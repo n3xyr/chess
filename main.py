@@ -22,16 +22,16 @@ class board:
         for i in [1, 6]:                                      # white knights
             self.board[7][i] = knight(i, 0, 'white')
 
-        for i in [2, 5]:                                      # black knights
+        for i in [2, 5]:                                      # black bishops
             self.board[0][i] = bishop(i, 0, 'black')
-        for i in [2, 5]:                                      # white knights
+        for i in [2, 5]:                                      # white bishops
             self.board[7][i] = bishop(i, 0, 'white')
 
-        self.board[0][3] = queen(3, 0, 'black')        # black queen
-        self.board[7][3] = queen(3, 0, 'white')        # white queen
+        self.board[0][3] = queen(3, 0, 'black')               # black queen
+        self.board[7][3] = queen(3, 0, 'white')               # white queen
 
-        self.board[0][4] = king(4, 0, 'black')         # black king
-        self.board[7][4] = king(4, 0, 'white')         # white king
+        self.board[0][4] = king(4, 0, 'black')                # black king
+        self.board[7][4] = king(4, 0, 'white')                # white king
 
     def print(self):
         '''
@@ -138,7 +138,6 @@ class knight:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-
 class rook:
     def __init__(self, coordX, coordY, color):
         self.__coordinateX = coordX
@@ -170,7 +169,6 @@ class rook:
     def setCoordY(self, y):
         self.__coordinateY = y
         
-
 class bishop:
     def __init__(self, coordX, coordY, color):
         self.__coordinateX = coordX
@@ -202,7 +200,6 @@ class bishop:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-
 class queen:
     def __init__(self, coordX, coordY, color):
         self.__coordinateX = coordX
@@ -233,7 +230,6 @@ class queen:
 
     def setCoordY(self, y):
         self.__coordinateY = y
-
 
 class king:
     def __init__(self, coordX, coordY, color):
