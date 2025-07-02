@@ -6,19 +6,19 @@ class pawn:
 
     def getCoordX(self):
         """
-        returns pawn's x coordinate
+        returns piece's x coordinate
         """
         return self.__coordinatesX
     
     def getCoordY(self):
         """
-        returns pawn's y coordinate
+        returns piece's y coordinate
         """
         return self.__coordinatesY
     
     def getColor(self):
         """
-        returns pawn's color
+        returns piece's color
         """
         return self.__color
 
@@ -38,3 +38,157 @@ class pawn:
             return True
         return False
 
+
+class knight:
+    def __init__(self, coordX, coordY, color):
+        self.__coordinateX = coordX
+        self.__coordinateY = coordY 
+        self.__color = color
+
+    def getCoordX(self):
+        """
+        returns piece's x coordinate
+        """
+        return self.__coordinatesX
+    
+    def getCoordY(self):
+        """
+        returns piece's y coordinate
+        """
+        return self.__coordinatesY
+    
+    def getColor(self):
+        """
+        returns piece's color
+        """
+        return self.__color
+
+    def setCoordX(self, x):
+        self.__coordinateX = x
+
+    def setCoordY(self, y):
+        self.__coordinateY = y
+
+
+class rook:
+    def __init__(self, coordX, coordY, color):
+        self.__coordinateX = coordX
+        self.__coordinateY = coordY 
+        self.__color = color
+
+    def getCoordX(self):
+        """
+        returns piece's x coordinate
+        """
+        return self.__coordinatesX
+    
+    def getCoordY(self):
+        """
+        returns piece's y coordinate
+        """
+        return self.__coordinatesY
+    
+    def getColor(self):
+        """
+        returns piece's color
+        """
+        return self.__color
+
+    def setCoordX(self, x):
+        self.__coordinateX = x
+
+    def setCoordY(self, y):
+        self.__coordinateY = y
+        
+
+class bishop:
+    def __init__(self, coordX, coordY, color):
+        self.__coordinateX = coordX
+        self.__coordinateY = coordY 
+        self.__color = color
+
+    def getCoordX(self):
+        """
+        returns piece's x coordinate
+        """
+        return self.__coordinatesX
+    
+    def getCoordY(self):
+        """
+        returns piece's y coordinate
+        """
+        return self.__coordinatesY
+    
+    def getColor(self):
+        """
+        returns piece's color
+        """
+        return self.__color
+
+    def setCoordX(self, x):
+        self.__coordinateX = x
+
+    def setCoordY(self, y):
+        self.__coordinateY = y
+
+
+class queen:
+    def __init__(self, coordX, coordY, color):
+        self.__coordinateX = coordX
+        self.__coordinateY = coordY 
+        self.__color = color
+
+    def getCoordX(self):
+        """
+        returns piece's x coordinate
+        """
+        return self.__coordinatesX
+    
+    def getCoordY(self):
+        """
+        returns piece's y coordinate
+        """
+        return self.__coordinatesY
+    
+    def getColor(self):
+        """
+        returns piece's color
+        """
+        return self.__color
+
+    def setCoordX(self, x):
+        self.__coordinateX = x
+
+    def setCoordY(self, y):
+        self.__coordinateY = y
+
+
+class king:
+    def __init__(self, coordX, coordY, color):
+        self.__coordinateX = coordX
+        self.__coordinateY = coordY 
+        self.__color = color
+
+    def getCoordX(self):
+        """
+        returns piece's x coordinate
+        """
+        return self.__coordinatesX
+    
+    def getCoordY(self):
+        """
+        returns piece's y coordinate
+        """
+        return self.__coordinatesY
+    
+    def getColor(self):
+        """
+        returns piece's color
+        """
+        return self.__color
+
+    def setCoordX(self, x):
+        self.__coordinateX = x
+
+    def setCoordY(self, y):
+        self.__coordinateY = y
