@@ -9,13 +9,13 @@ class pawn:
         """
         returns piece's x coordinate
         """
-        return self.__coordinatesX
+        return self.__coordinateX
     
     def getCoordY(self):
         """
         returns piece's y coordinate
         """
-        return self.__coordinatesY
+        return self.__coordinateY
     
     def getColor(self):
         """
@@ -33,25 +33,39 @@ class pawn:
         """
         returns True if the pawn hasn't moved yet False otherwise
         """
-        if self.getColor() == 'black' and self.getCoordY() == 6:
+        if self.getColor() == 'black' and self.getCoordY() == 1:
             return True
-        if self.getColor() == 'white' and self.getCoordY() == 1:
+        if self.getColor() == 'white' and self.getCoordY() == 6:
             return True
         return False
 
 
-    def canMove(self, x, y, board):
+    def canMove(self, y, x, board):
         """
-        returns True if the piece can move to the tile(coordX, coordY) False otherwise
+        returns True if the piece can move to the tile(x, y) False otherwise
         """
         coordX = self.getCoordX()
         coordY = self.getCoordY()
-        moves = [(coordX + 1, coordY + 1), (coordX - 1, coordY - 1), (coordX, coordY + 1), (coordX, coordY + 2)]
-        if not (x, y) in moves:
+        if self.getColor() == 'black':
+            direction = 1
+        else:
+            direction = -1
+        moves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2*direction, coordX)]
+        if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
             return False
-        if not(board.matrice[x][y] is None):
-            if (x,y) in moves[:2]:
+        if board[y][x] is None:
+            if (y, x) in moves[:2]:
+                return False
+            elif (y, x) == moves[2]:
                 return True
+            elif (y, x) == moves[3] and self.isFirstMove():
+                return True
+        if (y, x) in moves[:2]:
+            return True
+        if (y, x) == moves[3]:
+            return False
+        if (y, x) == moves[2]:
+            return False
                 
 class knight:
     def __init__(self, coordX, coordY, color):
@@ -149,13 +163,13 @@ class bishop:
         """
         returns piece's x coordinate
         """
-        return self.__coordinatesX
+        return self.__coordinateX
     
     def getCoordY(self):
         """
         returns piece's y coordinate
         """
-        return self.__coordinatesY
+        return self.__coordinateY
     
     def getColor(self):
         """
@@ -180,13 +194,13 @@ class queen:
         """
         returns piece's x coordinate
         """
-        return self.__coordinatesX
+        return self.__coordinateX
     
     def getCoordY(self):
         """
         returns piece's y coordinate
         """
-        return self.__coordinatesY
+        return self.__coordinateY
     
     def getColor(self):
         """
@@ -211,13 +225,13 @@ class king:
         """
         returns piece's x coordinate
         """
-        return self.__coordinatesX
+        return self.__coordinateX
     
     def getCoordY(self):
         """
         returns piece's y coordinate
         """
-        return self.__coordinatesY
+        return self.__coordinateY
     
     def getColor(self):
         """
