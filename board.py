@@ -51,3 +51,5 @@ class board:
 test = board()
 test.fillBoard()
 test.print()
+# print(test.matrix[1][0].getColor())
+# print(test.matrix[1][0].canMove(3, 0, test.matrix))
