@@ -208,14 +208,11 @@ class bishop:
         if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2:  #if it isn't in the board or if it doesn't move in a diagonal
             return False
         directionX = int((x - coordX)/abs(x - coordX))  # X vector
-        print(directionX)
         directionY = int((y - coordY)/abs(y - coordY))  # Y vector
-        print(directionY)
         for i in range(1, abs(coordX - x)):
             if board[coordY + i*directionY][coordX + i*directionX] != None: #if there's a piece on the diagonal
                 return False
         return True
-
 
 class queen:
     def __init__(self, coordY, coordX, color):
@@ -247,6 +244,46 @@ class queen:
 
     def setCoordY(self, y):
         self.__coordinateY = y
+        
+    def canMove(self, y, x, board):
+        """
+        returns True if the piece can move to the tile(x, y) False otherwise
+        """
+        coordX = self.getCoordX()
+        coordY = self.getCoordY()
+        if x < 0 or x > 7 or y < 0 or y > 7:  #if it isn't in the board or if it doesn't move in a diagonal nor in a straight line
+            return False
+        
+        if ((coordX-x)**2 != (coordY-y)**2) and not(x == coordX and (y != coordY )) and not((x != coordX) and y == coordY):
+            return False
+
+        #bishop part
+        if (coordX-x)**2 == (coordY-y)**2:
+            directionX = int((x - coordX)/abs(x - coordX))  # X vector
+            directionY = int((y - coordY)/abs(y - coordY))  # Y vector
+            for i in range(1, abs(coordX - x)):
+                if board[coordY + i*directionY][coordX + i*directionX] != None: #if there's a piece on the diagonal
+                    return False
+            return True
+        
+        #rook part
+        color = self.getColor()
+        if board[y][x] == None or board[y][x].getColor() != color:
+            if x == coordX and (y != coordY and (y <= 7 and y >= 0)):
+                for i in range(1, abs(coordY - y)):
+                    if board[coordY + i][coordX] != None:
+                        return False
+                return True
+            elif (x != coordX and (x <= 7 and x >= 0)) and y == coordY:
+                for i in range(1, abs(coordX - x)):
+                    if board[coordY][coordX + i] != None:
+                        return False
+                return True
+            else:
+                False
+        else:
+            return False
+        
 
 class king:
     def __init__(self, coordY, coordX, color):
