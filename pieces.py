@@ -1,3 +1,5 @@
+# from math import abs
+
 class pawn:
     def __init__(self, coordX, coordY, color):
         self.__coordinateX = coordX
@@ -182,6 +184,24 @@ class bishop:
 
     def setCoordY(self, y):
         self.__coordinateY = y
+
+    def canMove(self, y, x, board):
+        """
+        returns True if the piece can move to the tile(x, y) False otherwise
+        """
+        coordX = self.getCoordX()
+        coordY = self.getCoordY()
+        if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2:  #if it isn't in the board or if it doesn't move in a diagonal
+            return False
+        directionX = int((x - coordX)/abs(x - coordX))  # X vector
+        print(directionX)
+        directionY = int((y - coordY)/abs(y - coordY))  # Y vector
+        print(directionY)
+        for i in range(1, abs(coordX - x)):
+            if board[coordY + i*directionY][coordX + i*directionX] != None: #if there's a piece on the diagonal
+                return False
+        return True
+
 
 class queen:
     def __init__(self, coordX, coordY, color):

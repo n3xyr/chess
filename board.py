@@ -54,13 +54,23 @@ test.print()
 
 
 # Knight
-print(test.matrix[0][1].canMove(2, 2, test.matrix)) # True
-print(test.matrix[0][1].canMove(2, 3, test.matrix)) # False
-print(test.matrix[0][1].canMove(3, 2, test.matrix)) # False
-print(test.matrix[0][1].canMove(3, 2, test.matrix)) # False
+# print(test.matrix[0][1].canMove(2, 2, test.matrix)) # True
+# print(test.matrix[0][1].canMove(2, 3, test.matrix)) # False
+# print(test.matrix[0][1].canMove(3, 2, test.matrix)) # False
+# print(test.matrix[0][1].canMove(3, 2, test.matrix)) # False
 
 # Rook
-print(test.matrix[0][0].canMove(0, 2, test.matrix)) # False
+# print(test.matrix[0][0].canMove(0, 2, test.matrix)) # False
 
-# print(test.matrix[1][0].getColor())
-# print(test.matrix[1][0].canMove(3, 0, test.matrix))
+# Pawn
+# print(test.matrix[1][0].getColor()) # 'black'
+# print(test.matrix[1][0].canMove(3, 0, test.matrix)) #True
+
+# Bishop
+# test.matrix[1][1] = None
+# test.matrix[2][1] = pieces.pawn(2, 1, 'black')
+# test.print()
+# print(test.matrix[0][2].canMove(2, 4, test.matrix)) # False
+# print(test.matrix[0][2].canMove(2, 0, test.matrix)) # True
+# print(test.matrix[0][2].canMove(5, 2, test.matrix)) # False
+# print(test.matrix[0][2].canMove(2, 2, test.matrix)) # False
