@@ -1,3 +1,5 @@
+import board
+
 class pawn:
     def __init__(self, coordX, coordY, color):
         self.__coordinateX = coordX
@@ -37,6 +39,23 @@ class pawn:
         if self.getColor() == 'white' and self.getCoordY() == 1:
             return True
         return False
+
+    def availableMoves(self):
+        """
+        returns a list of coordinates where the piece could go
+        """
+        moves = []
+        if self.isFirstMove():
+            moves.append((self.getCoordX(), self.getCoordY() + 2))
+        moves.append(self.getCoordX(), self.getCoordY() + 1)
+        moves.append(self.getCoordX() + 1, self.getCoordY() + 1)
+        moves.append(self.getCoordX() - 1, self.getCoordY() + 1)
+        return moves
+
+    def canMove(self, coordX, coordY):
+        """
+        returns True if the piece can move to the tile(coordX, coordY) False otherwise
+        """
 
 
 class knight:
