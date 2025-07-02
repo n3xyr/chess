@@ -28,11 +28,11 @@ class board:
         for i in [2, 5]:                                      # white bishops
             self.matrix[7][i] = pieces.bishop(i, 0, 'white')
 
-        self.matrix[0][3] = pieces.queen(3, 0, 'black')               # black queen
-        self.matrix[7][3] = pieces.queen(3, 0, 'white')               # white queen
+        self.matrix[0][3] = pieces.queen(3, 0, 'black')       # black queen
+        self.matrix[7][3] = pieces.queen(3, 0, 'white')       # white queen
 
-        self.matrix[0][4] = pieces.king(4, 0, 'black')                # black king
-        self.matrix[7][4] = pieces.king(4, 0, 'white')                # white king
+        self.matrix[0][4] = pieces.king(4, 0, 'black')        # black king
+        self.matrix[7][4] = pieces.king(4, 0, 'white')        # white king
 
     def print(self):
         '''
@@ -52,15 +52,21 @@ test = board()
 test.fillBoard()
 test.print()
 
-
 # Knight
 print(test.matrix[0][1].canMove(2, 2, test.matrix)) # True
 print(test.matrix[0][1].canMove(2, 3, test.matrix)) # False
 print(test.matrix[0][1].canMove(3, 2, test.matrix)) # False
 print(test.matrix[0][1].canMove(3, 2, test.matrix)) # False
+print(test.matrix[0][1].canMove(-1, 3, test.matrix)) # False
 
 # Rook
 print(test.matrix[0][0].canMove(0, 2, test.matrix)) # False
+test.matrix[1][0] = None
+print(test.matrix[0][0].canMove(0, 2, test.matrix)) # True
+test.matrix[1][0] = pieces.pawn(0, 1, 'black')
 
-# print(test.matrix[1][0].getColor())
-# print(test.matrix[1][0].canMove(3, 0, test.matrix))
+# King
+print(test.matrix[0][4].canMove(3, 1, test.matrix)) # False
+test.matrix[1][3] = None
+print(test.matrix[0][4].canMove(3, 1, test.matrix)) # True
+test.matrix[1][3] = pieces.pawn(3, 1, 'black')

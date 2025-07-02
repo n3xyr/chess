@@ -104,9 +104,13 @@ class knight:
         """
         coordX = self.getCoordX()
         coordY = self.getCoordY()
+        color = self.getColor()
         moves = [(coordX + 1, coordY + 2), (coordX + 2, coordY + 1), (coordX - 1, coordY + 2), (coordX - 2, coordY + 1), (coordX + 1, coordY - 2),(coordX + 2, coordY - 1), (coordX - 1, coordY - 2), (coordX - 2, coordY - 1)]
-        if (x, y) in moves and board[y][x] == None:
-            return True
+        if (x, y) in moves and not (x < 0) or (x > 7) or (y < 0) or (y > 7):
+            if board[y][x] == None or board[y][x].getColor() != color:
+                return True
+            else:
+                return False
         else:
             return False
 
@@ -143,15 +147,25 @@ class rook:
     
     def canMove(self, x, y, board):
         """
-        returns True if the piece can move to the tile(coordX, coordY) False otherwise
+        returns True if the piece can move to the tile(x, y) False otherwise
         """
         coordX = self.getCoordX()
         coordY = self.getCoordY()
-        if (x == coordX and y != coordY) or ((x != coordX and (x >= 7 and x <= 0)) and y == coordY):
-            return True
+        color = self.getColor()
+        if board[y][x] == None or board[y][x].getColor() != color:
+            if x == coordX and (y != coordY and (y <= 7 and y >= 0)):
+                for i in range(1, abs(coordY - y)):
+                    if board[coordY + i][coordX] != None:
+                        return False
+                return True
+            elif (x != coordX and (x <= 7 and x >= 0)) and y == coordY:
+                for i in range(1, abs(coordX - x)):
+                    if board[coordY][coordX + i] != None:
+                        return False
+                return True
         else:
             return False
-        
+
 class bishop:
     def __init__(self, coordX, coordY, color):
         self.__coordinateX = coordX
@@ -244,3 +258,19 @@ class king:
 
     def setCoordY(self, y):
         self.__coordinateY = y
+
+    def canMove(self, x, y, board):
+        """
+        returns True if the piece can move to the tile(x, y) False otherwise
+        """
+        coordX = self.getCoordX()
+        coordY = self.getCoordY()
+        color = self.getColor()
+        moves = [(coordX + 1, coordY + 1), (coordX + 1, coordY), (coordX, coordY + 1), (coordX + 1, coordY - 1), (coordX - 1, coordY + 1), (coordX - 1, coordY - 1), (coordX - 1, coordY), (coordX, coordY - 1)]
+        if (x, y) in moves and not (x < 0) or (x > 7) or (y < 0) or (y > 7):
+            if board[y][x] == None or board[y][x].getColor() != color:
+                return True
+            else:
+                return False
+        else:
+            return False
