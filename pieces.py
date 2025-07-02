@@ -64,13 +64,13 @@ class knight:
         """
         returns piece's x coordinate
         """
-        return self.__coordinatesX
+        return self.__coordinateX
     
     def getCoordY(self):
         """
         returns piece's y coordinate
         """
-        return self.__coordinatesY
+        return self.__coordinateY
     
     def getColor(self):
         """
@@ -83,6 +83,18 @@ class knight:
 
     def setCoordY(self, y):
         self.__coordinateY = y
+
+    def canMove(self, x, y, board):
+        """
+        returns True if the piece can move to the tile(x, y) False otherwise
+        """
+        coordX = self.getCoordX()
+        coordY = self.getCoordY()
+        moves = [(coordX + 1, coordY + 2), (coordX + 2, coordY + 1), (coordX - 1, coordY + 2), (coordX - 2, coordY + 1), (coordX + 1, coordY - 2),(coordX + 2, coordY - 1), (coordX - 1, coordY - 2), (coordX - 2, coordY - 1)]
+        if (x, y) in moves and board[y][x] == None:
+            return True
+        else:
+            return False
 
 class rook:
     def __init__(self, coordX, coordY, color):
@@ -95,13 +107,13 @@ class rook:
         """
         returns piece's x coordinate
         """
-        return self.__coordinatesX
+        return self.__coordinateX
     
     def getCoordY(self):
         """
         returns piece's y coordinate
         """
-        return self.__coordinatesY
+        return self.__coordinateY
     
     def getColor(self):
         """
@@ -114,6 +126,17 @@ class rook:
 
     def setCoordY(self, y):
         self.__coordinateY = y
+    
+    def canMove(self, x, y, board):
+        """
+        returns True if the piece can move to the tile(coordX, coordY) False otherwise
+        """
+        coordX = self.getCoordX()
+        coordY = self.getCoordY()
+        if (x == coordX and y != coordY) or ((x != coordX and (x >= 7 and x <= 0)) and y == coordY):
+            return True
+        else:
+            return False
         
 class bishop:
     def __init__(self, coordX, coordY, color):
