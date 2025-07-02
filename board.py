@@ -34,7 +34,7 @@ class board:
         board[7][4] = pieces.queen(4, 0, 'white')             # white king
 
         return board
-    
+
     def print(board):
         for i in range(8):
             line = []
