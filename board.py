@@ -86,10 +86,10 @@ test.print()
 # print(test.matrix[0][2].canMove(2, 2, test.matrix)) # False
 
 # Queen
-for i in range(8):
-    test.matrix[1][i] = None
-test.print()
-print(test.matrix[0][3].canMove(5, 2, test.matrix)) # False
-print(test.matrix[0][3].canMove(4, 3, test.matrix)) # True
-print(test.matrix[0][3].canMove(3, 0, test.matrix)) # True
-print(test.matrix[0][3].canMove(0, 4, test.matrix)) # False
+# for i in range(8):
+#     test.matrix[1][i] = None
+# test.print()
+# print(test.matrix[0][3].canMove(5, 2, test.matrix)) # False
+# print(test.matrix[0][3].canMove(4, 3, test.matrix)) # True
+# print(test.matrix[0][3].canMove(3, 0, test.matrix)) # True
+# print(test.matrix[0][3].canMove(0, 4, test.matrix)) # False
