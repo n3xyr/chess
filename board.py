@@ -27,10 +27,22 @@ class board:
         for i in [1, 6]:                                      # white knights
             board[7][i] = pieces.bishop(i, 0, 'white')
 
-        board[0, 3] = pieces.queen(3, 0, 'black')             # black queen
-        board[7, 3] = pieces.queen(3, 0, 'white')             # white queen
+        board[0][3] = pieces.queen(3, 0, 'black')             # black queen
+        board[7][3] = pieces.queen(3, 0, 'white')             # white queen
 
-        board[0, 4] = pieces.queen(4, 0, 'black')             # black king
-        board[7, 4] = pieces.queen(4, 0, 'white')             # white king
+        board[0][4] = pieces.queen(4, 0, 'black')             # black king
+        board[7][4] = pieces.queen(4, 0, 'white')             # white king
 
-board.buildBoard()
+        return board
+    
+    def print(board):
+        for i in range(8):
+            line = []
+            for j in range(8):
+                if board[i][j] == None:
+                    line.append('    ')
+                line.append(board[i][j].name)
+        print(line)
+
+test = board.buildBoard()
+print(test)
