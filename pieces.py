@@ -5,6 +5,7 @@ class pawn:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.name  = 'pawn'
 
     def getCoordX(self):
         """
@@ -56,13 +57,16 @@ class pawn:
         """
         returns True if the piece can move to the tile(coordX, coordY) False otherwise
         """
-
+        moves = self.availableMoves()
+        if not (coordX, coordY) in moves:
+            return False
 
 class knight:
     def __init__(self, coordX, coordY, color):
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.name  = 'knight'
 
     def getCoordX(self):
         """
@@ -94,6 +98,7 @@ class rook:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.name  = 'rook'
 
     def getCoordX(self):
         """
@@ -125,6 +130,7 @@ class bishop:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.name  = 'bishop'
 
     def getCoordX(self):
         """
@@ -156,6 +162,7 @@ class queen:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.name  = 'queen'
 
     def getCoordX(self):
         """
@@ -187,6 +194,7 @@ class king:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.name  = 'king'
 
     def getCoordX(self):
         """
