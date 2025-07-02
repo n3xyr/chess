@@ -52,6 +52,12 @@ class pawn:
         if not(board.matrice[x][y] is None):
             if (x,y) in moves[:2]:
                 return True
+            else:
+                return False
+        if (x, y) == moves[-1] and self.isFirstMove():
+            return True
+        else:
+            False
                 
 class knight:
     def __init__(self, coordX, coordY, color):
