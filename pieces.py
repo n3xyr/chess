@@ -1,51 +1,3 @@
-
-class board:
-    def __init__(self):
-        self.board = [[None for _ in range(8)] for _ in range(8)]
-
-    def fillBoard(self):
-        '''
-        Fills an empty board with pieces.
-        '''
-        for i in range(8):                                    # black pawns
-            self.board[1][i] = pawn(i, 1, 'black')
-        for i in range(8):                                    # white pawns
-            self.board[6][i] = pawn(i, 6, 'white')
-
-        for i in [0, 7]:                                      # black rooks
-            self.board[0][i] = rook(i, 0, 'black')
-        for i in [0, 7]:                                      # white rooks
-            self.board[7][i] = rook(i, 7, 'white')
-
-        for i in [1, 6]:                                      # black knights
-            self.board[0][i] = knight(i, 0, 'black')
-        for i in [1, 6]:                                      # white knights
-            self.board[7][i] = knight(i, 0, 'white')
-
-        for i in [2, 5]:                                      # black bishops
-            self.board[0][i] = bishop(i, 0, 'black')
-        for i in [2, 5]:                                      # white bishops
-            self.board[7][i] = bishop(i, 0, 'white')
-
-        self.board[0][3] = queen(3, 0, 'black')               # black queen
-        self.board[7][3] = queen(3, 0, 'white')               # white queen
-
-        self.board[0][4] = king(4, 0, 'black')                # black king
-        self.board[7][4] = king(4, 0, 'white')                # white king
-
-    def print(self):
-        '''
-        Shows the board.
-        '''
-        for i in range(8):
-            line = []
-            for j in range(8):
-                if self.board[i][j] == None:
-                    line.append('    ')
-                else:
-                    line.append(self.board[i][j].name)
-            print(line)
-
 class pawn:
     def __init__(self, coordX, coordY, color):
         self.__coordinateX = coordX
@@ -87,26 +39,20 @@ class pawn:
             return True
         return False
 
-    def availableMoves(self):
-        """
-        returns a list of coordinates where the piece could go
-        """
-        moves = []
-        if self.isFirstMove():
-            moves.append((self.getCoordX(), self.getCoordY() + 2))
-        moves.append(self.getCoordX(), self.getCoordY() + 1)
-        moves.append(self.getCoordX() + 1, self.getCoordY() + 1)
-        moves.append(self.getCoordX() - 1, self.getCoordY() + 1)
-        return moves
 
-    def canMove(self, coordX, coordY):
+    def canMove(self, x, y, board):
         """
         returns True if the piece can move to the tile(coordX, coordY) False otherwise
         """
-        moves = self.availableMoves()
-        if not (coordX, coordY) in moves:
+        coordX = self.getCoordX()
+        coordY = self.getCoordY()
+        moves = [(coordX + 1, coordY + 1), (coordX - 1, coordY - 1), (coordX, coordY + 1), (coordX, coordY + 2)]
+        if not (x, y) in moves:
             return False
-
+        if not(board.matrice[x][y] is None):
+            if (x,y) in moves[:2]:
+                return True
+                
 class knight:
     def __init__(self, coordX, coordY, color):
         self.__coordinateX = coordX
@@ -261,7 +207,3 @@ class king:
 
     def setCoordY(self, y):
         self.__coordinateY = y
-
-test = board()
-test.fillBoard()
-test.print()
