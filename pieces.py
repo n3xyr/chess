@@ -1,7 +1,7 @@
 # from math import abs
 
 class pawn:
-    def __init__(self, coordX, coordY, color):
+    def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
@@ -70,7 +70,7 @@ class pawn:
             return False
                 
 class knight:
-    def __init__(self, coordX, coordY, color):
+    def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
@@ -113,7 +113,7 @@ class knight:
             return False
 
 class rook:
-    def __init__(self, coordX, coordY, color):
+    def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
@@ -155,7 +155,7 @@ class rook:
             return False
         
 class bishop:
-    def __init__(self, coordX, coordY, color):
+    def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
@@ -204,7 +204,7 @@ class bishop:
 
 
 class queen:
-    def __init__(self, coordX, coordY, color):
+    def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
@@ -235,7 +235,7 @@ class queen:
         self.__coordinateY = y
 
 class king:
-    def __init__(self, coordX, coordY, color):
+    def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
