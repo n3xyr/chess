@@ -1,4 +1,4 @@
-import board
+from board import board
 
 class pawn:
     def __init__(self, coordX, coordY, color):
