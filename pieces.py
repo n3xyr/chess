@@ -1,5 +1,3 @@
-# from math import abs
-
 class pawn:
     def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
@@ -282,8 +280,7 @@ class queen:
             else:
                 False
         else:
-            return False
-        
+            return False     
 
 class king:
     def __init__(self, coordY, coordX, color):
