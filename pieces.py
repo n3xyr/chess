@@ -58,7 +58,7 @@ class pawn:
                 return False
             elif (y, x) == moves[2]:
                 return True
-            elif (y, x) == moves[3] and self.isFirstMove():
+            elif (y, x) == moves[3] and self.isFirstMove() and board[coordY + direction][coordX] is None:
                 return True
         if (y, x) in moves[:2]:
             return True
