@@ -207,9 +207,15 @@ class bishop:
             return False
         directionX = int((x - coordX)/abs(x - coordX))  # X vector
         directionY = int((y - coordY)/abs(y - coordY))  # Y vector
+
         for i in range(1, abs(coordX - x)):
             if board[coordY + i*directionY][coordX + i*directionX] != None: #if there's a piece on the diagonal
                 return False
+            
+        if board[x][y] != None:
+            if board[x][y].getColor() == self.getColor():   # If the color of the piece on the targeted tile is the same as the moved piece
+                return False
+            
         return True
 
 class queen:
@@ -255,7 +261,7 @@ class queen:
         if ((coordX-x)**2 != (coordY-y)**2) and not(x == coordX and (y != coordY )) and not((x != coordX) and y == coordY):
             return False
 
-        #bishop part
+        # bishop part
         if (coordX-x)**2 == (coordY-y)**2:
             directionX = int((x - coordX)/abs(x - coordX))  # X vector
             directionY = int((y - coordY)/abs(y - coordY))  # Y vector
@@ -264,7 +270,7 @@ class queen:
                     return False
             return True
         
-        #rook part
+        # rook part
         color = self.getColor()
         if board[y][x] == None or board[y][x].getColor() != color:
             if x == coordX and (y != coordY and (y <= 7 and y >= 0)):
