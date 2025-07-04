@@ -47,11 +47,11 @@ class board:
                     line.append(self.matrix[i][j].name)
             print(line)
 
-
 test = board()
 test.fillBoard()
 test.print()
 print('----------------------------------------------------------------')
+
 # Knight
 
 # print(test.matrix[0][1].canMove(2, 2, test.matrix)) # True
