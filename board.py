@@ -77,15 +77,15 @@ print('----------------------------------------------------------------')
 # print(test.matrix[1][0].canMove(3, 0, test.matrix)) #True
 
 # Bishop
-test.matrix[1][1] = None
-test.matrix[1][0] = None
-test.matrix[2][1] = pieces.pawn(2, 1, 'black')
-test.matrix[2][0] = pieces.pawn(2, 0, 'black')
-test.print()
-print(test.matrix[0][2].canMove(2, 4, test.matrix)) # False
-print(test.matrix[0][2].canMove(2, 0, test.matrix)) # False
-print(test.matrix[0][2].canMove(1, 1, test.matrix)) # True
-print(test.matrix[0][2].canMove(2, 2, test.matrix)) # False
+# test.matrix[1][1] = None
+# test.matrix[1][0] = None
+# test.matrix[2][1] = pieces.pawn(2, 1, 'black')
+# test.matrix[2][0] = pieces.pawn(2, 0, 'black')
+# test.print()
+# print(test.matrix[0][2].canMove(2, 4, test.matrix)) # False
+# print(test.matrix[0][2].canMove(2, 0, test.matrix)) # False
+# print(test.matrix[0][2].canMove(1, 1, test.matrix)) # True
+# print(test.matrix[0][2].canMove(2, 2, test.matrix)) # False
 
 # Queen
 # for i in range(8):
