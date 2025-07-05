@@ -61,22 +61,26 @@ print('----------------------------------------------------------------')
 # print(test.matrix[0][1].canMove(-1, 3, test.matrix)) # False
 
 # Rook
+
 # print(test.matrix[0][0].canMove(0, 2, test.matrix)) # False
 # test.matrix[1][0] = None
 # print(test.matrix[0][0].canMove(0, 2, test.matrix)) # True
 # test.matrix[1][0] = pieces.pawn(0, 1, 'black')
 
 # King
+
 # print(test.matrix[0][4].canMove(3, 1, test.matrix)) # False
 # test.matrix[1][3] = None
 # print(test.matrix[0][4].canMove(3, 1, test.matrix)) # True
 # test.matrix[1][3] = pieces.pawn(3, 1, 'black')
 
 # Pawn
+
 # print(test.matrix[1][0].getColor()) # 'black'
 # print(test.matrix[1][0].canMove(3, 0, test.matrix)) #True
 
 # Bishop
+
 # test.matrix[1][1] = None
 # test.matrix[1][0] = None
 # test.matrix[2][1] = pieces.pawn(2, 1, 'black')
@@ -88,6 +92,7 @@ print('----------------------------------------------------------------')
 # print(test.matrix[0][2].canMove(2, 2, test.matrix)) # False
 
 # Queen
+
 # for i in range(8):
 #     test.matrix[1][i] = None
 # test.print()
