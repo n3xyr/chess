@@ -47,7 +47,9 @@ SQUARE_SIZE = WIDTH // COLS
 turn = 'white'
 
 def drawBoard(game):
-    """Draw board"""
+    """
+    Draw board
+    """
     game.fill(BACKGROUND)
     for row in range(ROWS):
         for col in range(COLS):
@@ -118,7 +120,6 @@ def main():
                 else:
                     pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
                     GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
-
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
