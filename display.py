@@ -132,15 +132,19 @@ def main():
 
             if event.type == pygame.MOUSEBUTTONDOWN:    # if mouse clicked
                 if event.button == 1:   # left click
+                    clickedTile = board.test.matrix[mouseYTab][mouseXTab]
                     if selected != None:
+                        print(selected.canMove(mouseYTab, mouseXTab, board.test.matrix))
                         if selected.canMove(mouseYTab, mouseXTab, board.test.matrix):
                             switchTurn()
                         board.test.movePiece(selected, mouseYTab, mouseXTab)
                         selected = None
-                    if board.test.matrix[mouseYTab][mouseXTab] != None and board.test.matrix[mouseYTab][mouseXTab].getColor() == turn:
-                        selected = board.test.matrix[mouseYTab][mouseXTab]
+                    if clickedTile != None:
+                        if clickedTile.getColor() == turn:
+                            selected = board.test.matrix[mouseYTab][mouseXTab]
                     else:
                         selected = None
+
                     if selected != None:
                         print(selected.name)
                     else:
