@@ -102,6 +102,7 @@ def main():
     while run:
         global turn
         clock.tick(60)  # 60 FPS cap
+        drawBoard(GAME)
 
         if len(moveList) == 0:
             initialTime = time.time()
@@ -113,9 +114,11 @@ def main():
                 lastTime = currentTime
                 timer = int(currentTime - initialTime)
                 if timer >= 3600:
+                    print('1h')
                     pygame.draw.rect(GAME, ULTRADARK, (615, 23, 150, 54))
                     GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (630, 35))
                 else:
+                    print('x1h')
                     pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
                     GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
 
@@ -149,7 +152,6 @@ def main():
                         print(selected.name)
                     else:
                         print(None)
-        drawBoard(GAME)
         pygame.display.update()
 
     pygame.quit()
