@@ -203,7 +203,7 @@ class bishop:
         """
         coordX = self.getCoordX()
         coordY = self.getCoordY()
-        if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2:  #if it isn't in the board or if it doesn't move in a diagonal
+        if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2 or x == coordX or y == coordY:  #if it isn't in the board or if it doesn't move in a diagonal
             return False
         directionX = int((x - coordX)/abs(x - coordX))  # X vector
         directionY = int((y - coordY)/abs(y - coordY))  # Y vector
