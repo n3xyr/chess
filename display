@@ -10,8 +10,8 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Jeu d'échecs LAN")
 
 # Définir les couleurs
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
+LIGHT = (235, 236, 208)
+DARK = (73, 95, 52)
 
 # Définir la taille des cases
 ROWS, COLS = 8, 8
@@ -19,11 +19,11 @@ SQUARE_SIZE = WIDTH // COLS
 
 def draw_board(win):
     """Dessine l'échiquier."""
-    win.fill(WHITE)
+    win.fill(LIGHT)
     for row in range(ROWS):
         for col in range(COLS):
             if (row + col) % 2 == 1:
-                pygame.draw.rect(win, BLACK, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                pygame.draw.rect(win, DARK, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
 def main():
     clock = pygame.time.Clock()
