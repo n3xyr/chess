@@ -34,6 +34,15 @@ class board:
         self.matrix[0][4] = pieces.king(0, 4, 'black')                # black king
         self.matrix[7][4] = pieces.king(0, 4, 'white')                # white king
 
+    def movePiece(self, piece, y, x):
+        if piece == None:
+            return
+        elif piece.canMove(y, x, self.matrix):
+            self.matrix[y][x] = piece
+            self.matrix[piece.getCoordY()][piece.getCoordX()] = None
+            piece.setCoordY() = y
+            piece.setCoordX() = x
+
     def print(self):
         '''
         Shows the board.
