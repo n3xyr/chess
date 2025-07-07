@@ -1,5 +1,5 @@
 import board
-import images
+import piecesImages
 import pygame
 import sys
 
