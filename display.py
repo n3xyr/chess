@@ -38,13 +38,8 @@ def draw_board(game):
     game.fill(BLACK)
     for row in range(ROWS):
         for col in range(COLS):
-            print(row)
-
             if (row + col) % 2 == 1:
                 pygame.draw.rect(game, DARK, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
-
-                # if row == 1:
-                #     game.blit(bp, )
             else:
                 pygame.draw.rect(game, LIGHT, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
