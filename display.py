@@ -118,7 +118,6 @@ def main():
                     pygame.draw.rect(GAME, ULTRADARK, (615, 23, 150, 54))
                     GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (630, 35))
                 else:
-                    print('x1h')
                     pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
                     GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
 
