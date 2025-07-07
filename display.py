@@ -1,5 +1,4 @@
 import board
-import piecesImages
 import time
 import datetime
 import pygame
@@ -22,8 +21,11 @@ wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (100, 100)
 wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (100, 100))
 
 # Define window size
-HEIGHTMARGIN = 100
-WIDTH, HEIGHT = 800, 800 + 2 * HEIGHTMARGIN
+TOPMARGIN = 100
+BOTTOMMARGIN = 100
+LEFTMARGIN = 0
+RIGHTMARGIN = 0
+WIDTH, HEIGHT = LEFTMARGIN + 800 + RIGHTMARGIN, 800 + BOTTOMMARGIN + TOPMARGIN
 GAME = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
 
@@ -42,54 +44,63 @@ robotoFont = pygame.font.SysFont('Roboto', 50)
 ROWS, COLS = 8, 8
 SQUARE_SIZE = WIDTH // COLS
 
+turn = 'white'
+
 def drawBoard(game):
     """Draw board"""
     game.fill(BACKGROUND)
     for row in range(ROWS):
         for col in range(COLS):
             if (row + col) % 2 == 1:
-                pygame.draw.rect(game, DARK, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                pygame.draw.rect(game, DARK, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
             else:
-                pygame.draw.rect(game, LIGHT, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                pygame.draw.rect(game, LIGHT, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
 
-            if row == 0:        # black pieces first rank
-                if col == 0 or col == 7:
-                    game.blit(br, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # black rook
-                if col == 1 or col == 6:
-                    game.blit(bn, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # black knight
-                if col == 2 or col == 5:
-                    game.blit(bb, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # black bishop
-                if col == 3:
-                    game.blit(bk, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # black king
-                if col == 4:
-                    game.blit(bq, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # black queen
-            
-            if row == 1:        # black pieces second row
-                game.blit(bp, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))        # black pawn
+            currentLoadingPiece = board.test.matrix[row][col]
+            if currentLoadingPiece != None:
+                if currentLoadingPiece.getColor() == 'black':
+                    if currentLoadingPiece.name == 'knight':
+                        game.blit(bn, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black knight
+                    if currentLoadingPiece.name == 'rook':
+                        game.blit(br, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black rook
+                    if currentLoadingPiece.name == 'pawn':
+                        game.blit(bp, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black pawn
+                    if currentLoadingPiece.name == 'bishop':
+                        game.blit(bb, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black bishop
+                    if currentLoadingPiece.name == 'queen':
+                        game.blit(bq, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black queen
+                    if currentLoadingPiece.name == 'king':
+                        game.blit(bk, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black king
+                else:
+                    if currentLoadingPiece.name == 'knight':
+                        game.blit(wn, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white knight
+                    if currentLoadingPiece.name == 'rook':
+                        game.blit(wr, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white rook
+                    if currentLoadingPiece.name == 'pawn':
+                        game.blit(wp, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white pawn
+                    if currentLoadingPiece.name == 'bishop':
+                        game.blit(wb, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white bishop
+                    if currentLoadingPiece.name == 'queen':
+                        game.blit(wq, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white queen
+                    if currentLoadingPiece.name == 'king':
+                        game.blit(wk, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white king
 
-            if row == 7:        # white pieces first row
-                if col == 0 or col == 7:
-                    game.blit(wr, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # white rook
-                if col == 1 or col == 6:
-                    game.blit(wn, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # white knight
-                if col == 2 or col == 5:
-                    game.blit(wb, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # white bishop
-                if col == 3:
-                    game.blit(wk, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # white king
-                if col == 4:
-                    game.blit(wq, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))    # white queen
-            
-            if row == 6:        # white pieces second row
-                game.blit(wp, (col * SQUARE_SIZE, HEIGHTMARGIN + row * SQUARE_SIZE))        # white pawn
-
+def switchTurn():
+    global turn
+    if turn == 'white':
+        turn = 'black'
+    else:
+        turn = 'white'
 
 def main():
     drawBoard(GAME)
     clock = pygame.time.Clock()
     run = True
     moveList = []
+    selected = None
 
     while run:
+        global turn
         clock.tick(60)  # 60 FPS cap
 
         if len(moveList) == 0:
@@ -108,10 +119,33 @@ def main():
                     pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
                     GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
 
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
+            mouseX = pygame.mouse.get_pos()[0]  # gets x position of the mouse in the window
+            mouseY = pygame.mouse.get_pos()[1]  # gets y position of the mouse in the window
 
+            if WIDTH - RIGHTMARGIN > mouseX > LEFTMARGIN and HEIGHT - BOTTOMMARGIN > mouseY > TOPMARGIN:
+                mouseXTab = int((mouseX - LEFTMARGIN) / ((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8))   # x position in board coordinates
+                mouseYTab = int((mouseY - TOPMARGIN) / ((HEIGHT - TOPMARGIN - BOTTOMMARGIN) / 8))   # y position in board coordinates
+
+            if event.type == pygame.MOUSEBUTTONDOWN:    # if mouse clicked
+                if event.button == 1:   # left click
+                    if selected != None:
+                        if selected.canMove(mouseYTab, mouseXTab, board.test.matrix):
+                            switchTurn()
+                        board.test.movePiece(selected, mouseYTab, mouseXTab)
+                        selected = None
+                    if board.test.matrix[mouseYTab][mouseXTab] != None and board.test.matrix[mouseYTab][mouseXTab].getColor() == turn:
+                        selected = board.test.matrix[mouseYTab][mouseXTab]
+                    else:
+                        selected = None
+                    if selected != None:
+                        print(selected.name)
+                    else:
+                        print(None)
+        drawBoard(GAME)
         pygame.display.update()
 
     pygame.quit()
