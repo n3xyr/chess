@@ -40,8 +40,8 @@ class board:
         elif piece.canMove(y, x, self.matrix):
             self.matrix[y][x] = piece
             self.matrix[piece.getCoordY()][piece.getCoordX()] = None
-            piece.setCoordY() = y
-            piece.setCoordX() = x
+            piece.setCoordY(y)
+            piece.setCoordX(x)
 
     def print(self):
         '''
@@ -90,10 +90,8 @@ print('----------------------------------------------------------------')
 
 # Bishop
 
-# test.matrix[1][1] = None
-# test.matrix[1][0] = None
-# test.matrix[2][1] = pieces.pawn(2, 1, 'black')
-# test.matrix[2][0] = pieces.pawn(2, 0, 'black')
+# test.movePiece(test.matrix[1][1], 2, 1)
+# test.movePiece(test.matrix[1][0], 2, 0)
 # test.print()
 # print(test.matrix[0][2].canMove(2, 4, test.matrix)) # False
 # print(test.matrix[0][2].canMove(2, 0, test.matrix)) # False

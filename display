@@ -1,0 +1,46 @@
+import pygame
+import sys
+
+# Initialisation de Pygame
+pygame.init()
+
+# Définir les dimensions de la fenêtre
+WIDTH, HEIGHT = 800, 800
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+pygame.display.set_caption("Jeu d'échecs LAN")
+
+# Définir les couleurs
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+
+# Définir la taille des cases
+ROWS, COLS = 8, 8
+SQUARE_SIZE = WIDTH // COLS
+
+def draw_board(win):
+    """Dessine l'échiquier."""
+    win.fill(WHITE)
+    for row in range(ROWS):
+        for col in range(COLS):
+            if (row + col) % 2 == 1:
+                pygame.draw.rect(win, BLACK, (col * SQUARE_SIZE, row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+
+def main():
+    clock = pygame.time.Clock()
+    run = True
+
+    while run:
+        clock.tick(60)  # Limite à 60 FPS
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        draw_board(WIN)
+        pygame.display.update()
+
+    pygame.quit()
+    sys.exit()
+
+if __name__ == "__main__":
+    main()
