@@ -263,6 +263,8 @@ class queen:
 
         # bishop part
         if (coordX-x)**2 == (coordY-y)**2:
+            if x == coordX or y == coordY:
+                return False
             directionX = int((x - coordX)/abs(x - coordX))  # X vector
             directionY = int((y - coordY)/abs(y - coordY))  # Y vector
             for i in range(1, abs(coordX - x)):
