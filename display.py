@@ -116,7 +116,6 @@ def main():
                 lastTime = currentTime
                 timer = int(currentTime - initialTime)
                 if timer >= 3600:
-                    print('1h')
                     pygame.draw.rect(GAME, ULTRADARK, (615, 23, 150, 54))
                     GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (630, 35))
                 else:
