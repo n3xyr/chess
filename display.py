@@ -7,6 +7,7 @@ import sys
 
 # Initialize Pygame
 pygame.init()
+
 bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (100, 100))
 bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (100, 100))
 bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (100, 100))
@@ -33,11 +34,15 @@ DARK = (73, 95, 52)
 ULTRADARK = (38, 36, 33)
 BACKGROUND = (48, 46, 43)
 
+# Define text
+pygame.font.init()
+robotoFont = pygame.font.SysFont('Roboto', 50)
+
 # Define tiles size
 ROWS, COLS = 8, 8
 SQUARE_SIZE = WIDTH // COLS
 
-def draw_board(game):
+def drawBoard(game):
     """Draw board"""
     game.fill(BACKGROUND)
     for row in range(ROWS):
@@ -79,24 +84,34 @@ def draw_board(game):
 
 
 def main():
+    drawBoard(GAME)
     clock = pygame.time.Clock()
     run = True
+    moveList = []
 
     while run:
         clock.tick(60)  # 60 FPS cap
 
         if len(moveList) == 0:
-            timer = time.time()
-            lastTime = timer
+            initialTime = time.time()
+            lastTime = initialTime
+            moveList.append(1)
         else:
-            if timer - lastTime >= 1:
-                lastTime = timer
+            currentTime = time.time()
+            if currentTime - lastTime >= 1:
+                lastTime = currentTime
+                timer = int(currentTime - initialTime)
+                if timer >= 3600:
+                    pygame.draw.rect(GAME, ULTRADARK, (615, 23, 150, 54))
+                    GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (630, 35))
+                else:
+                    pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
+                    GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
-        draw_board(GAME)
         pygame.display.update()
 
     pygame.quit()

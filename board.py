@@ -8,24 +8,24 @@ class board:
         '''
         Fills an empty board with pieces.
         '''
-        for i in range(8):                                    # black pawns
+        for i in range(8):                                            # black pawns
             self.matrix[1][i] = pieces.pawn(1, i, 'black')
-        for i in range(8):                                    # white pawns
+        for i in range(8):                                            # white pawns
             self.matrix[6][i] = pieces.pawn(6, i, 'white')
 
-        for i in [0, 7]:                                      # black rooks
+        for i in [0, 7]:                                              # black rooks
             self.matrix[0][i] = pieces.rook(0, i, 'black')
-        for i in [0, 7]:                                      # white rooks
+        for i in [0, 7]:                                              # white rooks
             self.matrix[7][i] = pieces.rook(7, i, 'white')
 
-        for i in [1, 6]:                                      # black knights
+        for i in [1, 6]:                                              # black knights
             self.matrix[0][i] = pieces.knight(0, i, 'black')
-        for i in [1, 6]:                                      # white knights
+        for i in [1, 6]:                                              # white knights
             self.matrix[7][i] = pieces.knight(0, i, 'white')
 
-        for i in [2, 5]:                                      # black bishops
+        for i in [2, 5]:                                              # black bishops
             self.matrix[0][i] = pieces.bishop(0, i, 'black')
-        for i in [2, 5]:                                      # white bishops
+        for i in [2, 5]:                                              # white bishops
             self.matrix[7][i] = pieces.bishop(0, i, 'white')
 
         self.matrix[0][3] = pieces.queen(0, 3, 'black')               # black queen
