@@ -98,7 +98,7 @@ class knight:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-    def canMove(self, x, y, board):
+    def canMove(self, y, x, board):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -145,7 +145,7 @@ class rook:
     def setCoordY(self, y):
         self.__coordinateY = y
     
-    def canMove(self, x, y, board):
+    def canMove(self, y, x, board):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -319,7 +319,7 @@ class king:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-    def canMove(self, x, y, board):
+    def canMove(self, y, x, board):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """

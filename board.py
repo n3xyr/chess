@@ -21,18 +21,18 @@ class board:
         for i in [1, 6]:                                      # black knights
             self.matrix[0][i] = pieces.knight(0, i, 'black')
         for i in [1, 6]:                                      # white knights
-            self.matrix[7][i] = pieces.knight(0, i, 'white')
+            self.matrix[7][i] = pieces.knight(7, i, 'white')
 
         for i in [2, 5]:                                      # black bishops
             self.matrix[0][i] = pieces.bishop(0, i, 'black')
         for i in [2, 5]:                                      # white bishops
-            self.matrix[7][i] = pieces.bishop(0, i, 'white')
+            self.matrix[7][i] = pieces.bishop(7, i, 'white')
 
         self.matrix[0][3] = pieces.queen(0, 3, 'black')               # black queen
-        self.matrix[7][3] = pieces.queen(0, 3, 'white')               # white queen
+        self.matrix[7][3] = pieces.queen(7, 3, 'white')               # white queen
 
         self.matrix[0][4] = pieces.king(0, 4, 'black')                # black king
-        self.matrix[7][4] = pieces.king(0, 4, 'white')                # white king
+        self.matrix[7][4] = pieces.king(7, 4, 'white')                # white king
 
     def movePiece(self, piece, y, x):
         if piece == None:
