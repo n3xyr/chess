@@ -106,7 +106,7 @@ class knight:
         coordY = self.getCoordY()
         color = self.getColor()
         moves = [(coordX + 1, coordY + 2), (coordX + 2, coordY + 1), (coordX - 1, coordY + 2), (coordX - 2, coordY + 1), (coordX + 1, coordY - 2),(coordX + 2, coordY - 1), (coordX - 1, coordY - 2), (coordX - 2, coordY - 1)]
-        if (x, y) in moves and not (x < 0) or (x > 7) or (y < 0) or (y > 7):
+        if (x, y) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
             if board[y][x] == None or board[y][x].getColor() != color:
                 return True
             else:
@@ -152,15 +152,18 @@ class rook:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
+
         if board[y][x] == None or board[y][x].getColor() != color:
             if x == coordX and (y != coordY and (y <= 7 and y >= 0)):
+                directionY = int((y - coordY)/abs(y - coordY))  # Y vector
                 for i in range(1, abs(coordY - y)):
-                    if board[coordY + i][coordX] != None:
+                    if board[coordY + i * directionY][coordX] != None:
                         return False
                 return True
             elif (x != coordX and (x <= 7 and x >= 0)) and y == coordY:
+                directionX = int((x - coordX)/abs(x - coordX))  # X vector
                 for i in range(1, abs(coordX - x)):
-                    if board[coordY][coordX + i] != None:
+                    if board[coordY][coordX + i * directionX] != None:
                         return False
                 return True
         else:
@@ -276,13 +279,15 @@ class queen:
         color = self.getColor()
         if board[y][x] == None or board[y][x].getColor() != color:
             if x == coordX and (y != coordY and (y <= 7 and y >= 0)):
+                directionY = int((y - coordY)/abs(y - coordY))  # Y vector
                 for i in range(1, abs(coordY - y)):
-                    if board[coordY + i][coordX] != None:
+                    if board[coordY + i * directionY][coordX] != None:
                         return False
                 return True
             elif (x != coordX and (x <= 7 and x >= 0)) and y == coordY:
+                directionX = int((x - coordX)/abs(x - coordX))  # X vector
                 for i in range(1, abs(coordX - x)):
-                    if board[coordY][coordX + i] != None:
+                    if board[coordY][coordX + i * directionX] != None:
                         return False
                 return True
             else:
@@ -329,7 +334,7 @@ class king:
         coordY = self.getCoordY()
         color = self.getColor()
         moves = [(coordX + 1, coordY + 1), (coordX + 1, coordY), (coordX, coordY + 1), (coordX + 1, coordY - 1), (coordX - 1, coordY + 1), (coordX - 1, coordY - 1), (coordX - 1, coordY), (coordX, coordY - 1)]
-        if (x, y) in moves and not (x < 0) or (x > 7) or (y < 0) or (y > 7):
+        if (x, y) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
             if board[y][x] == None or board[y][x].getColor() != color:
                 return True
             else:
