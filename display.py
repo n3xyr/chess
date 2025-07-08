@@ -109,18 +109,19 @@ def main():
         if len(moveList) == 0:
             initialTime = time.time()
             lastTime = initialTime
+            timer = 0
             moveList.append(1)
         else:
             currentTime = time.time()
             if currentTime - lastTime >= 1:
                 lastTime = currentTime
                 timer = int(currentTime - initialTime)
-                if timer >= 3600:
-                    pygame.draw.rect(GAME, ULTRADARK, (615, 23, 150, 54))
-                    GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (630, 35))
-                else:
-                    pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
-                    GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
+            if timer >= 3600:
+                pygame.draw.rect(GAME, ULTRADARK, (615, 23, 150, 54))
+                GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (630, 35))
+            else:
+                pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
+                GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
