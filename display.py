@@ -44,7 +44,6 @@ robotoFont = pygame.font.SysFont('Roboto', 50)
 ROWS, COLS = 8, 8
 SQUARE_SIZE = WIDTH // COLS
 
-turn = 'white'
 
 def drawBoard(game):
     """
@@ -87,12 +86,6 @@ def drawBoard(game):
                     if currentLoadingPiece.name == 'king':
                         game.blit(wk, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white king
 
-def switchTurn():
-    global turn
-    if turn == 'white':
-        turn = 'black'
-    else:
-        turn = 'white'
 
 def main():
     drawBoard(GAME)
@@ -102,7 +95,6 @@ def main():
     selectedTile = None
 
     while run:
-        global turn
         clock.tick(60)  # 60 FPS cap
         drawBoard(GAME)
 
@@ -132,24 +124,19 @@ def main():
             if WIDTH - RIGHTMARGIN > mouseX > LEFTMARGIN and HEIGHT - BOTTOMMARGIN > mouseY > TOPMARGIN:
                 mouseXTab = int((mouseX - LEFTMARGIN) / ((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8))   # x position in board coordinates
                 mouseYTab = int((mouseY - TOPMARGIN) / ((HEIGHT - TOPMARGIN - BOTTOMMARGIN) / 8))   # y position in board coordinates
-
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:        # Left clikc up
+                
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:        # Left clikc up
                 clickedTile = board.test.matrix[mouseYTab][mouseXTab]
-                if selectedTile != None and selectedTile != clickedTile:
+
+                if selectedTile != None:
                     if selectedTile.canMove(mouseYTab, mouseXTab, board.test.matrix):
-                        switchTurn()
-                    board.test.movePiece(selectedTile, mouseYTab, mouseXTab)
-                    selectedTile = None
-                elif clickedTile != None:
-                    if clickedTile.getColor() == turn:
-                        selectedTile = board.test.matrix[mouseYTab][mouseXTab]
+                        board.test.movePiece(selectedTile, mouseYTab, mouseXTab)
+                        selectedTile = None
+                    elif clickedTile != None:
+                        selectedTile = clickedTile
                 else:
                     selectedTile = clickedTile
-                    
-                if selectedTile != None:
-                    print(selectedTile.name)
-                else:
-                    print(None)
+
         pygame.display.update()
 
     pygame.quit()

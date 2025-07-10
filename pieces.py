@@ -54,11 +54,11 @@ class pawn:
         if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
             return False
         if board[y][x] is None:
-            if (y, x) in moves[:2]:
+            if (y, x) in moves[:2]:     # Captures
                 return False
-            elif (y, x) == moves[2]:
+            elif (y, x) == moves[2]:    # Goes forwards by one
                 return True
-            elif (y, x) == moves[3] and self.isFirstMove() and board[coordY + direction][coordX] is None:
+            elif (y, x) == moves[3] and self.isFirstMove() and board[coordY + direction][coordX] is None:   # Goes forward by two
                 return True
         if (y, x) in moves[:2]:
             return True

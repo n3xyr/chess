@@ -3,7 +3,14 @@ import pieces
 class board:
     def __init__(self):
         self.matrix = [[None for _ in range(8)] for _ in range(8)]
+        self.turn = 'white'
 
+    def switchTurn(self):
+        if self.turn == 'white':
+            self.turn = 'black'
+        else:
+            self.turn = 'white'
+        
     def fillBoard(self):
         '''
         Fills an empty board with pieces.
@@ -37,11 +44,15 @@ class board:
     def movePiece(self, piece, y, x):
         if piece == None:
             return
-        elif piece.canMove(y, x, self.matrix):
+        
+        elif piece.getColor() == self.turn and piece.canMove(y, x, self.matrix):
             self.matrix[y][x] = piece
             self.matrix[piece.getCoordY()][piece.getCoordX()] = None
+
             piece.setCoordY(y)
             piece.setCoordX(x)
+
+            self.switchTurn()
 
     def print(self):
         '''
