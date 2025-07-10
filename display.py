@@ -21,20 +21,25 @@ wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (100, 100)
 wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (100, 100))
 
 # Define window size
+TILESIZE = 100
 TOPMARGIN = 100
 BOTTOMMARGIN = 100
 LEFTMARGIN = 0
 RIGHTMARGIN = 0
-WIDTH, HEIGHT = LEFTMARGIN + 800 + RIGHTMARGIN, 800 + BOTTOMMARGIN + TOPMARGIN
+WIDTH, HEIGHT = LEFTMARGIN + 8 * TILESIZE + RIGHTMARGIN, 8 * TILESIZE + BOTTOMMARGIN + TOPMARGIN
 GAME = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
 
 # Define colors
 WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
 LIGHT = (235, 236, 208)
-DARK = (73, 95, 52)
+DARK = (115, 149, 82)
+LIGHTSELECT = (202, 203, 179)
+DARKSELECT = (99, 128, 70)
 ULTRADARK = (38, 36, 33)
 BACKGROUND = (48, 46, 43)
+
 
 # Define text
 pygame.font.init()
@@ -87,6 +92,20 @@ def drawBoard(game):
                         game.blit(wk, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white king
 
 
+def getTileColor(coordinates):
+    y = coordinates[0]
+    x = coordinates[1]
+    return 'LIGHT' if (y + x) % 2 == 0 else 'DARK'
+
+
+def drawPossibleTile(game, tabCoordinates):
+    print(getTileColor(tabCoordinates))
+    if getTileColor(tabCoordinates) == 'LIGHT':
+        pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE/2), TILESIZE/6)
+    else:
+        pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE/2), TILESIZE/6)
+
+
 def main():
     drawBoard(GAME)
     clock = pygame.time.Clock()
@@ -97,6 +116,9 @@ def main():
     while run:
         clock.tick(60)  # 60 FPS cap
         drawBoard(GAME)
+        drawPossibleTile(GAME, (5, 5))
+        drawPossibleTile(GAME, (4, 5))
+        drawPossibleTile(GAME, (3, 5))
 
         if len(moveList) == 0:
             initialTime = time.time()
@@ -124,7 +146,7 @@ def main():
             if WIDTH - RIGHTMARGIN > mouseX > LEFTMARGIN and HEIGHT - BOTTOMMARGIN > mouseY > TOPMARGIN:
                 mouseXTab = int((mouseX - LEFTMARGIN) / ((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8))   # x position in board coordinates
                 mouseYTab = int((mouseY - TOPMARGIN) / ((HEIGHT - TOPMARGIN - BOTTOMMARGIN) / 8))   # y position in board coordinates
-                
+
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:        # Left clikc up
                 clickedTile = board.test.matrix[mouseYTab][mouseXTab]
 
