@@ -116,9 +116,6 @@ def main():
     while run:
         clock.tick(60)  # 60 FPS cap
         drawBoard(GAME)
-        drawPossibleTile(GAME, (5, 5))
-        drawPossibleTile(GAME, (4, 5))
-        drawPossibleTile(GAME, (3, 5))
 
         if len(moveList) == 0:
             initialTime = time.time()
