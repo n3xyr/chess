@@ -99,7 +99,7 @@ def main():
     clock = pygame.time.Clock()
     run = True
     moveList = []
-    selected = None
+    selectedTile = None
 
     while run:
         global turn
@@ -133,25 +133,23 @@ def main():
                 mouseXTab = int((mouseX - LEFTMARGIN) / ((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8))   # x position in board coordinates
                 mouseYTab = int((mouseY - TOPMARGIN) / ((HEIGHT - TOPMARGIN - BOTTOMMARGIN) / 8))   # y position in board coordinates
 
-            if event.type == pygame.MOUSEBUTTONDOWN:    # if mouse clicked
-                if event.button == 1:   # left click
-                    clickedTile = board.test.matrix[mouseYTab][mouseXTab]
-                    if selected != None:
-                        print(selected.canMove(mouseYTab, mouseXTab, board.test.matrix))
-                        if selected.canMove(mouseYTab, mouseXTab, board.test.matrix):
-                            switchTurn()
-                        board.test.movePiece(selected, mouseYTab, mouseXTab)
-                        selected = None
-                    if clickedTile != None:
-                        if clickedTile.getColor() == turn:
-                            selected = board.test.matrix[mouseYTab][mouseXTab]
-                    else:
-                        selected = None
-
-                    if selected != None:
-                        print(selected.name)
-                    else:
-                        print(None)
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:        # Left clikc up
+                clickedTile = board.test.matrix[mouseYTab][mouseXTab]
+                if selectedTile != None and selectedTile != clickedTile:
+                    if selectedTile.canMove(mouseYTab, mouseXTab, board.test.matrix):
+                        switchTurn()
+                    board.test.movePiece(selectedTile, mouseYTab, mouseXTab)
+                    selectedTile = None
+                elif clickedTile != None:
+                    if clickedTile.getColor() == turn:
+                        selectedTile = board.test.matrix[mouseYTab][mouseXTab]
+                else:
+                    selectedTile = clickedTile
+                    
+                if selectedTile != None:
+                    print(selectedTile.name)
+                else:
+                    print(None)
         pygame.display.update()
 
     pygame.quit()
