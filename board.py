@@ -102,6 +102,13 @@ print('----------------------------------------------------------------')
 
 # Bishop
 
+# test.matrix[7][5] = None
+# test.matrix[1][4] = None
+# test.matrix[1][5] = None
+# test.matrix[6][4] = None
+# test.matrix[4][2] = pieces.bishop(4, 2, 'white')
+# print(test.matrix[4][2].canMove(2, 4, test.matrix))
+
 # test.movePiece(test.matrix[1][1], 2, 1)
 # test.movePiece(test.matrix[1][0], 2, 0)
 # test.print()
