@@ -99,11 +99,10 @@ def getTileColor(coordinates):
 
 
 def drawPossibleTile(game, tabCoordinates):
-    print(getTileColor(tabCoordinates))
     if getTileColor(tabCoordinates) == 'LIGHT':
-        pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE/2), TILESIZE/6)
+        pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
     else:
-        pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE/2), TILESIZE/6)
+        pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
 
 
 def main():
@@ -112,10 +111,13 @@ def main():
     run = True
     moveList = []
     selectedTile = None
+    availableMoves = []
 
     while run:
         clock.tick(60)  # 60 FPS cap
         drawBoard(GAME)
+        for move in availableMoves:
+            drawPossibleTile(GAME, move)
 
         if len(moveList) == 0:
             initialTime = time.time()
@@ -148,13 +150,22 @@ def main():
                 clickedTile = board.test.matrix[mouseYTab][mouseXTab]
 
                 if selectedTile != None:
+
                     if selectedTile.canMove(mouseYTab, mouseXTab, board.test.matrix):
                         board.test.movePiece(selectedTile, mouseYTab, mouseXTab)
+                        availableMoves = []
                         selectedTile = None
                     elif clickedTile != None:
                         selectedTile = clickedTile
+
                 else:
                     selectedTile = clickedTile
+
+                if selectedTile != None:
+                    if selectedTile.getColor() == board.test.turn:
+                        availableMoves = selectedTile.possibleMoves(board.test.matrix)
+                    else:
+                        availableMoves = []
 
         pygame.display.update()
 
