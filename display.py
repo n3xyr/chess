@@ -183,7 +183,7 @@ def main():
                         board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
                         availableMoves = []
                         selectedTile = None
-                        moveList.append(board.displayedBoard.matrix[mouseYTab][mouseXTab].getName(), chr(97 + mouseYTab), str(mouseXTab))
+                        # moveList.append(board.displayedBoard.matrix[mouseYTab][mouseXTab].getName(), chr(97 + mouseYTab), str(mouseXTab))
                     elif clickedTile != None:
                         selectedTile = clickedTile
 
