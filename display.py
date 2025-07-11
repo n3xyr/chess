@@ -106,16 +106,9 @@ def getTileColor(coordinates):
 
 def drawPossibleTile(game, tabCoordinates):
     if getTileColor(tabCoordinates) == 'LIGHT':
-        if board.displayedBoard.matrix[tabCoordinates[1]][tabCoordinates[0]] == None:
-            pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
-        else:
-            pygame.draw.ellipse(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE, TOPMARGIN + tabCoordinates[0] * TILESIZE, 100, 100), 9)
+        pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
     else:
-        if board.displayedBoard.matrix[tabCoordinates[1]][tabCoordinates[0]] == None:
-            pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
-        else:
-            pygame.draw.ellipse(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE, TOPMARGIN + tabCoordinates[0] * TILESIZE, 100, 100), 9)
-
+        pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
 
 
 def initClock(moveList):
@@ -124,7 +117,6 @@ def initClock(moveList):
     timer = 0
     moveList.append(1)
     return initialTime, lastTime, timer
-
 
 
 def doClock(initialTime, lastTime, timer):
@@ -140,7 +132,6 @@ def doClock(initialTime, lastTime, timer):
         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
 
 
-
 def main():
     drawBoard(GAME)
     clock = pygame.time.Clock()
@@ -153,9 +144,20 @@ def main():
         clock.tick(60)  # 60 FPS cap
         drawBoard(GAME)
         for move in availableMoves:
-            drawPossibleTile(GAME, move)
+            y = move[0]
+            x = move[1]
+            target = board.test.matrix[y][x]
+            if target != None and selectedTile != None:
+                if target.getColor() != selectedTile.getColor():
+                    if getTileColor(move) == 'DARK':
+                        GAME.blit(DarkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                    else:
+                        GAME.blit(LightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                else:
+                    drawPossibleTile(GAME, move)
+            else:
+                    drawPossibleTile(GAME, move)
 
-        GAME.blit(DarkSurfaceRGBA, (500, 500))
 
         if len(moveList) == 0:
             initialTime, lastTime, timer = initClock(moveList)
@@ -165,8 +167,8 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            mouseX = pygame.mouse.get_pos()[0]  # Gets x position of the mouse in the window
-            mouseY = pygame.mouse.get_pos()[1]  # Gets y position of the mouse in the window
+            mouseX = pygame.mouse.get_pos()[0]  # gets x position of the mouse in the window
+            mouseY = pygame.mouse.get_pos()[1]  # gets y position of the mouse in the window
 
             if WIDTH - RIGHTMARGIN > mouseX > LEFTMARGIN and HEIGHT - BOTTOMMARGIN > mouseY > TOPMARGIN:
                 mouseXTab = int((mouseX - LEFTMARGIN) / ((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8))   # x position in board coordinates

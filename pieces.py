@@ -115,14 +115,11 @@ class knight:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
-        moves = [(coordX + 1, coordY + 2), (coordX + 2, coordY + 1), (coordX - 1, coordY + 2), (coordX - 2, coordY + 1), (coordX + 1, coordY - 2),(coordX + 2, coordY - 1), (coordX - 1, coordY - 2), (coordX - 2, coordY - 1)]
-        if (x, y) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
+        moves = [(coordX + 1, coordY + 2), (coordX - 1, coordY + 2), (coordX + 2, coordY + 1), (coordX + 2, coordY - 1), (coordX - 2, coordY + 1), (coordX - 2, coordY - 1), (coordX + 1, coordY - 2), (coordX - 1, coordY - 2)]
+        if (x, y) in moves and 0 <= x <= 7 and 0 <= y <= 7:
             if board[y][x] == None or board[y][x].getColor() != color:
                 return True
-            else:
-                return False
-        else:
-            return False
+        return False
 
     def possibleMoves(self, board):
         """
@@ -130,7 +127,9 @@ class knight:
         """
         coordX = self.getCoordX()
         coordY = self.getCoordY()
-        pieceMoves = [(coordX + 1, coordY + 2), (coordX + 2, coordY + 1), (coordX - 1, coordY + 2), (coordX - 2, coordY + 1), (coordX + 1, coordY - 2),(coordX + 2, coordY - 1), (coordX - 1, coordY - 2), (coordX - 2, coordY - 1)]
+
+        pieceMoves = [(coordY + 2, coordX + 1), (coordY + 2, coordX - 1), (coordY + 1, coordX + 2), (coordY - 1, coordX + 2), (coordY + 1, coordX - 2), (coordY - 1, coordX - 2), (coordY - 2, coordX + 1), (coordY - 2, coordX - 1)]
+        
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
 class rook:
@@ -404,7 +403,7 @@ class king:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
-        moves = [(coordX + 1, coordY + 1), (coordX + 1, coordY), (coordX, coordY + 1), (coordX + 1, coordY - 1), (coordX - 1, coordY + 1), (coordX - 1, coordY - 1), (coordX - 1, coordY), (coordX, coordY - 1)]
+        moves = [(coordY + 1, coordX + 1), (coordX + 1, coordY), (coordX, coordY + 1), (coordX + 1, coordY - 1), (coordX - 1, coordY + 1), (coordX - 1, coordY - 1), (coordX - 1, coordY), (coordX, coordY - 1)]
         if (x, y) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
             if board[y][x] == None or board[y][x].getColor() != color:
                 return True
