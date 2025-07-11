@@ -98,7 +98,21 @@ class pawn:
             if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
                 return True
         return False
-           
+    
+    def isAbleToPromote(self):
+        color = self.getColor()
+        coordY = self.getCoordY()
+        if color == 'white':
+            if coordY == 0:
+                return True
+            else:
+                return False
+        else:
+            if coordY == 7:
+                return True
+            else:
+                return False
+    
 class knight:
     def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX

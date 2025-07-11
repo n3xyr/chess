@@ -79,5 +79,19 @@ class board:
                     line.append(self.matrix[i][j].name)
             print(line)
 
+    def promote(self, piece, newPieceName):
+        coordX = piece.getCoordX()
+        coordY = piece.getCoordY()
+        color = piece.getColor()
+        self.matrix[piece.getCoordY()][piece.getCoordX()] = None
+        if newPieceName == 'queen':
+            self.matrix[coordY][coordX] = pieces.queen(coordY, coordX, color)
+        elif newPieceName == 'knight':
+            self.matrix[coordY][coordX] = pieces.knight(coordY, coordX, color)
+        elif newPieceName == 'rook':
+            self.matrix[coordY][coordX] = pieces.rook(coordY, coordX, color)
+        elif newPieceName == 'bishop':
+            self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
+
 displayedBoard = board()
 displayedBoard.fillBoard()

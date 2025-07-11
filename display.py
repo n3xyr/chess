@@ -3,6 +3,8 @@ import time
 import datetime
 import pygame
 import sys
+import pygame_widgets
+from pygame_widgets.button  import Button
 
 # Initialize Pygame
 pygame.init()
@@ -39,6 +41,7 @@ LIGHTSELECT = (202, 203, 179)
 DARKSELECT = (99, 128, 70)
 ULTRADARK = (38, 36, 33)
 BACKGROUND = (48, 46, 43)
+LIGHTGREY = (200, 200, 200)
 
 # Create a surface with per-pixel alpha
 DarkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
@@ -54,6 +57,49 @@ robotoFont = pygame.font.SysFont('Roboto', 50)
 
 # Define tiles size
 ROWS, COLS = 8, 8
+
+buttons = []
+pieces = [
+    {'name': 'whiteQueen', 'img': wq, 'pos': (160, 50)},
+    {'name': 'whiteKnight', 'img': wn, 'pos': (160, 150)},
+    {'name': 'whiteRook', 'img': wr, 'pos': (160, 250)},
+    {'name': 'whiteBishop', 'img': wb, 'pos': (160, 350)},
+    {'name': 'blackQueen', 'img': bq, 'pos': (160, 50)},
+    {'name': 'blackKnight', 'img': bn, 'pos': (160, 150)},
+    {'name': 'blackRook', 'img': br, 'pos': (160, 250)},
+    {'name': 'blackBishop', 'img': bb, 'pos': (160, 350)},
+]
+
+promoImageSize = 100
+promoImageSpacing = 5
+promoInnerMargin = 10
+
+promoBlockWidth = promoImageSize + 2 * promoInnerMargin
+promoBlockHeight = 4 * promoImageSize + (4 - 1) * promoImageSpacing + 2 * promoInnerMargin
+
+promoBlockX = WIDTH // 2 - promoBlockWidth // 2
+promoBlockY = HEIGHT // 2 - promoBlockHeight // 2
+
+promoBackground = pygame.Rect(promoBlockX, promoBlockY, promoBlockWidth, promoBlockHeight)
+
+promoIconPos = []
+for i in range(4):
+    x = promoBlockX + promoBlockWidth // 2
+    y = promoBlockY + promoInnerMargin + i * (promoImageSize + promoImageSpacing)
+    promoIconPos.append((x, y))
+
+promoOrder = {
+    'white': [wq, wn, wr, wb],
+    'black': [bq, bn, br, bb]
+}
+
+promoIconRects = []
+
+for i in range(len(pieces)):
+    pos = promoIconPos[i % 4]
+    img = pieces[i]['img']
+    img_rect = img.get_rect(center=pos)
+    pieces[i]['rect'] = img_rect
 
 
 def drawBoard(game):
@@ -132,7 +178,6 @@ def doClock(initialTime, lastTime, timer):
 
 
 def main():
-    drawBoard(GAME)
     clock = pygame.time.Clock()
     run = True
     moveList = []
@@ -141,12 +186,12 @@ def main():
 
     while run:
         clock.tick(60)  # 60 FPS cap
+
         drawBoard(GAME)
         for move in availableMoves:
-            y = move[0]
-            x = move[1]
+            y, x = move
             target = board.displayedBoard.matrix[y][x]
-            if target != None and selectedTile != None:
+            if target and selectedTile:
                 if target.getColor() != selectedTile.getColor():
                     if getTileColor(move) == 'DARK':
                         GAME.blit(DarkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
@@ -155,51 +200,79 @@ def main():
                 else:
                     drawPossibleTile(GAME, move)
             else:
-                    drawPossibleTile(GAME, move)
+                drawPossibleTile(GAME, move)
 
-
-        if len(moveList) == 0:
+        if not moveList:
             initialTime, lastTime, timer = initClock()
         else:
             doClock(initialTime, lastTime, timer)
 
-        for event in pygame.event.get():
+        promoIconRects.clear()
+        if selectedTile is not None and selectedTile.name == 'P' and selectedTile.isAbleToPromote():
+            pygame.draw.rect(GAME, WHITE, promoBackground)
+            for idx, img in enumerate(promoOrder[selectedTile.getColor()]):
+                pos = promoIconPos[idx]
+                rectBg = pygame.Rect(pos[0] - img.get_width() // 2, pos[1], img.get_width(), img.get_height())
+                pygame.draw.rect(GAME, LIGHTGREY, rectBg)
+                GAME.blit(img, (pos[0] - img.get_width() // 2, pos[1]))
+                promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
+
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 run = False
-            mouseX = pygame.mouse.get_pos()[0]  # gets x position of the mouse in the window
-            mouseY = pygame.mouse.get_pos()[1]  # gets y position of the mouse in the window
 
-            if WIDTH - RIGHTMARGIN > mouseX > LEFTMARGIN and HEIGHT - BOTTOMMARGIN > mouseY > TOPMARGIN:
-                mouseXTab = int((mouseX - LEFTMARGIN) / ((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8))   # x position in board coordinates
-                mouseYTab = int((mouseY - TOPMARGIN) / ((HEIGHT - TOPMARGIN - BOTTOMMARGIN) / 8))   # y position in board coordinates
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                mouseX, mouseY = pygame.mouse.get_pos()
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:        # Left click up
-                clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
+                if promoIconRects:  # if a pawn is promoting
+                    for rect, pieceName in promoIconRects:
+                        if rect.collidepoint((mouseX, mouseY)):
+                            board.displayedBoard.promote(selectedTile, pieceName)
+                            promoIconRects.clear()
+                            selectedTile = None
+                            availableMoves = []
+                            break
+                    continue  # don't do anything if something else than a promotion is clicked
 
-                if selectedTile != None:
+                if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
+                    mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                    mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
+                    clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
 
-                    if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard.matrix):
-                        act = board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                        availableMoves = []
-                        selectedTile = None
-                        moveList.append(board.displayedBoard.matrix[mouseYTab][mouseXTab].getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab))
-                        print(moveList)
-                    elif clickedTile != None:
+                    if selectedTile:
+                        if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard.matrix):
+                            act = board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                            if board.displayedBoard.matrix[mouseYTab][mouseXTab] is not None:
+                                movedPiece = board.displayedBoard.matrix[mouseYTab][mouseXTab]
+
+                            if movedPiece.name == 'P' and movedPiece.isAbleToPromote():
+                                selectedTile = movedPiece
+                            else:
+                                selectedTile = None
+
+                            availableMoves = []
+                            moveList.append(
+                                movedPiece.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab)
+                            )
+
+                        elif clickedTile:
+                            selectedTile = clickedTile
+
+                    else:
                         selectedTile = clickedTile
 
-                else:
-                    selectedTile = clickedTile
-
-                if selectedTile != None:
-                    if selectedTile.getColor() == board.displayedBoard.turn:
+                    if selectedTile and selectedTile.getColor() == board.displayedBoard.turn:
                         availableMoves = selectedTile.possibleMoves(board.displayedBoard.matrix)
                     else:
                         availableMoves = []
 
+        pygame_widgets.update(events)
         pygame.display.update()
 
     pygame.quit()
     sys.exit()
+
 
 if __name__ == "__main__":
     main()
