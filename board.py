@@ -47,22 +47,44 @@ class board:
         self.matrix[7][4] = pieces.king(7, 4, 'white')                # white king
 
 
+    def getAvailableMoves(self, selectedTile):
+        if selectedTile == None:
+            return []
+        if selectedTile.getColor() == self.turn:
+           return selectedTile.possibleMoves(self.matrix)
+        return []
+
+
+    def manageMove(self, selectedTile, mouseYTab, mouseXTab, moveList):
+        clickedTile = self.matrix[mouseYTab][mouseXTab]
+
+        if selectedTile != None:
+            if selectedTile.getColor() == self.turn and selectedTile.canMove(mouseYTab, mouseXTab, self.matrix):
+                act = self.movePiece(selectedTile, mouseYTab, mouseXTab)
+                moveList.append(selectedTile.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab))
+                print(moveList)
+                return None
+            elif clickedTile != None:
+                return clickedTile
+
+        else:
+            return clickedTile
+
     def movePiece(self, piece, y, x):
 
-        if piece.getColor() == self.turn and piece.canMove(y, x, self.matrix):
-            target = self.matrix[y][x]
-            self.matrix[y][x] = piece
-            self.matrix[piece.getCoordY()][piece.getCoordX()] = None
+        target = self.matrix[y][x]
+        self.matrix[y][x] = piece
+        self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
-            piece.setCoordY(y)
-            piece.setCoordX(x)
+        piece.setCoordY(y)
+        piece.setCoordX(x)
 
-            self.switchTurn()
+        self.switchTurn()
 
-            if target !=None:
-                if target.getColor() != piece.getColor():
-                    eatSound.play()
-                    return 'x'
+        if target !=None:
+            if target.getColor() != piece.getColor():
+                eatSound.play()
+                return 'x'
         moveSound.play()
         return ''
     

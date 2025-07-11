@@ -177,6 +177,22 @@ def doClock(initialTime, lastTime, timer):
         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
 
 
+def displayAvailableMoves(availableMoves, selectedTile):
+    for move in availableMoves:
+        y = move[0]
+        x = move[1]
+        target = board.displayedBoard.matrix[y][x]
+        if target != None and selectedTile != None:
+            if target.getColor() != selectedTile.getColor():
+                if getTileColor(move) == 'DARK':
+                    GAME.blit(DarkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                else:
+                    GAME.blit(LightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+            else:
+                drawPossibleTile(GAME, move)
+        else:
+                drawPossibleTile(GAME, move)
+
 def main():
     clock = pygame.time.Clock()
     run = True
@@ -202,7 +218,7 @@ def main():
             else:
                 drawPossibleTile(GAME, move)
 
-        if not moveList:
+        if len(moveList) == 0:
             initialTime, lastTime, timer = initClock()
         else:
             doClock(initialTime, lastTime, timer)
