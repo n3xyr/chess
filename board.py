@@ -1,8 +1,9 @@
 import pieces
 import pygame
 
-moveSound = pygame.mixer.Sound('moveSound.mp3')
-eatSound = pygame.mixer.Sound('eatSound.mp3')
+pygame.mixer.init()
+moveSound = pygame.mixer.Sound('soundEffects/moveSound.wav')
+eatSound = pygame.mixer.Sound('soundEffects/eatSound.wav')
 
 class board:
     def __init__(self):
@@ -49,6 +50,7 @@ class board:
     def movePiece(self, piece, y, x):
 
         if piece.getColor() == self.turn and piece.canMove(y, x, self.matrix):
+            target = self.matrix[y][x]
             self.matrix[y][x] = piece
             self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
@@ -57,13 +59,13 @@ class board:
 
             self.switchTurn()
 
-        if self.matrix[y][x] !=None:
-            if self.matrix[y][x].getColor() != piece.getColor():
-                return 'x'
-            return ''
-        else:
-            return ''
-
+            if target !=None:
+                if target.getColor() != piece.getColor():
+                    eatSound.play()
+                    return 'x'
+        moveSound.play()
+        return ''
+    
     def print(self):
         '''
         Shows the board.
