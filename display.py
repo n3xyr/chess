@@ -119,7 +119,6 @@ def initClock(moveList):
     return initialTime, lastTime, timer
 
 
-
 def doClock(initialTime, lastTime, timer):
     currentTime = time.time()
     if currentTime - lastTime >= 1:
@@ -131,7 +130,6 @@ def doClock(initialTime, lastTime, timer):
     else:
         pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
-
 
 
 def main():
@@ -146,9 +144,20 @@ def main():
         clock.tick(60)  # 60 FPS cap
         drawBoard(GAME)
         for move in availableMoves:
-            drawPossibleTile(GAME, move)
+            y = move[0]
+            x = move[1]
+            target = board.test.matrix[y][x]
+            if target != None and selectedTile != None:
+                if target.getColor() != selectedTile.getColor():
+                    if getTileColor(move) == 'DARK':
+                        GAME.blit(DarkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                    else:
+                        GAME.blit(LightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                else:
+                    drawPossibleTile(GAME, move)
+            else:
+                    drawPossibleTile(GAME, move)
 
-        GAME.blit(DarkSurfaceRGBA, (500, 500))
 
         if len(moveList) == 0:
             initialTime, lastTime, timer = initClock(moveList)
