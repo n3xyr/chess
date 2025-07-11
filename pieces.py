@@ -23,6 +23,12 @@ class pawn:
         returns piece's color
         """
         return self.__color
+    
+    def getName(self):
+        """
+        returns piece's name
+        """
+        return self.name
 
     def setCoordX(self, x):
         self.__coordinateX = x
@@ -68,10 +74,10 @@ class pawn:
         elif (y, x) in moves[:2]:
             return True
         return False
-        
+          
     def possibleMoves(self, board):
         """
-        returns a list of coordinates corresponding to the available moves
+        returns a list of coordinates (y, x) corresponding to the available moves 
         """
         coordX = self.getCoordX()
         coordY = self.getCoordY()
@@ -79,10 +85,20 @@ class pawn:
             direction = 1
         else:
             direction = -1
-        piecemoves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2 * direction, coordX)]
+        pieceMoves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2 * direction, coordX)]
 
-        return [move for move in piecemoves if self.canMove(move[0], move[1], board)]
-                
+        return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+    
+    def isChecking(self, board):
+        """
+        Returns True if the piece is checking the opponent's king, False otherwise.
+        """
+        possibleMoves = possibleMoves(board)
+        for moves in possibleMoves:
+            if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
+                return True
+        return False
+           
 class knight:
     def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
@@ -108,6 +124,12 @@ class knight:
         returns piece's color
         """
         return self.__color
+    
+    def getName(self):
+        """
+        returns piece's name
+        """
+        return self.name
 
     def setCoordX(self, x):
         self.__coordinateX = x
@@ -139,6 +161,16 @@ class knight:
         
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
+    def isChecking(self, board):
+        """
+        Returns True if the piece is checking the opponent's king, False otherwise.
+        """
+        possibleMoves = possibleMoves(board)
+        for moves in possibleMoves:
+            if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
+                return True
+        return False
+
 class rook:
     def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
@@ -164,6 +196,12 @@ class rook:
         returns piece's color
         """
         return self.__color
+    
+    def getName(self):
+        """
+        returns piece's name
+        """
+        return self.name
 
     def setCoordX(self, x):
         self.__coordinateX = x
@@ -206,6 +244,16 @@ class rook:
             pieceMoves.append((i, coordX))
             pieceMoves.append((coordY, i))
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+    
+    def isChecking(self, board):
+        """
+        Returns True if the piece is checking the opponent's king, False otherwise.
+        """
+        possibleMoves = possibleMoves(board)
+        for moves in possibleMoves:
+            if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
+                return True
+        return False
 
 class bishop:
     def __init__(self, coordY, coordX, color):
@@ -232,6 +280,12 @@ class bishop:
         returns piece's color
         """
         return self.__color
+
+    def getName(self):
+        """
+        returns piece's name
+        """
+        return self.name
 
     def setCoordX(self, x):
         self.__coordinateX = x
@@ -272,6 +326,16 @@ class bishop:
             if (coordX-x)**2 == (coordY-y)**2:
                 pieceMoves.append((y, x))
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+    
+    def isChecking(self, board):
+        """
+        Returns True if the piece is checking the opponent's king, False otherwise.
+        """
+        possibleMoves = possibleMoves(board)
+        for moves in possibleMoves:
+            if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
+                return True
+        return False
 
 class queen:
     def __init__(self, coordY, coordX, color):
@@ -298,6 +362,12 @@ class queen:
         returns piece's color
         """
         return self.__color
+    
+    def getName(self):
+        """
+        returns piece's name
+        """
+        return self.name
 
     def setCoordX(self, x):
         self.__coordinateX = x
@@ -373,7 +443,17 @@ class queen:
             pieceMoves.append((i, coordX))
             pieceMoves.append((coordY, i))
 
-        return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]  
+        return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+
+    def isChecking(self, board):
+        """
+        Returns True if the piece is checking the opponent's king, False otherwise.
+        """
+        possibleMoves = possibleMoves(board)
+        for moves in possibleMoves:
+            if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
+                return True
+        return False
         
 class king:
     def __init__(self, coordY, coordX, color):
@@ -400,6 +480,12 @@ class king:
         returns piece's color
         """
         return self.__color
+    
+    def getName(self):
+        """
+        returns piece's name
+        """
+        return self.name
 
     def setCoordX(self, x):
         self.__coordinateX = x
@@ -433,3 +519,13 @@ class king:
         pieceMoves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX + 1), (coordY + 1, coordX - 1), (coordY - 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX)]
 
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+
+    def isChecking(self, board):
+        """
+        Returns True if the piece is checking the opponent's king, False otherwise.
+        """
+        possibleMoves = possibleMoves(board)
+        for moves in possibleMoves:
+            if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
+                return True
+        return False
