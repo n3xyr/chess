@@ -111,11 +111,10 @@ def drawPossibleTile(game, tabCoordinates):
         pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
 
 
-def initClock(moveList):
+def initClock():
     initialTime = time.time()
     lastTime = initialTime
     timer = 0
-    moveList.append(1)
     return initialTime, lastTime, timer
 
 
@@ -160,7 +159,7 @@ def main():
 
 
         if len(moveList) == 0:
-            initialTime, lastTime, timer = initClock(moveList)
+            initialTime, lastTime, timer = initClock()
         else:
             doClock(initialTime, lastTime, timer)
 
@@ -180,10 +179,11 @@ def main():
                 if selectedTile != None:
 
                     if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard.matrix):
-                        board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                        act = board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
                         availableMoves = []
                         selectedTile = None
-                        # moveList.append(board.displayedBoard.matrix[mouseYTab][mouseXTab].getName(), chr(97 + mouseYTab), str(mouseXTab))
+                        moveList.append(board.displayedBoard.matrix[mouseYTab][mouseXTab].getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab))
+                        print(moveList)
                     elif clickedTile != None:
                         selectedTile = clickedTile
 

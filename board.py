@@ -47,10 +47,8 @@ class board:
 
 
     def movePiece(self, piece, y, x):
-        if piece == None:
-            return
-        
-        elif piece.getColor() == self.turn and piece.canMove(y, x, self.matrix):
+
+        if piece.getColor() == self.turn and piece.canMove(y, x, self.matrix):
             self.matrix[y][x] = piece
             self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
@@ -58,6 +56,13 @@ class board:
             piece.setCoordX(x)
 
             self.switchTurn()
+
+        if self.matrix[y][x] !=None:
+            if self.matrix[y][x].getColor() != piece.getColor():
+                return 'x'
+            return ''
+        else:
+            return ''
 
     def print(self):
         '''
