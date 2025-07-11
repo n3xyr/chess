@@ -241,15 +241,11 @@ class bishop:
             return False
         directionX = int((x - coordX)/abs(x - coordX))  # X vector
         directionY = int((y - coordY)/abs(y - coordY))  # Y vector
-        print((directionY,directionX))
-        print(abs(coordX - x))
         for i in range(1, abs(coordX - x)):
-            print((coordY + i*directionY, coordX + i*directionX))
             if board[coordY + i*directionY][coordX + i*directionX] != None: # If there's a piece on the diagonal
                 return False
             
         if board[y][x] != None:
-            print((x, y))
             if board[y][x].getColor() == self.getColor():   # If the color of the piece on the targeted tile is the same as the moved piece
                 return False
             
@@ -267,7 +263,6 @@ class bishop:
             x = i % 8
             if (coordX-x)**2 == (coordY-y)**2:
                 pieceMoves.append((y, x))
-        print(pieceMoves)
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
 class queen:
@@ -324,7 +319,6 @@ class queen:
                     return False
             
             if board[y][x] != None:
-                print((x, y))
                 if board[y][x].getColor() == self.getColor():   # If the color of the piece on the targeted tile is the same as the moved piece
                     return False
             
