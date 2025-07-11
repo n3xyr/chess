@@ -46,7 +46,7 @@ LightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
 
 # Draw a semi-transparent circle (RGBA) on canCaptureSurfaceRGBA
 pygame.draw.circle(DarkSurfaceRGBA, (99, 128, 70, 128), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 8)
-pygame.draw.circle(LightSurfaceRGBA, (255, 0, 0, 128), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 8)
+pygame.draw.circle(LightSurfaceRGBA, (202, 203, 179, 128), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 8)
 
 # Define text
 pygame.font.init()
