@@ -71,30 +71,30 @@ def drawBoard(game):
             currentLoadingPiece = board.displayedBoard.matrix[row][col]
             if currentLoadingPiece != None:
                 if currentLoadingPiece.getColor() == 'black':
-                    if currentLoadingPiece.name == 'knight':
+                    if currentLoadingPiece.name == 'N':
                         game.blit(bn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black knight
-                    if currentLoadingPiece.name == 'rook':
+                    if currentLoadingPiece.name == 'R':
                         game.blit(br, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black rook
-                    if currentLoadingPiece.name == 'pawn':
+                    if currentLoadingPiece.name == 'P':
                         game.blit(bp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black pawn
-                    if currentLoadingPiece.name == 'bishop':
+                    if currentLoadingPiece.name == 'B':
                         game.blit(bb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black bishop
-                    if currentLoadingPiece.name == 'queen':
+                    if currentLoadingPiece.name == 'Q':
                         game.blit(bq, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black queen
-                    if currentLoadingPiece.name == 'king':
+                    if currentLoadingPiece.name == 'K':
                         game.blit(bk, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black king
                 else:
-                    if currentLoadingPiece.name == 'knight':
+                    if currentLoadingPiece.name == 'N':
                         game.blit(wn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white knight
-                    if currentLoadingPiece.name == 'rook':
+                    if currentLoadingPiece.name == 'R':
                         game.blit(wr, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white rook
-                    if currentLoadingPiece.name == 'pawn':
+                    if currentLoadingPiece.name == 'P':
                         game.blit(wp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white pawn
-                    if currentLoadingPiece.name == 'bishop':
+                    if currentLoadingPiece.name == 'B':
                         game.blit(wb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white bishop
-                    if currentLoadingPiece.name == 'queen':
+                    if currentLoadingPiece.name == 'Q':
                         game.blit(wq, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white queen
-                    if currentLoadingPiece.name == 'king':
+                    if currentLoadingPiece.name == 'K':
                         game.blit(wk, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white king
 
 
