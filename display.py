@@ -146,7 +146,7 @@ def main():
         for move in availableMoves:
             y = move[0]
             x = move[1]
-            target = board.test.matrix[y][x]
+            target = board.displayedBoard.matrix[y][x]
             if target != None and selectedTile != None:
                 if target.getColor() != selectedTile.getColor():
                     if getTileColor(move) == 'DARK':
