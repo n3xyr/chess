@@ -174,27 +174,9 @@ def main():
                 mouseYTab = int((mouseY - TOPMARGIN) / ((HEIGHT - TOPMARGIN - BOTTOMMARGIN) / 8))   # y position in board coordinates
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:        # Left click up
-                clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
-
-                if selectedTile != None:
-
-                    if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard.matrix):
-                        act = board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                        availableMoves = []
-                        selectedTile = None
-                        moveList.append(board.displayedBoard.matrix[mouseYTab][mouseXTab].getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab))
-                        print(moveList)
-                    elif clickedTile != None:
-                        selectedTile = clickedTile
-
-                else:
-                    selectedTile = clickedTile
-
-                if selectedTile != None:
-                    if selectedTile.getColor() == board.displayedBoard.turn:
-                        availableMoves = selectedTile.possibleMoves(board.displayedBoard.matrix)
-                    else:
-                        availableMoves = []
+                selectedTile = board.displayedBoard.manageMove(selectedTile, mouseYTab, mouseXTab, moveList)
+                availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
+                print(availableMoves)
 
         pygame.display.update()
 

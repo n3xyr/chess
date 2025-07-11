@@ -1,8 +1,8 @@
 import pieces
 import pygame
 
-moveSound = pygame.mixer.Sound('moveSound.mp3')
-eatSound = pygame.mixer.Sound('eatSound.mp3')
+# moveSound = pygame.mixer.Sound('moveSound.mp3')
+# eatSound = pygame.mixer.Sound('eatSound.mp3')
 
 class board:
     def __init__(self):
@@ -45,10 +45,33 @@ class board:
         self.matrix[0][4] = pieces.king(0, 4, 'black')                # black king
         self.matrix[7][4] = pieces.king(7, 4, 'white')                # white king
 
+    def getAvailableMoves(self, selectedTile):
+        if selectedTile == None:
+            return []
+        if selectedTile.getColor() == self.turn:
+           return selectedTile.possibleMoves(self.matrix)
+
+
+    def manageMove(self, selectedTile, mouseYTab, mouseXTab, moveList):
+        clickedTile = self.matrix[mouseYTab][mouseXTab]
+
+        if selectedTile != None:
+
+            if selectedTile.canMove(mouseYTab, mouseXTab, self.matrix):
+                act = self.movePiece(selectedTile, mouseYTab, mouseXTab)
+                moveList.append(selectedTile.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab))
+                print(moveList)
+                return None
+            elif clickedTile != None:
+                return clickedTile
+
+        else:
+            return clickedTile
 
     def movePiece(self, piece, y, x):
 
         if piece.getColor() == self.turn and piece.canMove(y, x, self.matrix):
+            target = self.matrix[y][x]
             self.matrix[y][x] = piece
             self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
@@ -57,13 +80,10 @@ class board:
 
             self.switchTurn()
 
-        if self.matrix[y][x] !=None:
-            if self.matrix[y][x].getColor() != piece.getColor():
-                return 'x'
-            return ''
-        else:
-            return ''
-
+            if target !=None:
+                if target.getColor() != piece.getColor():
+                    return 'x'
+        return ''
     def print(self):
         '''
         Shows the board.
