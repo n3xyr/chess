@@ -68,10 +68,8 @@ class board:
                     line.append(self.matrix[i][j].name)
             print(line)
 
-test = board()
-test.fillBoard()
-test.print()
-print('----------------------------------------------------------------')
+displayedBoard = board()
+displayedBoard.fillBoard()
 
 # Knight
 

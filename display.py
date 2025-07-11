@@ -68,7 +68,7 @@ def drawBoard(game):
             else:
                 pygame.draw.rect(game, LIGHT, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
 
-            currentLoadingPiece = board.test.matrix[row][col]
+            currentLoadingPiece = board.displayedBoard.matrix[row][col]
             if currentLoadingPiece != None:
                 if currentLoadingPiece.getColor() == 'black':
                     if currentLoadingPiece.name == 'knight':
@@ -106,15 +106,15 @@ def getTileColor(coordinates):
 
 def drawPossibleTile(game, tabCoordinates):
     if getTileColor(tabCoordinates) == 'LIGHT':
-        if board.test.matrix[tabCoordinates[0]][tabCoordinates[1]] == None:
+        if board.displayedBoard.matrix[tabCoordinates[1]][tabCoordinates[0]] == None:
             pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
         else:
-            pygame.draw.ellipse(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE, TOPMARGIN + tabCoordinates[0] * TILESIZE, 100, 100), 8)
+            pygame.draw.ellipse(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE, TOPMARGIN + tabCoordinates[0] * TILESIZE, 100, 100), 9)
     else:
-        if board.test.matrix[tabCoordinates[0]][tabCoordinates[1]] == None:
+        if board.displayedBoard.matrix[tabCoordinates[1]][tabCoordinates[0]] == None:
             pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
         else:
-            pygame.draw.ellipse(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE, TOPMARGIN + tabCoordinates[0] * TILESIZE, 100, 100), 8)
+            pygame.draw.ellipse(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE, TOPMARGIN + tabCoordinates[0] * TILESIZE, 100, 100), 9)
 
 
 
@@ -173,12 +173,12 @@ def main():
                 mouseYTab = int((mouseY - TOPMARGIN) / ((HEIGHT - TOPMARGIN - BOTTOMMARGIN) / 8))   # y position in board coordinates
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:        # Left click up
-                clickedTile = board.test.matrix[mouseYTab][mouseXTab]
+                clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
 
                 if selectedTile != None:
 
-                    if selectedTile.canMove(mouseYTab, mouseXTab, board.test.matrix):
-                        board.test.movePiece(selectedTile, mouseYTab, mouseXTab)
+                    if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard.matrix):
+                        board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
                         availableMoves = []
                         selectedTile = None
                     elif clickedTile != None:
@@ -188,8 +188,8 @@ def main():
                     selectedTile = clickedTile
 
                 if selectedTile != None:
-                    if selectedTile.getColor() == board.test.turn:
-                        availableMoves = selectedTile.possibleMoves(board.test.matrix)
+                    if selectedTile.getColor() == board.displayedBoard.turn:
+                        availableMoves = selectedTile.possibleMoves(board.displayedBoard.matrix)
                     else:
                         availableMoves = []
 
