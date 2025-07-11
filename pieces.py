@@ -53,6 +53,11 @@ class pawn:
         moves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2*direction, coordX)]
         if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
             return False
+        
+        if board[y][x] != None:
+            if board[y][x].getColor() == self.getColor():
+                return False
+
         if board[y][x] is None:
             if (y, x) == moves[2]:    # Goes forwards by one
                 return True
@@ -419,6 +424,6 @@ class king:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
 
-        pieceMoves = [(coordX + 1, coordY + 1), (coordX + 1, coordY), (coordX, coordY + 1), (coordX + 1, coordY - 1), (coordX - 1, coordY + 1), (coordX - 1, coordY - 1), (coordX - 1, coordY), (coordX, coordY - 1)]
+        pieceMoves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX + 1), (coordY + 1, coordX - 1), (coordY - 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX)]
 
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
