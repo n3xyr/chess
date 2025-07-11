@@ -40,6 +40,13 @@ DARKSELECT = (99, 128, 70)
 ULTRADARK = (38, 36, 33)
 BACKGROUND = (48, 46, 43)
 
+# Create a surface with per-pixel alpha
+DarkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+LightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+
+# Draw a semi-transparent circle (RGBA) on canCaptureSurfaceRGBA
+pygame.draw.circle(DarkSurfaceRGBA, (99, 128, 70, 128), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 8)
+pygame.draw.circle(LightSurfaceRGBA, (255, 0, 0, 128), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 8)
 
 # Define text
 pygame.font.init()
@@ -47,7 +54,6 @@ robotoFont = pygame.font.SysFont('Roboto', 50)
 
 # Define tiles size
 ROWS, COLS = 8, 8
-SQUARE_SIZE = WIDTH // COLS
 
 
 def drawBoard(game):
@@ -58,38 +64,38 @@ def drawBoard(game):
     for row in range(ROWS):
         for col in range(COLS):
             if (row + col) % 2 == 1:
-                pygame.draw.rect(game, DARK, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                pygame.draw.rect(game, DARK, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
             else:
-                pygame.draw.rect(game, LIGHT, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE))
+                pygame.draw.rect(game, LIGHT, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
 
             currentLoadingPiece = board.test.matrix[row][col]
             if currentLoadingPiece != None:
                 if currentLoadingPiece.getColor() == 'black':
                     if currentLoadingPiece.name == 'knight':
-                        game.blit(bn, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black knight
+                        game.blit(bn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black knight
                     if currentLoadingPiece.name == 'rook':
-                        game.blit(br, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black rook
+                        game.blit(br, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black rook
                     if currentLoadingPiece.name == 'pawn':
-                        game.blit(bp, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black pawn
+                        game.blit(bp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black pawn
                     if currentLoadingPiece.name == 'bishop':
-                        game.blit(bb, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black bishop
+                        game.blit(bb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black bishop
                     if currentLoadingPiece.name == 'queen':
-                        game.blit(bq, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black queen
+                        game.blit(bq, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black queen
                     if currentLoadingPiece.name == 'king':
-                        game.blit(bk, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # black king
+                        game.blit(bk, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black king
                 else:
                     if currentLoadingPiece.name == 'knight':
-                        game.blit(wn, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white knight
+                        game.blit(wn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white knight
                     if currentLoadingPiece.name == 'rook':
-                        game.blit(wr, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white rook
+                        game.blit(wr, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white rook
                     if currentLoadingPiece.name == 'pawn':
-                        game.blit(wp, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white pawn
+                        game.blit(wp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white pawn
                     if currentLoadingPiece.name == 'bishop':
-                        game.blit(wb, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white bishop
+                        game.blit(wb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white bishop
                     if currentLoadingPiece.name == 'queen':
-                        game.blit(wq, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white queen
+                        game.blit(wq, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white queen
                     if currentLoadingPiece.name == 'king':
-                        game.blit(wk, (col * SQUARE_SIZE, TOPMARGIN + row * SQUARE_SIZE))    # white king
+                        game.blit(wk, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white king
 
 
 def getTileColor(coordinates):
@@ -103,6 +109,30 @@ def drawPossibleTile(game, tabCoordinates):
         pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
     else:
         pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
+
+
+def initClock():
+    global moveList
+    initialTime = time.time()
+    lastTime = initialTime
+    timer = 0
+    moveList.append(1)
+    return initialTime, lastTime, timer
+
+
+
+def doClock(moveList, initialTime, lastTime):
+    currentTime = time.time()
+    if currentTime - lastTime >= 1:
+        lastTime = currentTime
+        timer = int(currentTime - initialTime)
+    if timer >= 3600:
+        pygame.draw.rect(GAME, ULTRADARK, (615, 23, 150, 54))
+        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (630, 35))
+    else:
+        pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
+        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
+
 
 
 def main():
@@ -119,22 +149,12 @@ def main():
         for move in availableMoves:
             drawPossibleTile(GAME, move)
 
+        GAME.blit(DarkSurfaceRGBA, (500, 500))
+
         if len(moveList) == 0:
-            initialTime = time.time()
-            lastTime = initialTime
-            timer = 0
-            moveList.append(1)
+            initialTime, lastTime, timer = initClock()
         else:
-            currentTime = time.time()
-            if currentTime - lastTime >= 1:
-                lastTime = currentTime
-                timer = int(currentTime - initialTime)
-            if timer >= 3600:
-                pygame.draw.rect(GAME, ULTRADARK, (615, 23, 150, 54))
-                GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (630, 35))
-            else:
-                pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
-                GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
+            doClock(moveList, initialTime, lastTime)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
