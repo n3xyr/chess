@@ -106,16 +106,9 @@ def getTileColor(coordinates):
 
 def drawPossibleTile(game, tabCoordinates):
     if getTileColor(tabCoordinates) == 'LIGHT':
-        if board.test.matrix[tabCoordinates[0]][tabCoordinates[1]] == None:
-            pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
-        else:
-            pygame.draw.ellipse(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE, TOPMARGIN + tabCoordinates[0] * TILESIZE, 100, 100), 8)
+        pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
     else:
-        if board.test.matrix[tabCoordinates[0]][tabCoordinates[1]] == None:
-            pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
-        else:
-            pygame.draw.ellipse(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE, TOPMARGIN + tabCoordinates[0] * TILESIZE, 100, 100), 8)
-
+        pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
 
 
 def initClock(moveList):
@@ -174,14 +167,14 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
-            mouseX = pygame.mouse.get_pos()[0]  # Gets x position of the mouse in the window
-            mouseY = pygame.mouse.get_pos()[1]  # Gets y position of the mouse in the window
+            mouseX = pygame.mouse.get_pos()[0]  # gets x position of the mouse in the window
+            mouseY = pygame.mouse.get_pos()[1]  # gets y position of the mouse in the window
 
             if WIDTH - RIGHTMARGIN > mouseX > LEFTMARGIN and HEIGHT - BOTTOMMARGIN > mouseY > TOPMARGIN:
                 mouseXTab = int((mouseX - LEFTMARGIN) / ((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8))   # x position in board coordinates
                 mouseYTab = int((mouseY - TOPMARGIN) / ((HEIGHT - TOPMARGIN - BOTTOMMARGIN) / 8))   # y position in board coordinates
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:        # Left click up
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:        # Left clikc up
                 clickedTile = board.test.matrix[mouseYTab][mouseXTab]
 
                 if selectedTile != None:
