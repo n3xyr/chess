@@ -3,7 +3,8 @@ class pawn:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.name  = 'pawn'
+        self.name  = 'P'
+        self.value = 1
 
     def getCoordX(self):
         """
@@ -87,7 +88,8 @@ class knight:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.name  = 'knight'
+        self.name  = 'N'
+        self.value = 3
 
     def getCoordX(self):
         """
@@ -142,7 +144,8 @@ class rook:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.name  = 'rook'
+        self.name  = 'R'
+        self.value = 5
 
     def getCoordX(self):
         """
@@ -209,7 +212,8 @@ class bishop:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.name  = 'bishop'
+        self.name  = 'B'
+        self.value = 3
 
     def getCoordX(self):
         """
@@ -274,7 +278,8 @@ class queen:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.name  = 'queen'
+        self.name  = 'Q'
+        self.value = 9
 
     def getCoordX(self):
         """
@@ -375,7 +380,8 @@ class king:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.name  = 'king'
+        self.name  = 'K'
+        self.value = 0
 
     def getCoordX(self):
         """
