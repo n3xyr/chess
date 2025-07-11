@@ -111,8 +111,7 @@ def drawPossibleTile(game, tabCoordinates):
         pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
 
 
-def initClock():
-    global moveList
+def initClock(moveList):
     initialTime = time.time()
     lastTime = initialTime
     timer = 0
@@ -121,7 +120,7 @@ def initClock():
 
 
 
-def doClock(moveList, initialTime, lastTime):
+def doClock(initialTime, lastTime, timer):
     currentTime = time.time()
     if currentTime - lastTime >= 1:
         lastTime = currentTime
@@ -152,9 +151,9 @@ def main():
         GAME.blit(DarkSurfaceRGBA, (500, 500))
 
         if len(moveList) == 0:
-            initialTime, lastTime, timer = initClock()
+            initialTime, lastTime, timer = initClock(moveList)
         else:
-            doClock(moveList, initialTime, lastTime)
+            doClock(initialTime, lastTime, timer)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
