@@ -1,4 +1,8 @@
 import pieces
+import pygame
+
+moveSound = pygame.mixer.Sound('moveSound.mp3')
+eatSound = pygame.mixer.Sound('eatSound.mp3')
 
 class board:
     def __init__(self):
