@@ -68,7 +68,7 @@ def drawBoard(game):
             else:
                 pygame.draw.rect(game, LIGHT, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
 
-            currentLoadingPiece = board.test.matrix[row][col]
+            currentLoadingPiece = board.displayedBoard.matrix[row][col]
             if currentLoadingPiece != None:
                 if currentLoadingPiece.getColor() == 'black':
                     if currentLoadingPiece.name == 'knight':
@@ -146,7 +146,7 @@ def main():
         for move in availableMoves:
             y = move[0]
             x = move[1]
-            target = board.test.matrix[y][x]
+            target = board.displayedBoard.matrix[y][x]
             if target != None and selectedTile != None:
                 if target.getColor() != selectedTile.getColor():
                     if getTileColor(move) == 'DARK':
@@ -174,13 +174,13 @@ def main():
                 mouseXTab = int((mouseX - LEFTMARGIN) / ((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8))   # x position in board coordinates
                 mouseYTab = int((mouseY - TOPMARGIN) / ((HEIGHT - TOPMARGIN - BOTTOMMARGIN) / 8))   # y position in board coordinates
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:        # Left clikc up
-                clickedTile = board.test.matrix[mouseYTab][mouseXTab]
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:        # Left click up
+                clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
 
                 if selectedTile != None:
 
-                    if selectedTile.canMove(mouseYTab, mouseXTab, board.test.matrix):
-                        board.test.movePiece(selectedTile, mouseYTab, mouseXTab)
+                    if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard.matrix):
+                        board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
                         availableMoves = []
                         selectedTile = None
                     elif clickedTile != None:
@@ -190,8 +190,8 @@ def main():
                     selectedTile = clickedTile
 
                 if selectedTile != None:
-                    if selectedTile.getColor() == board.test.turn:
-                        availableMoves = selectedTile.possibleMoves(board.test.matrix)
+                    if selectedTile.getColor() == board.displayedBoard.turn:
+                        availableMoves = selectedTile.possibleMoves(board.displayedBoard.matrix)
                     else:
                         availableMoves = []
 
