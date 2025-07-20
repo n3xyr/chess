@@ -4,33 +4,35 @@ import datetime
 import pygame
 import sys
 import pygame_widgets
-from pygame_widgets.button  import Button
+from pygame_widgets.button import Button
 
 # Initialize Pygame
 pygame.init()
 
-bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (100, 100))
-bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (100, 100))
-bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (100, 100))
-bn = pygame.transform.scale(pygame.image.load("piecesImages/bn.png"), (100, 100))
-bq = pygame.transform.scale(pygame.image.load("piecesImages/bq.png"), (100, 100))
-br = pygame.transform.scale(pygame.image.load("piecesImages/br.png"), (100, 100))
-wp = pygame.transform.scale(pygame.image.load("piecesImages/wp.png"), (100, 100))
-wb = pygame.transform.scale(pygame.image.load("piecesImages/wb.png"), (100, 100))
-wk = pygame.transform.scale(pygame.image.load("piecesImages/wk.png"), (100, 100))
-wn = pygame.transform.scale(pygame.image.load("piecesImages/wn.png"), (100, 100))
-wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (100, 100))
-wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (100, 100))
-
 # Define window size
-TILESIZE = 100
-TOPMARGIN = 100
-BOTTOMMARGIN = 100
+SCALE = float(0.5)
+
+TILESIZE = int(100 * SCALE)
+TOPMARGIN = int(100 * SCALE)
+BOTTOMMARGIN = int(100 * SCALE)
 LEFTMARGIN = 0
 RIGHTMARGIN = 0
 WIDTH, HEIGHT = LEFTMARGIN + 8 * TILESIZE + RIGHTMARGIN, 8 * TILESIZE + BOTTOMMARGIN + TOPMARGIN
 GAME = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Chess")
+
+bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
+bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
+bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (TILESIZE, TILESIZE))
+bn = pygame.transform.scale(pygame.image.load("piecesImages/bn.png"), (TILESIZE, TILESIZE))
+bq = pygame.transform.scale(pygame.image.load("piecesImages/bq.png"), (TILESIZE, TILESIZE))
+br = pygame.transform.scale(pygame.image.load("piecesImages/br.png"), (TILESIZE, TILESIZE))
+wp = pygame.transform.scale(pygame.image.load("piecesImages/wp.png"), (TILESIZE, TILESIZE))
+wb = pygame.transform.scale(pygame.image.load("piecesImages/wb.png"), (TILESIZE, TILESIZE))
+wk = pygame.transform.scale(pygame.image.load("piecesImages/wk.png"), (TILESIZE, TILESIZE))
+wn = pygame.transform.scale(pygame.image.load("piecesImages/wn.png"), (TILESIZE, TILESIZE))
+wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
+wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -70,9 +72,9 @@ pieces = [
     {'name': 'blackBishop', 'img': bb, 'pos': (160, 350)},
 ]
 
-promoImageSize = 100
-promoImageSpacing = 5
-promoInnerMargin = 10
+promoImageSize = int(100 * SCALE)
+promoImageSpacing = int(5 * SCALE)
+promoInnerMargin = int(10 * SCALE)
 
 promoBlockWidth = promoImageSize + 2 * promoInnerMargin
 promoBlockHeight = 4 * promoImageSize + (4 - 1) * promoImageSpacing + 2 * promoInnerMargin

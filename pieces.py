@@ -531,7 +531,6 @@ class king:
         coordY = self.getCoordY()
 
         pieceMoves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX + 1), (coordY + 1, coordX - 1), (coordY - 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX)]
-
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
     def isChecking(self, board):

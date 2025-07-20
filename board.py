@@ -81,7 +81,7 @@ class board:
 
         self.switchTurn()
 
-        if target !=None:
+        if target != None:
             if target.getColor() != piece.getColor():
                 eatSound.play()
                 return 'x'
