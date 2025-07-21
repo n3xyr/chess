@@ -112,7 +112,7 @@ class pawn:
                 return True
             else:
                 return False
-    
+
 class knight:
     def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX

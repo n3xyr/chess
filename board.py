@@ -1,5 +1,6 @@
 import pieces
 import pygame
+import time
 
 pygame.mixer.init()
 moveSound = pygame.mixer.Sound('soundEffects/moveSound.wav')
@@ -88,18 +89,18 @@ class board:
         moveSound.play()
         return ''
     
-    def print(self):
-        '''
-        Shows the board.
-        '''
-        for i in range(8):
-            line = []
-            for j in range(8):
-                if self.matrix[i][j] == None:
-                    line.append('    ')
-                else:
-                    line.append(self.matrix[i][j].name)
-            print(line)
+    # def print(self):
+    #     '''
+    #     Shows the board.
+    #     '''
+    #     for i in range(8):
+    #         line = []
+    #         for j in range(8):
+    #             if self.matrix[i][j] == None:
+    #                 line.append('    ')
+    #             else:
+    #                 line.append(self.matrix[i][j].name)
+    #         print(line)
 
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
@@ -114,6 +115,15 @@ class board:
             self.matrix[coordY][coordX] = pieces.rook(coordY, coordX, color)
         elif newPieceName == 'bishop':
             self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
+
+    def initClock(self):
+        initialTime = time.time()
+        lastTime = initialTime
+        return initialTime, lastTime
+
+    def getClock(self, initialTime):
+        currentTime = time.time()
+        return int(currentTime - initialTime)
 
 displayedBoard = board()
 displayedBoard.fillBoard()
