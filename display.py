@@ -18,7 +18,8 @@ BOTTOMMARGIN = int(100 * SCALE)
 LEFTMARGIN = 0
 RIGHTMARGIN = 0
 WIDTH, HEIGHT = LEFTMARGIN + 8 * TILESIZE + RIGHTMARGIN, 8 * TILESIZE + BOTTOMMARGIN + TOPMARGIN
-GAME = pygame.display.set_mode((WIDTH, HEIGHT))
+GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * SCALE), int(125 * SCALE), int(54 * SCALE)
 pygame.display.set_caption("Chess")
 
 bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
@@ -55,7 +56,7 @@ pygame.draw.circle(LightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILES
 
 # Define text
 pygame.font.init()
-robotoFont = pygame.font.SysFont('Roboto', 50)
+robotoFont = pygame.font.SysFont('Roboto', int(50 * SCALE))
 
 # Define tiles size
 ROWS, COLS = 8, 8
@@ -167,16 +168,17 @@ def initClock():
 
 
 def doClock(initialTime, lastTime, timer):
+    global SCALE
     currentTime = time.time()
     if currentTime - lastTime >= 1:
         lastTime = currentTime
         timer = int(currentTime - initialTime)
     if timer >= 3600:
-        pygame.draw.rect(GAME, ULTRADARK, (615, 23, 150, 54))
-        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (630, 35))
+        pygame.draw.rect(GAME, ULTRADARK, (int(615 * SCALE), int(23 * SCALE), BIGCLOCKWIDTH, CLOCKHEIGHT))
+        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * SCALE), int(35 * SCALE)))
     else:
-        pygame.draw.rect(GAME, ULTRADARK, (630, 23, 125, 54))
-        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (648, 35))
+        pygame.draw.rect(GAME, ULTRADARK, (int(630 * SCALE), int(23 * SCALE), SMALLCLOCKWIDTH, CLOCKHEIGHT))
+        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (int(648 * SCALE), int(35 * SCALE)))
 
 
 def displayAvailableMoves(availableMoves, selectedTile):
