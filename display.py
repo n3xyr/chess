@@ -225,39 +225,26 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
 
     displayedBoardStart = (start[1] * TILESIZE + TILESIZE / 2, start[0] * TILESIZE + TILESIZE / 2)
     displayedBoardEnd = (end[1] * TILESIZE + TILESIZE / 2, end[0] * TILESIZE + TILESIZE / 2)
-    knightMoves = [(start[0] + 1, start[1] + 2), (start[0] - 1, start[1] + 2), (start[0] + 2, start[1] + 1), (start[0] + 2, start[1] - 1), (start[0] - 2, start[1] + 1), (start[0] - 2, start[1] - 1), (start[0] + 1, start[1] - 2), (start[0] - 1, start[1] - 2)]
+    knightMoves = [(start[1] + 1, start[0] + 2), (start[1] - 1, start[0] + 2), (start[1] + 2, start[0] + 1), (start[1] + 2, start[0] - 1), (start[1] - 2, start[0] + 1), (start[1] - 2, start[0] - 1), (start[1] + 1, start[0] - 2), (start[1] - 1, start[0] - 2)]
 
     if end in knightMoves:
-        adjustment = 0
-
+        length =  2 * TILESIZE + headHeight / 2 + width / 2
         dX = displayedBoardEnd[0] - displayedBoardStart[0]
         dY = displayedBoardEnd[1] - displayedBoardStart[1]
 
-        endVY = displayedBoardEnd[1] - displayedBoardStart[1]
-        endVX = displayedBoardEnd[0] - displayedBoardStart[0]
-        
-        if endVX < 0:
-            uVX = -1
+        angleX = math.atan2(dX, 0)
+        angleY = math.atan2(0, dY)
+        # First rectangle
+
+        if abs(dX) < abs(dY):
+            center = (displayedBoardStart[0], displayedBoardEnd[1] - width / 4 * dY/abs(dY) - 184 / 2 * dY/abs(dY))   # 184 is the length of a straight arrow going two tiles away form the piece don't ask why (yes i counted the pixels)
+            angle = angleX + math.radians(90)
         else:
-            uVX = 1
-        if endVY < 0:
-            uVY = -1
-        else:
-            uVY = 1
+            center = (displayedBoardEnd[0] - (184 - width) / 2 * dX/abs(dX), displayedBoardStart[1])
+            angle = angleY + math.radians(90)
 
-        if abs(dX) > abs(dY):
-            angle = math.atan2(endVY, 0)
-        
-            pygame.draw.line(surface, color, (displayedBoardStart[0] + width / 2 * uVX, displayedBoardStart[1]), (displayedBoardEnd[0] + width / 2 * uVX, displayedBoardStart[1]), width)
-            pygame.draw.line(surface,  color, (displayedBoardEnd[0], displayedBoardStart[1] - (width / 2 - adjustment) * uVY + adjustment), (displayedBoardEnd[0], displayedBoardEnd[1] - (headLength - adjustment) * uVY), width)
+        drawTiltedRect(surface, color, center, length, angle, width)
 
-
-        else:
-            angle = math.atan2(0, endVX)
-
-            pygame.draw.line(surface, color, (displayedBoardStart[0], displayedBoardStart[1] + width / 2 * uVY), (displayedBoardStart[0], displayedBoardEnd[1] + width / 2 * uVY), width)
-            pygame.draw.line(surface,  color, (displayedBoardStart[0] - (width / 2 - adjustment) * uVX, displayedBoardEnd[1]), (displayedBoardEnd[0] - (headLength - adjustment) * uVX, displayedBoardEnd[1]), width)
-            
     else:
         # Calculate direction vector
         dX = displayedBoardEnd[0] - displayedBoardStart[0]
