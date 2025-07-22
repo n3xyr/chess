@@ -50,6 +50,7 @@ ORANGERGBA = (237, 127, 16, 128)
 # Create a surface with per-pixel alpha
 darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
 lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
 
 # Draw a semi-transparent circle (RGBA) on canCaptureSurfaceRGBA
 pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
@@ -225,7 +226,7 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
 
     displayedBoardStart = (start[1] * TILESIZE + TILESIZE / 2, start[0] * TILESIZE + TILESIZE / 2)
     displayedBoardEnd = (end[1] * TILESIZE + TILESIZE / 2, end[0] * TILESIZE + TILESIZE / 2)
-    knightMoves = [(start[1] + 1, start[0] + 2), (start[1] - 1, start[0] + 2), (start[1] + 2, start[0] + 1), (start[1] + 2, start[0] - 1), (start[1] - 2, start[0] + 1), (start[1] - 2, start[0] - 1), (start[1] + 1, start[0] - 2), (start[1] - 1, start[0] - 2)]
+    knightMoves = [(start[0] + 2, start[1] + 1), (start[0] + 2, start[1] - 1), (start[0] - 2, start[1] + 1), (start[0] - 2, start[1] - 1), (start[0] + 1, start[1] + 2), (start[0] - 1, start[1] + 2), (start[0] + 1, start[1] - 2), (start[0] - 1, start[1] - 2)]
 
     if end in knightMoves:
         length =  2 * TILESIZE + headHeight / 2 + width / 2
@@ -234,16 +235,33 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
 
         angleX = math.atan2(dX, 0)
         angleY = math.atan2(0, dY)
+
         # First rectangle
+        # if abs(dX) < abs(dY):
+        #     center = (displayedBoardStart[0], displayedBoardEnd[1] + (width / 2 - 185) / 2 * dY/abs(dY))   # 185 is the length of a straight arrow going two tiles away form the piece don't ask why (yes i counted the pixels)
+        #     angle = angleX + math.radians(90)
+        # else:
+        #     center = (displayedBoardEnd[0] + (width / 2 - 185) / 2 * dX/abs(dX), displayedBoardStart[1])
+        #     angle = angleY + math.radians(90)
+
+        # drawTiltedRect(surface, color, center, length, angle, width)
+        
+        # Second rectangle
+        length = TILESIZE + headHeight + width / 2
 
         if abs(dX) < abs(dY):
-            center = (displayedBoardStart[0], displayedBoardEnd[1] - width / 4 * dY/abs(dY) - 184 / 2 * dY/abs(dY))   # 184 is the length of a straight arrow going two tiles away form the piece don't ask why (yes i counted the pixels)
-            angle = angleX + math.radians(90)
+            center = (displayedBoardEnd[0] + (width / 2 - headHeight) / 2* dX * abs(dX), displayedBoardEnd[1])
+            angle = angleX
         else:
-            center = (displayedBoardEnd[0] - (184 - width) / 2 * dX/abs(dX), displayedBoardStart[1])
-            angle = angleY + math.radians(90)
+            center = (displayedBoardEnd[0], displayedBoardEnd[1] + (width / 2 - headHeight) / 2* dY * abs(dY))
+            angle = angleY
 
         drawTiltedRect(surface, color, center, length, angle, width)
+
+        if abs(dX) < abs(dY):
+            angle = angleY
+        else:
+            angle = angleX
 
     else:
         # Calculate direction vector
@@ -253,7 +271,7 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
         arrowAngle = angle + math.radians(90)
         
         # Drawing the rectangle
-        displayedBoardEndWithHead = (displayedBoardEnd[0] + 1.1 * headHeight * math.cos(angle), displayedBoardEnd[1] + 1.1 * headHeight * math.sin(angle)) # We remove some length so it doesn t go on arrow head
+        displayedBoardEndWithHead = (displayedBoardEnd[0] + headHeight * math.cos(angle), displayedBoardEnd[1] + headHeight * math.sin(angle)) # We remove some length so it doesn t go on arrow head
         
         center = ((displayedBoardStart[0] + displayedBoardEnd[0]) / 2, (displayedBoardStart[1] + displayedBoardEnd[1]) / 2) # head is part of the arrow
         length = ((displayedBoardStart[0] - displayedBoardEndWithHead[0]) ** 2 + (displayedBoardStart[1] - displayedBoardEndWithHead[1]) ** 2) ** (1/2)
@@ -287,13 +305,13 @@ def main():
 
         drawBoard(GAME)
         displayAvailableMoves(availableMoves, selectedTile)
-
         
         arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
         for arrow in arrows:
             drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1])
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+
 
         if not firstMovePlayed and len(moveList) != 0:
             firstMovePlayed = True
@@ -318,7 +336,6 @@ def main():
 
                 if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7:
                     arrowStart = (mouseYTab, mouseXTab)
-                    print(arrowStart)
             
             if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and firstMovePlayed and rightClickDown:
                 rightClickDown = False
@@ -332,29 +349,24 @@ def main():
                     
                     if (arrowStart, arrowEnd) in arrows:
                         arrows.pop(arrows.index((arrowStart, arrowEnd)))
-
                     else:
                         arrows.append((arrowStart, arrowEnd))
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                arrows = []
                 mouseX, mouseY = pygame.mouse.get_pos()
+                arrows = []
 
                 if promoIconRects:  # if a pawn is promoting
-
                     for rect, pieceName in promoIconRects:
                         if rect.collidepoint((mouseX, mouseY)):
                             board.displayedBoard.promote(selectedTile, pieceName)
-
                             promoIconRects.clear()
-
                             selectedTile = None
                             availableMoves = []
                             break
                     continue  # don't do anything if something else than a promotion is clicked
 
                 if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
-
                     mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
                     mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
                     clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
@@ -362,7 +374,6 @@ def main():
                     if selectedTile:
                         if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard.matrix):
                             act = board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-
                             if board.displayedBoard.matrix[mouseYTab][mouseXTab] is not None:
                                 movedPiece = board.displayedBoard.matrix[mouseYTab][mouseXTab]
 
