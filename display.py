@@ -45,11 +45,11 @@ DARKSELECT = (99, 128, 70)
 ULTRADARK = (38, 36, 33)
 BACKGROUND = (48, 46, 43)
 LIGHTGREY = (200, 200, 200)
+ORANGERGBA = (237, 127, 16, 128)
 
 # Create a surface with per-pixel alpha
 darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
 lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
-arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
 
 # Draw a semi-transparent circle (RGBA) on canCaptureSurfaceRGBA
 pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
@@ -197,17 +197,81 @@ def tryPromotion(selectedTile):
             promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
 
 
+def drawTiltedRect(surface, color, center, height, angleRad, width = 20):
+    cx, cy = center
+    w2, h2 = width / 2, height / 2
+
+    # Define rectangle corners (relative to center)
+    corners = [
+        (-w2, -h2),
+        (w2, -h2),
+        (w2, h2),
+        (-w2, h2)
+    ]
+
+    # Rotate and translate corners
+    rotated = []
+    for x, y in corners:
+        xr = x * math.cos(angleRad) - y * math.sin(angleRad)
+        yr = x * math.sin(angleRad) + y * math.cos(angleRad)
+        rotated.append((cx + xr, cy + yr))
+
+    pygame.draw.polygon(surface, color, rotated)
+
+
 def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30):
-    # Draw line (shaft)
-    displayedBoardStart = (LEFTMARGIN +  start[1] * TILESIZE + TILESIZE // 2, TOPMARGIN + start[0] * TILESIZE + TILESIZE // 2)
-    displayedBoardEnd = (LEFTMARGIN + (end[1] + 1) * TILESIZE - TILESIZE // 2, TOPMARGIN + (end[0] + 1) * TILESIZE - TILESIZE // 2)
-    print(displayedBoardStart, displayedBoardEnd)
-    pygame.draw.line(surface, color, displayedBoardStart, displayedBoardEnd, width)
-    
-    # Calculate direction vector
-    dX = displayedBoardEnd[0] - displayedBoardStart[0]
-    dY = displayedBoardEnd[1] - displayedBoardStart[1]
-    angle = math.atan2(dY, dX)
+
+    headHeight = (headLength * math.cos(headAngle/2))
+
+    displayedBoardStart = (start[1] * TILESIZE + TILESIZE / 2, start[0] * TILESIZE + TILESIZE / 2)
+    displayedBoardEnd = (end[1] * TILESIZE + TILESIZE / 2, end[0] * TILESIZE + TILESIZE / 2)
+    knightMoves = [(start[0] + 1, start[1] + 2), (start[0] - 1, start[1] + 2), (start[0] + 2, start[1] + 1), (start[0] + 2, start[1] - 1), (start[0] - 2, start[1] + 1), (start[0] - 2, start[1] - 1), (start[0] + 1, start[1] - 2), (start[0] - 1, start[1] - 2)]
+
+    if end in knightMoves:
+        adjustment = 0
+
+        dX = displayedBoardEnd[0] - displayedBoardStart[0]
+        dY = displayedBoardEnd[1] - displayedBoardStart[1]
+
+        endVY = displayedBoardEnd[1] - displayedBoardStart[1]
+        endVX = displayedBoardEnd[0] - displayedBoardStart[0]
+        
+        if endVX < 0:
+            uVX = -1
+        else:
+            uVX = 1
+        if endVY < 0:
+            uVY = -1
+        else:
+            uVY = 1
+
+        if abs(dX) > abs(dY):
+            angle = math.atan2(endVY, 0)
+        
+            pygame.draw.line(surface, color, (displayedBoardStart[0] + width / 2 * uVX, displayedBoardStart[1]), (displayedBoardEnd[0] + width / 2 * uVX, displayedBoardStart[1]), width)
+            pygame.draw.line(surface,  color, (displayedBoardEnd[0], displayedBoardStart[1] - (width / 2 - adjustment) * uVY + adjustment), (displayedBoardEnd[0], displayedBoardEnd[1] - (headLength - adjustment) * uVY), width)
+
+
+        else:
+            angle = math.atan2(0, endVX)
+
+            pygame.draw.line(surface, color, (displayedBoardStart[0], displayedBoardStart[1] + width / 2 * uVY), (displayedBoardStart[0], displayedBoardEnd[1] + width / 2 * uVY), width)
+            pygame.draw.line(surface,  color, (displayedBoardStart[0] - (width / 2 - adjustment) * uVX, displayedBoardEnd[1]), (displayedBoardEnd[0] - (headLength - adjustment) * uVX, displayedBoardEnd[1]), width)
+            
+    else:
+        # Calculate direction vector
+        dX = displayedBoardEnd[0] - displayedBoardStart[0]
+        dY = displayedBoardEnd[1] - displayedBoardStart[1]
+        angle = math.atan2(dY, dX)
+        arrowAngle = angle + math.radians(90)
+        
+        # Drawing the rectangle
+        displayedBoardEndWithHead = (displayedBoardEnd[0] + 1.1 * headHeight * math.cos(angle), displayedBoardEnd[1] + 1.1 * headHeight * math.sin(angle)) # We remove some length so it doesn t go on arrow head
+        
+        center = ((displayedBoardStart[0] + displayedBoardEnd[0]) / 2, (displayedBoardStart[1] + displayedBoardEnd[1]) / 2) # head is part of the arrow
+        length = ((displayedBoardStart[0] - displayedBoardEndWithHead[0]) ** 2 + (displayedBoardStart[1] - displayedBoardEndWithHead[1]) ** 2) ** (1/2)
+
+        drawTiltedRect(surface, color, center, length, arrowAngle, width)
 
     # Calculate arrowhead points
     angle1 = angle + math.radians(headAngle)
@@ -228,13 +292,21 @@ def main():
     selectedTile = None
     availableMoves = []
     firstMovePlayed = False
+    rightClickDown = False
+    arrows = []
 
     while run:
         clock.tick(60)  # 60 FPS cap
 
         drawBoard(GAME)
         displayAvailableMoves(availableMoves, selectedTile)
-        drawArrow(GAME, (0, 0, 0, 64), (0, 0), (5, 3))  # arrowSurfaceRGBA
+
+        
+        arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
+        for arrow in arrows:
+            drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1])
+
+        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
         if not firstMovePlayed and len(moveList) != 0:
             firstMovePlayed = True
@@ -250,20 +322,52 @@ def main():
             if event.type == pygame.QUIT:
                 run = False
 
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and firstMovePlayed and not rightClickDown:
+                rightClickDown = True
+                mouseX, mouseY = pygame.mouse.get_pos()
+
+                mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
+
+                if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7:
+                    arrowStart = (mouseYTab, mouseXTab)
+                    print(arrowStart)
+            
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and firstMovePlayed and rightClickDown:
+                rightClickDown = False
+                mouseX, mouseY = pygame.mouse.get_pos()
+
+                mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
+
+                if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7 and (mouseYTab, mouseXTab) != arrowStart:
+                    arrowEnd = (mouseYTab, mouseXTab)
+                    
+                    if (arrowStart, arrowEnd) in arrows:
+                        arrows.pop(arrows.index((arrowStart, arrowEnd)))
+
+                    else:
+                        arrows.append((arrowStart, arrowEnd))
+
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                arrows = []
                 mouseX, mouseY = pygame.mouse.get_pos()
 
                 if promoIconRects:  # if a pawn is promoting
+
                     for rect, pieceName in promoIconRects:
                         if rect.collidepoint((mouseX, mouseY)):
                             board.displayedBoard.promote(selectedTile, pieceName)
+
                             promoIconRects.clear()
+
                             selectedTile = None
                             availableMoves = []
                             break
                     continue  # don't do anything if something else than a promotion is clicked
 
                 if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
+
                     mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
                     mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
                     clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
@@ -271,6 +375,7 @@ def main():
                     if selectedTile:
                         if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard.matrix):
                             act = board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+
                             if board.displayedBoard.matrix[mouseYTab][mouseXTab] is not None:
                                 movedPiece = board.displayedBoard.matrix[mouseYTab][mouseXTab]
 
