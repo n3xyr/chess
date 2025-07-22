@@ -40,8 +40,17 @@ This project is built to mimic a full-featured chess game, providing a playable 
 
 ## Installation & Running
 
-1. **Clone the repo:**
+1. Clone the repo
 
    ```bash
-   git clone https://github.com/n3xyr/chess.git
    cd chess
+   git clone https://github.com/n3xyr/chess.git
+   ```
+
+2. Install Python 3.x
+3. Run `setup.bat` to install dependencies.
+4. Start the game:
+
+   ```bash
+   python display.py
+   ```
