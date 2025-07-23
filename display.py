@@ -220,16 +220,8 @@ def drawTiltedRect(surface, color, center, height, angleRad, width = 20):
     pygame.draw.polygon(surface, color, rotated)
 
 
-def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30):
-
-    headHeight = (headLength * math.cos(headAngle/2))
-
-    displayedBoardStart = (start[1] * TILESIZE + TILESIZE / 2, start[0] * TILESIZE + TILESIZE / 2)
-    displayedBoardEnd = (end[1] * TILESIZE + TILESIZE / 2, end[0] * TILESIZE + TILESIZE / 2)
-    knightMoves = [(start[0] + 2, start[1] + 1), (start[0] + 2, start[1] - 1), (start[0] - 2, start[1] + 1), (start[0] - 2, start[1] - 1), (start[0] + 1, start[1] + 2), (start[0] - 1, start[1] + 2), (start[0] + 1, start[1] - 2), (start[0] - 1, start[1] - 2)]
-
-    if end in knightMoves:
-        length =  2 * TILESIZE + headHeight / 2 + width / 2
+def drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, headHeight, width):
+        length =  2 * TILESIZE - headHeight / 2 + width / 2
         dX = displayedBoardEnd[0] - displayedBoardStart[0]
         dY = displayedBoardEnd[1] - displayedBoardStart[1]
 
@@ -237,31 +229,50 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
         angleY = math.atan2(0, dY)
 
         # First rectangle
-        # if abs(dX) < abs(dY):
-        #     center = (displayedBoardStart[0], displayedBoardEnd[1] + (width / 2 - 185) / 2 * dY/abs(dY))   # 185 is the length of a straight arrow going two tiles away form the piece don't ask why (yes i counted the pixels)
-        #     angle = angleX + math.radians(90)
-        # else:
-        #     center = (displayedBoardEnd[0] + (width / 2 - 185) / 2 * dX/abs(dX), displayedBoardStart[1])
-        #     angle = angleY + math.radians(90)
-
-        # drawTiltedRect(surface, color, center, length, angle, width)
-        
-        # Second rectangle
-        length = TILESIZE + headHeight + width / 2
-
         if abs(dX) < abs(dY):
-            center = (displayedBoardEnd[0] + (width / 2 - headHeight) / 2* dX * abs(dX), displayedBoardEnd[1])
-            angle = angleX
-        else:
-            center = (displayedBoardEnd[0], displayedBoardEnd[1] + (width / 2 - headHeight) / 2* dY * abs(dY))
-            angle = angleY
 
-        drawTiltedRect(surface, color, center, length, angle, width)
+            # First rectangle
+            center = (displayedBoardStart[0], displayedBoardEnd[1] + ((width - length) / 2) * (dY / abs(dY)))
+            angle = angleX + math.radians(90)
+            drawTiltedRect(surface, color, center, length, angle, width)
 
-        if abs(dX) < abs(dY):
-            angle = angleY
-        else:
+            # Second rectangle
+            length = TILESIZE - headHeight + width / 2
+            center = (displayedBoardEnd[0] - ((TILESIZE + width / 2) / 2) * (dX / abs(dX)), displayedBoardEnd[1])
             angle = angleX
+            drawTiltedRect(surface, color, center, length, angle, width)
+
+            # Setting arrow head angle
+            return angle - math.radians(90)
+        else:
+
+            # First rectangle
+            center = (displayedBoardEnd[0] + ((width - length) / 2) * (dX / abs(dX)), displayedBoardStart[1])
+            angle = angleY + math.radians(90)
+            drawTiltedRect(surface, color, center, length, angle, width)
+
+            # Second rectangle
+            length = TILESIZE - headHeight + width / 2
+            center = (displayedBoardEnd[0], displayedBoardEnd[1] - ((TILESIZE + width / 2) / 2) * (dY / abs(dY)))
+            angle = angleY
+            drawTiltedRect(surface, color, center, length, angle, width)
+
+            # Setting arrow head angle
+            return angle + math.radians(90)
+
+
+
+def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30):
+
+    headHeight = abs(headLength * math.cos(headAngle/2))
+
+    displayedBoardStart = (start[1] * TILESIZE + TILESIZE / 2, start[0] * TILESIZE + TILESIZE / 2)
+    displayedBoardEnd = (end[1] * TILESIZE + TILESIZE / 2, end[0] * TILESIZE + TILESIZE / 2)
+    knightMoves = [(start[0] + 2, start[1] + 1), (start[0] + 2, start[1] - 1), (start[0] - 2, start[1] + 1), (start[0] - 2, start[1] - 1), (start[0] + 1, start[1] + 2), (start[0] - 1, start[1] + 2), (start[0] + 1, start[1] - 2), (start[0] - 1, start[1] - 2)]
+
+    if end in knightMoves:
+        drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, headHeight, width)
+
 
     else:
         # Calculate direction vector
@@ -271,7 +282,7 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
         arrowAngle = angle + math.radians(90)
         
         # Drawing the rectangle
-        displayedBoardEndWithHead = (displayedBoardEnd[0] + headHeight * math.cos(angle), displayedBoardEnd[1] + headHeight * math.sin(angle)) # We remove some length so it doesn t go on arrow head
+        displayedBoardEndWithHead = (displayedBoardEnd[0] - headHeight * math.cos(angle), displayedBoardEnd[1] - headHeight * math.sin(angle)) # We remove some length so it doesn t go on arrow head
         
         center = ((displayedBoardStart[0] + displayedBoardEnd[0]) / 2, (displayedBoardStart[1] + displayedBoardEnd[1]) / 2) # head is part of the arrow
         length = ((displayedBoardStart[0] - displayedBoardEndWithHead[0]) ** 2 + (displayedBoardStart[1] - displayedBoardEndWithHead[1]) ** 2) ** (1/2)
