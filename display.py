@@ -1,5 +1,5 @@
 import board
-import time
+import math
 import datetime
 import pygame
 import sys
@@ -10,7 +10,7 @@ from pygame_widgets.button import Button
 pygame.init()
 
 # Define window size
-SCALE = float(0.5)
+SCALE = float(1)
 
 TILESIZE = int(100 * SCALE)
 TOPMARGIN = int(100 * SCALE)
@@ -45,14 +45,16 @@ DARKSELECT = (99, 128, 70)
 ULTRADARK = (38, 36, 33)
 BACKGROUND = (48, 46, 43)
 LIGHTGREY = (200, 200, 200)
+ORANGERGBA = (237, 127, 16, 128)
 
 # Create a surface with per-pixel alpha
-DarkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
-LightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
 
 # Draw a semi-transparent circle (RGBA) on canCaptureSurfaceRGBA
-pygame.draw.circle(DarkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
-pygame.draw.circle(LightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
 
 # Define text
 pygame.font.init()
@@ -73,7 +75,7 @@ pieces = [
     {'name': 'blackBishop', 'img': bb, 'pos': (160, 350)},
 ]
 
-promoImageSize = int(100 * SCALE)
+promoImageSize = TILESIZE
 promoImageSpacing = int(5 * SCALE)
 promoInnerMargin = int(10 * SCALE)
 
@@ -97,6 +99,7 @@ promoOrder = {
 }
 
 promoIconRects = []
+
 
 for i in range(len(pieces)):
     pos = promoIconPos[i % 4]
@@ -160,19 +163,7 @@ def drawPossibleTile(game, tabCoordinates):
         pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
 
 
-def initClock():
-    initialTime = time.time()
-    lastTime = initialTime
-    timer = 0
-    return initialTime, lastTime, timer
-
-
-def doClock(initialTime, lastTime, timer):
-    global SCALE
-    currentTime = time.time()
-    if currentTime - lastTime >= 1:
-        lastTime = currentTime
-        timer = int(currentTime - initialTime)
+def displayTime(timer):
     if timer >= 3600:
         pygame.draw.rect(GAME, ULTRADARK, (int(615 * SCALE), int(23 * SCALE), BIGCLOCKWIDTH, CLOCKHEIGHT))
         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * SCALE), int(35 * SCALE)))
@@ -183,19 +174,133 @@ def doClock(initialTime, lastTime, timer):
 
 def displayAvailableMoves(availableMoves, selectedTile):
     for move in availableMoves:
-        y = move[0]
-        x = move[1]
+        y, x = move
         target = board.displayedBoard.matrix[y][x]
-        if target != None and selectedTile != None:
+        if target and selectedTile:
             if target.getColor() != selectedTile.getColor():
                 if getTileColor(move) == 'DARK':
-                    GAME.blit(DarkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                    GAME.blit(darkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
                 else:
-                    GAME.blit(LightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                    GAME.blit(lightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
             else:
                 drawPossibleTile(GAME, move)
         else:
-                drawPossibleTile(GAME, move)
+            drawPossibleTile(GAME, move)
+
+
+def tryPromotion(selectedTile):
+    promoIconRects.clear()
+    if selectedTile is not None and selectedTile.name == 'P' and selectedTile.isAbleToPromote():
+        pygame.draw.rect(GAME, WHITE, promoBackground)
+        for idx, img in enumerate(promoOrder[selectedTile.getColor()]):
+            pos = promoIconPos[idx]
+            rectBg = pygame.Rect(pos[0] - img.get_width() // 2, pos[1], img.get_width(), img.get_height())
+            pygame.draw.rect(GAME, LIGHTGREY, rectBg)
+            GAME.blit(img, (pos[0] - img.get_width() // 2, pos[1]))
+            promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
+
+
+def drawTiltedRect(surface, color, center, height, angleRad, width = 20):
+    cx, cy = center
+    w2, h2 = width / 2, height / 2
+
+    # Define rectangle corners (relative to center)
+    corners = [
+        (-w2, -h2),
+        (w2, -h2),
+        (w2, h2),
+        (-w2, h2)
+    ]
+
+    # Rotate and translate corners
+    rotated = []
+    for x, y in corners:
+        xr = x * math.cos(angleRad) - y * math.sin(angleRad)
+        yr = x * math.sin(angleRad) + y * math.cos(angleRad)
+        rotated.append((cx + xr, cy + yr))
+
+    pygame.draw.polygon(surface, color, rotated)
+
+
+def drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, headHeight, width):
+        length =  2 * TILESIZE - headHeight / 2 + width / 2
+        dX = displayedBoardEnd[0] - displayedBoardStart[0]
+        dY = displayedBoardEnd[1] - displayedBoardStart[1]
+
+        angleX = math.atan2(dX, 0)
+        angleY = math.atan2(0, dY)
+
+        # First rectangle
+        if abs(dX) < abs(dY):
+
+            # First rectangle
+            center = (displayedBoardStart[0], displayedBoardEnd[1] + ((width - length) / 2) * (dY / abs(dY)))
+            angle = angleX + math.radians(90)
+            drawTiltedRect(surface, color, center, length, angle, width)
+
+            # Second rectangle
+            length = TILESIZE - headHeight + width / 2
+            center = (displayedBoardEnd[0] - ((TILESIZE + width / 2) / 2) * (dX / abs(dX)), displayedBoardEnd[1])
+            angle = angleX
+            drawTiltedRect(surface, color, center, length, angle, width)
+
+            # Setting arrow head angle
+            return angle - math.radians(90)
+        else:
+
+            # First rectangle
+            center = (displayedBoardEnd[0] + ((width - length) / 2) * (dX / abs(dX)), displayedBoardStart[1])
+            angle = angleY + math.radians(90)
+            drawTiltedRect(surface, color, center, length, angle, width)
+
+            # Second rectangle
+            length = TILESIZE - headHeight + width / 2
+            center = (displayedBoardEnd[0], displayedBoardEnd[1] - ((TILESIZE + width / 2) / 2) * (dY / abs(dY)))
+            angle = angleY
+            drawTiltedRect(surface, color, center, length, angle, width)
+
+            # Setting arrow head angle
+            return angle + math.radians(90)
+
+
+def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30):
+
+    headHeight = abs(headLength * math.cos(headAngle/2))
+
+    displayedBoardStart = (start[1] * TILESIZE + TILESIZE / 2, start[0] * TILESIZE + TILESIZE / 2)
+    displayedBoardEnd = (end[1] * TILESIZE + TILESIZE / 2, end[0] * TILESIZE + TILESIZE / 2)
+    knightMoves = [(start[0] + 2, start[1] + 1), (start[0] + 2, start[1] - 1), (start[0] - 2, start[1] + 1), (start[0] - 2, start[1] - 1), (start[0] + 1, start[1] + 2), (start[0] - 1, start[1] + 2), (start[0] + 1, start[1] - 2), (start[0] - 1, start[1] - 2)]
+
+    if end in knightMoves:
+        drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, headHeight, width)
+
+    else:
+        # Calculate direction vector
+        dX = displayedBoardEnd[0] - displayedBoardStart[0]
+        dY = displayedBoardEnd[1] - displayedBoardStart[1]
+        angle = math.atan2(dY, dX)
+        arrowAngle = angle + math.radians(90)
+        
+        # Drawing the rectangle
+        displayedBoardEndWithHead = (displayedBoardEnd[0] - headHeight * math.cos(angle), displayedBoardEnd[1] - headHeight * math.sin(angle)) # We remove some length so it doesn t go on arrow head
+        
+        center = ((displayedBoardStart[0] + displayedBoardEnd[0]) / 2, (displayedBoardStart[1] + displayedBoardEnd[1]) / 2) # head is part of the arrow
+        length = ((displayedBoardStart[0] - displayedBoardEndWithHead[0]) ** 2 + (displayedBoardStart[1] - displayedBoardEndWithHead[1]) ** 2) ** (1/2)
+
+        drawTiltedRect(surface, color, center, length, arrowAngle, width)
+
+    # Calculate arrowhead points
+    angle1 = angle + math.radians(headAngle)
+    angle2 = angle - math.radians(headAngle)
+
+    x1 = displayedBoardEnd[0] - headLength * math.cos(angle1)
+    y1 = displayedBoardEnd[1] - headLength * math.sin(angle1)
+    x2 = displayedBoardEnd[0] - headLength * math.cos(angle2)
+    y2 = displayedBoardEnd[1] - headLength * math.sin(angle2)
+
+    # Draw triangle (arrowhead)
+    pygame.draw.polygon(surface, color, [displayedBoardEnd, (x1, y1), (x2, y2)])
+
 
 def main():
     clock = pygame.time.Clock()
@@ -203,47 +308,65 @@ def main():
     moveList = []
     selectedTile = None
     availableMoves = []
+    firstMovePlayed = False
+    rightClickDown = False
+    arrows = []
 
     while run:
         clock.tick(60)  # 60 FPS cap
 
         drawBoard(GAME)
-        for move in availableMoves:
-            y, x = move
-            target = board.displayedBoard.matrix[y][x]
-            if target and selectedTile:
-                if target.getColor() != selectedTile.getColor():
-                    if getTileColor(move) == 'DARK':
-                        GAME.blit(DarkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
-                    else:
-                        GAME.blit(LightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
-                else:
-                    drawPossibleTile(GAME, move)
-            else:
-                drawPossibleTile(GAME, move)
+        displayAvailableMoves(availableMoves, selectedTile)
+        
+        arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
+        for arrow in arrows:
+            drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1])
 
-        if len(moveList) == 0:
-            initialTime, lastTime, timer = initClock()
-        else:
-            doClock(initialTime, lastTime, timer)
+        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
-        promoIconRects.clear()
-        if selectedTile is not None and selectedTile.name == 'P' and selectedTile.isAbleToPromote():
-            pygame.draw.rect(GAME, WHITE, promoBackground)
-            for idx, img in enumerate(promoOrder[selectedTile.getColor()]):
-                pos = promoIconPos[idx]
-                rectBg = pygame.Rect(pos[0] - img.get_width() // 2, pos[1], img.get_width(), img.get_height())
-                pygame.draw.rect(GAME, LIGHTGREY, rectBg)
-                GAME.blit(img, (pos[0] - img.get_width() // 2, pos[1]))
-                promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
+
+        if not firstMovePlayed and len(moveList) != 0:
+            firstMovePlayed = True
+            initialTime, lastTime = board.displayedBoard.initClock()
+        elif firstMovePlayed:
+            timer = board.displayedBoard.getClock(initialTime)
+            displayTime(timer)
+
+        tryPromotion(selectedTile)
 
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 run = False
 
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and firstMovePlayed and not rightClickDown:
+                rightClickDown = True
+                mouseX, mouseY = pygame.mouse.get_pos()
+
+                mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
+
+                if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7:
+                    arrowStart = (mouseYTab, mouseXTab)
+            
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and firstMovePlayed and rightClickDown:
+                rightClickDown = False
+                mouseX, mouseY = pygame.mouse.get_pos()
+
+                mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
+
+                if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7 and (mouseYTab, mouseXTab) != arrowStart:
+                    arrowEnd = (mouseYTab, mouseXTab)
+                    
+                    if (arrowStart, arrowEnd) in arrows:
+                        arrows.pop(arrows.index((arrowStart, arrowEnd)))
+                    else:
+                        arrows.append((arrowStart, arrowEnd))
+
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouseX, mouseY = pygame.mouse.get_pos()
+                arrows = []
 
                 if promoIconRects:  # if a pawn is promoting
                     for rect, pieceName in promoIconRects:

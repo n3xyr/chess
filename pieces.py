@@ -112,7 +112,8 @@ class pawn:
                 return True
             else:
                 return False
-    
+
+
 class knight:
     def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
@@ -184,6 +185,7 @@ class knight:
             if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
                 return True
         return False
+
 
 class rook:
     def __init__(self, coordY, coordX, color):
@@ -269,6 +271,7 @@ class rook:
                 return True
         return False
 
+
 class bishop:
     def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
@@ -350,6 +353,7 @@ class bishop:
             if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
                 return True
         return False
+
 
 class queen:
     def __init__(self, coordY, coordX, color):
@@ -468,7 +472,8 @@ class queen:
             if board[moves[0]][moves[1]].getName() == 'K' and board[moves[0]][moves[1]].getColor != self.getColor():
                 return True
         return False
-        
+
+
 class king:
     def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
