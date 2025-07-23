@@ -272,7 +272,7 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
     knightMoves = [(start[0] + 2, start[1] + 1), (start[0] + 2, start[1] - 1), (start[0] - 2, start[1] + 1), (start[0] - 2, start[1] - 1), (start[0] + 1, start[1] + 2), (start[0] - 1, start[1] + 2), (start[0] + 1, start[1] - 2), (start[0] - 1, start[1] - 2)]
 
     if end in knightMoves:
-        drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, headHeight, width)
+        angle = drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, headHeight, width)
 
     else:
         # Calculate direction vector
