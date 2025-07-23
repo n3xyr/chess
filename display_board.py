@@ -1,10 +1,10 @@
 import board
-import math
 import datetime
 import pygame
 import sys
 import pygame_widgets
 from pygame_widgets.button import Button
+import display_assistant
 
 # Initialize Pygame
 pygame.init()
@@ -107,6 +107,7 @@ for i in range(len(pieces)):
     img_rect = img.get_rect(center=pos)
     pieces[i]['rect'] = img_rect
 
+display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 
 def drawBoard(game):
     """
@@ -156,13 +157,6 @@ def getTileColor(coordinates):
     return 'LIGHT' if (y + x) % 2 == 0 else 'DARK'
 
 
-def drawPossibleTile(game, tabCoordinates):
-    if getTileColor(tabCoordinates) == 'LIGHT':
-        pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
-    else:
-        pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
-
-
 def displayTime(timer):
     if timer >= 3600:
         pygame.draw.rect(GAME, ULTRADARK, (int(615 * SCALE), int(23 * SCALE), BIGCLOCKWIDTH, CLOCKHEIGHT))
@@ -183,10 +177,10 @@ def displayAvailableMoves(availableMoves, selectedTile):
                 else:
                     GAME.blit(lightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
             else:
-                drawPossibleTile(GAME, move)
+                display_assistant.drawPossibleTile(GAME, move)
         else:
-            drawPossibleTile(GAME, move)
-
+            display_assistant.drawPossibleTile(GAME, move)
+            
 
 def tryPromotion(selectedTile):
     promoIconRects.clear()
@@ -198,108 +192,6 @@ def tryPromotion(selectedTile):
             pygame.draw.rect(GAME, LIGHTGREY, rectBg)
             GAME.blit(img, (pos[0] - img.get_width() // 2, pos[1]))
             promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
-
-
-def drawTiltedRect(surface, color, center, height, angleRad, width = 20):
-    cx, cy = center
-    w2, h2 = width / 2, height / 2
-
-    # Define rectangle corners (relative to center)
-    corners = [
-        (-w2, -h2),
-        (w2, -h2),
-        (w2, h2),
-        (-w2, h2)
-    ]
-
-    # Rotate and translate corners
-    rotated = []
-    for x, y in corners:
-        xr = x * math.cos(angleRad) - y * math.sin(angleRad)
-        yr = x * math.sin(angleRad) + y * math.cos(angleRad)
-        rotated.append((cx + xr, cy + yr))
-
-    pygame.draw.polygon(surface, color, rotated)
-
-
-def drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, headHeight, width):
-        length =  2 * TILESIZE - headHeight / 2 + width / 2
-        dX = displayedBoardEnd[0] - displayedBoardStart[0]
-        dY = displayedBoardEnd[1] - displayedBoardStart[1]
-
-        angleX = math.atan2(dX, 0)
-        angleY = math.atan2(0, dY)
-
-        # First rectangle
-        if abs(dX) < abs(dY):
-
-            # First rectangle
-            center = (displayedBoardStart[0], displayedBoardEnd[1] + ((width - length) / 2) * (dY / abs(dY)))
-            angle = angleX + math.radians(90)
-            drawTiltedRect(surface, color, center, length, angle, width)
-
-            # Second rectangle
-            length = TILESIZE - headHeight + width / 2
-            center = (displayedBoardEnd[0] - ((TILESIZE + width / 2) / 2) * (dX / abs(dX)), displayedBoardEnd[1])
-            angle = angleX
-            drawTiltedRect(surface, color, center, length, angle, width)
-
-            # Setting arrow head angle
-            return angle - math.radians(90)
-        else:
-
-            # First rectangle
-            center = (displayedBoardEnd[0] + ((width - length) / 2) * (dX / abs(dX)), displayedBoardStart[1])
-            angle = angleY + math.radians(90)
-            drawTiltedRect(surface, color, center, length, angle, width)
-
-            # Second rectangle
-            length = TILESIZE - headHeight + width / 2
-            center = (displayedBoardEnd[0], displayedBoardEnd[1] - ((TILESIZE + width / 2) / 2) * (dY / abs(dY)))
-            angle = angleY
-            drawTiltedRect(surface, color, center, length, angle, width)
-
-            # Setting arrow head angle
-            return angle + math.radians(90)
-
-
-def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30):
-
-    headHeight = abs(headLength * math.cos(headAngle/2))
-
-    displayedBoardStart = (start[1] * TILESIZE + TILESIZE / 2, start[0] * TILESIZE + TILESIZE / 2)
-    displayedBoardEnd = (end[1] * TILESIZE + TILESIZE / 2, end[0] * TILESIZE + TILESIZE / 2)
-    knightMoves = [(start[0] + 2, start[1] + 1), (start[0] + 2, start[1] - 1), (start[0] - 2, start[1] + 1), (start[0] - 2, start[1] - 1), (start[0] + 1, start[1] + 2), (start[0] - 1, start[1] + 2), (start[0] + 1, start[1] - 2), (start[0] - 1, start[1] - 2)]
-
-    if end in knightMoves:
-        angle = drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, headHeight, width)
-
-    else:
-        # Calculate direction vector
-        dX = displayedBoardEnd[0] - displayedBoardStart[0]
-        dY = displayedBoardEnd[1] - displayedBoardStart[1]
-        angle = math.atan2(dY, dX)
-        arrowAngle = angle + math.radians(90)
-        
-        # Drawing the rectangle
-        displayedBoardEndWithHead = (displayedBoardEnd[0] - headHeight * math.cos(angle), displayedBoardEnd[1] - headHeight * math.sin(angle)) # We remove some length so it doesn t go on arrow head
-        
-        center = ((displayedBoardStart[0] + displayedBoardEnd[0]) / 2, (displayedBoardStart[1] + displayedBoardEnd[1]) / 2) # head is part of the arrow
-        length = ((displayedBoardStart[0] - displayedBoardEndWithHead[0]) ** 2 + (displayedBoardStart[1] - displayedBoardEndWithHead[1]) ** 2) ** (1/2)
-
-        drawTiltedRect(surface, color, center, length, arrowAngle, width)
-
-    # Calculate arrowhead points
-    angle1 = angle + math.radians(headAngle)
-    angle2 = angle - math.radians(headAngle)
-
-    x1 = displayedBoardEnd[0] - headLength * math.cos(angle1)
-    y1 = displayedBoardEnd[1] - headLength * math.sin(angle1)
-    x2 = displayedBoardEnd[0] - headLength * math.cos(angle2)
-    y2 = displayedBoardEnd[1] - headLength * math.sin(angle2)
-
-    # Draw triangle (arrowhead)
-    pygame.draw.polygon(surface, color, [displayedBoardEnd, (x1, y1), (x2, y2)])
 
 
 def main():
@@ -319,8 +211,9 @@ def main():
         displayAvailableMoves(availableMoves, selectedTile)
         
         arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
+        
         for arrow in arrows:
-            drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1])
+            display_assistant.drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1])
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
