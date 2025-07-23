@@ -11,12 +11,14 @@ class board:
         self.matrix = [[None for _ in range(8)] for _ in range(8)]
         self.turn = 'white'
 
+
     def switchTurn(self):
         if self.turn == 'white':
             self.turn = 'black'
         else:
             self.turn = 'white'
         
+
     def fillBoard(self):
         '''
         Fills an empty board with pieces.
@@ -71,6 +73,7 @@ class board:
         else:
             return clickedTile
 
+
     def movePiece(self, piece, y, x):
 
         target = self.matrix[y][x]
@@ -89,18 +92,6 @@ class board:
         moveSound.play()
         return ''
     
-    # def print(self):
-    #     '''
-    #     Shows the board.
-    #     '''
-    #     for i in range(8):
-    #         line = []
-    #         for j in range(8):
-    #             if self.matrix[i][j] == None:
-    #                 line.append('    ')
-    #             else:
-    #                 line.append(self.matrix[i][j].name)
-    #         print(line)
 
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
@@ -116,14 +107,17 @@ class board:
         elif newPieceName == 'bishop':
             self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
 
+
     def initClock(self):
         initialTime = time.time()
         lastTime = initialTime
         return initialTime, lastTime
 
+
     def getClock(self, initialTime):
         currentTime = time.time()
         return int(currentTime - initialTime)
+
 
 displayedBoard = board()
 displayedBoard.fillBoard()

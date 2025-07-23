@@ -100,6 +100,7 @@ promoOrder = {
 
 promoIconRects = []
 
+
 for i in range(len(pieces)):
     pos = promoIconPos[i % 4]
     img = pieces[i]['img']
@@ -160,6 +161,7 @@ def drawPossibleTile(game, tabCoordinates):
         pygame.draw.circle(game, LIGHTSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
     else:
         pygame.draw.circle(game, DARKSELECT, (LEFTMARGIN + tabCoordinates[1] * TILESIZE + TILESIZE / 2, TOPMARGIN + tabCoordinates[0] * TILESIZE + TILESIZE/2), TILESIZE/6)
+
 
 def displayTime(timer):
     if timer >= 3600:
@@ -261,7 +263,6 @@ def drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, head
             return angle + math.radians(90)
 
 
-
 def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30):
 
     headHeight = abs(headLength * math.cos(headAngle/2))
@@ -272,7 +273,6 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
 
     if end in knightMoves:
         drawKnightArrow(surface, color, displayedBoardStart, displayedBoardEnd, headHeight, width)
-
 
     else:
         # Calculate direction vector
@@ -300,6 +300,7 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
 
     # Draw triangle (arrowhead)
     pygame.draw.polygon(surface, color, [displayedBoardEnd, (x1, y1), (x2, y2)])
+
 
 def main():
     clock = pygame.time.Clock()
