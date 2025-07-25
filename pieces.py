@@ -519,8 +519,8 @@ class king:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
-        moves = [(coordY + 1, coordX + 1), (coordX + 1, coordY), (coordX, coordY + 1), (coordX + 1, coordY - 1), (coordX - 1, coordY + 1), (coordX - 1, coordY - 1), (coordX - 1, coordY), (coordX, coordY - 1)]
-        if (x, y) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
+        moves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
+        if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
             if board[y][x] == None or board[y][x].getColor() != color:
                 return True
             else:
@@ -535,7 +535,7 @@ class king:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
 
-        pieceMoves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX + 1), (coordY + 1, coordX - 1), (coordY - 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX)]
+        pieceMoves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
     def isChecking(self, board):
