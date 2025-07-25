@@ -287,6 +287,7 @@ def main():
     firstMovePlayed = False
     rightClickDown = False
     arrows = []
+    promotingPawn = None
 
     while run:
         clock.tick(60)  # 60 FPS cap
@@ -309,7 +310,7 @@ def main():
             timer = board.displayedBoard.getClock(initialTime)
             displayTime(timer)
 
-        tryPromotion(selectedTile)
+        tryPromotion(promotingPawn)
 
         events = pygame.event.get()
         for event in events:
@@ -371,9 +372,8 @@ def main():
                                 movedPiece = board.displayedBoard.matrix[mouseYTab][mouseXTab]
 
                             if movedPiece.name == 'P' and movedPiece.isAbleToPromote():
-                                selectedTile = movedPiece
-                            else:
-                                selectedTile = None
+                                promotingPawn = movedPiece
+                            selectedTile = None
 
                             availableMoves = []
                             moveList.append(
