@@ -78,8 +78,8 @@ class board:
         else:
             oponentKing = self.wk
 
-        if self.isChecking(piece, oponentKing):
-            oponentKing.checked = True
+        # if self.isChecking(piece, oponentKing):
+        #     oponentKing.checked = True
 
         self.switchTurn()
 
@@ -91,8 +91,8 @@ class board:
         return ''
     
     
-    def isChecking(self, pieceChecking, pieceChecked):
-        return pieceChecking.canMove((pieceChecked.getCoordY(), pieceChecked.getCoordX()), self)
+    # def isChecking(self, pieceChecking, pieceChecked):
+    #     return pieceChecking.canMove((pieceChecked.getCoordY(), pieceChecked.getCoordX()), self)
 
 
     def promote(self, piece, newPieceName):
