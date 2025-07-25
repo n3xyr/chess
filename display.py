@@ -27,8 +27,8 @@ def adjustWindowSize(newWidth, newHeight):
     else:
         SCALE = newWidth / oldWidth
         
-    HEIGHT = int(oldHeight * SCALE)
-    WIDTH = int(oldWidth * SCALE)
+    HEIGHT = int(oldHeight * SCALE) // 8 * 8  # Ensure height is a multiple of 8
+    WIDTH = int(oldWidth * SCALE) // 8 * 8  # Ensure width is a multiple of 8
     
     TILESIZE = int((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8)
     TOPMARGIN = TILESIZE
