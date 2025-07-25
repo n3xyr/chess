@@ -34,6 +34,7 @@ This project is built to mimic a full-featured chess game, providing a playable 
 - Python (3.x)
 - [`pygame`](https://www.pygame.org/)
 - `pygame_widgets`
+- `screeninfo`
 - `time`, `datetime`, `sys`
 
 ---
