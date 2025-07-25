@@ -539,7 +539,7 @@ class king:
         moves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
         
         if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
-            if board[y][x] == None or board[y][x].getColor() != color:
+            if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
                 return True
             
             else:

@@ -17,7 +17,7 @@ def getMonitorResolution():
             return m.width, m.height
 
 def adjustWindowSize(newWidth, newHeight):
-    global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME, BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT, robotoFont
+    global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME, BIGCLOCKWIDTH, SMALLCLOCKWIDTH, BIGCLOCKPOS, SMALLCLOCKPOS, CLOCKHEIGHT, robotoFont
     global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr
     
     oldHeight = HEIGHT
@@ -36,6 +36,7 @@ def adjustWindowSize(newWidth, newHeight):
     LEFTMARGIN = 0
     RIGHTMARGIN = 0
     BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * SCALE), int(125 * SCALE), int(54 * SCALE)
+    BIGCLOCKPOS, SMALLCLOCKPOS = (615 * SCALE, 23 * SCALE), (630 * SCALE, 23 * SCALE)
 
     GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
     
@@ -104,6 +105,7 @@ RIGHTMARGIN = 0
 WIDTH, HEIGHT = LEFTMARGIN + 8 * TILESIZE + RIGHTMARGIN, 8 * TILESIZE + BOTTOMMARGIN + TOPMARGIN
 GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * SCALE), int(125 * SCALE), int(54 * SCALE)
+BIGCLOCKPOS, SMALLCLOCKPOS = (615 * SCALE, 23 * SCALE), (630 * SCALE, 23 * SCALE)
 pygame.display.set_caption("Chess")
 
 bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
@@ -242,10 +244,10 @@ def getTileColor(coordinates):
 
 def displayTime(timer):
     if timer >= 3600:
-        pygame.draw.rect(GAME, ULTRADARK, (int(615 * SCALE), int(23 * SCALE), BIGCLOCKWIDTH, CLOCKHEIGHT))
+        pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * SCALE), int(35 * SCALE)))
     else:
-        pygame.draw.rect(GAME, ULTRADARK, (int(630 * SCALE), int(23 * SCALE), SMALLCLOCKWIDTH, CLOCKHEIGHT))
+        pygame.draw.rect(GAME, ULTRADARK, (SMALLCLOCKPOS[0], SMALLCLOCKPOS[1], SMALLCLOCKWIDTH, CLOCKHEIGHT))
         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (int(648 * SCALE), int(35 * SCALE)))
 
 
@@ -320,6 +322,7 @@ def main():
             if event.type == pygame.VIDEORESIZE:
                 adjustWindowSize(event.w, event.h)
                 adjustPromoSize()
+                display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and firstMovePlayed and not rightClickDown:
                 rightClickDown = True
