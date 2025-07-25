@@ -100,6 +100,21 @@ class pawn:
         pieceMoves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2 * direction, coordX)]
 
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+    
+    
+    def isAbleToPromote(self):
+        color = self.getColor()
+        coordY = self.getCoordY()
+        if color == 'white':
+            if coordY == 0:
+                return True
+            else:
+                return False
+        else:
+            if coordY == 7:
+                return True
+            else:
+                return False
 
 
 class knight:
