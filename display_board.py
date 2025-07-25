@@ -27,20 +27,21 @@ def adjustWindowSize(newWidth, newHeight):
     else:
         SCALE = newWidth / oldWidth
         
-    HEIGHT = int(oldHeight * SCALE) // 8 * 8  # Ensure height is a multiple of 8
-    WIDTH = int(oldWidth * SCALE) // 8 * 8  # Ensure width is a multiple of 8
+    HEIGHT = int(oldHeight * SCALE) // 8 * 8
+    WIDTH = int(oldWidth * SCALE) // 8 * 8
     
+    BASESCALE =  WIDTH / 800
     TILESIZE = int((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8)
     TOPMARGIN = TILESIZE
     BOTTOMMARGIN = TILESIZE
     LEFTMARGIN = 0
     RIGHTMARGIN = 0
-    BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * SCALE), int(125 * SCALE), int(54 * SCALE)
-    BIGCLOCKPOS, SMALLCLOCKPOS = (615 * SCALE, 23 * SCALE), (630 * SCALE, 23 * SCALE)
+    BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * BASESCALE), int(125 * BASESCALE), int(54 * BASESCALE)
+    BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * BASESCALE), int(23 * BASESCALE)), (int(630 * BASESCALE), int(23 * BASESCALE))
 
     GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
     
-    robotoFont = pygame.font.SysFont('Roboto', int(50 * SCALE))
+    robotoFont = pygame.font.SysFont('Roboto', int(50 * BASESCALE))
     
     bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
     bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
@@ -105,7 +106,7 @@ RIGHTMARGIN = 0
 WIDTH, HEIGHT = LEFTMARGIN + 8 * TILESIZE + RIGHTMARGIN, 8 * TILESIZE + BOTTOMMARGIN + TOPMARGIN
 GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * SCALE), int(125 * SCALE), int(54 * SCALE)
-BIGCLOCKPOS, SMALLCLOCKPOS = (615 * SCALE, 23 * SCALE), (630 * SCALE, 23 * SCALE)
+BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * SCALE), int(23 * SCALE)), (int(630 * SCALE), int(23 * SCALE))
 pygame.display.set_caption("Chess")
 
 bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
@@ -243,12 +244,13 @@ def getTileColor(coordinates):
 
 
 def displayTime(timer):
+    BASESCALE = WIDTH / 800
     if timer >= 3600:
         pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
-        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * SCALE), int(35 * SCALE)))
+        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE)))
     else:
         pygame.draw.rect(GAME, ULTRADARK, (SMALLCLOCKPOS[0], SMALLCLOCKPOS[1], SMALLCLOCKWIDTH, CLOCKHEIGHT))
-        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (int(648 * SCALE), int(35 * SCALE)))
+        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
 
 
 def displayAvailableMoves(availableMoves, selectedTile):
