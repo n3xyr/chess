@@ -101,7 +101,7 @@ class pawn:
 
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
     
-    
+
     def isAbleToPromote(self):
         color = self.getColor()
         coordY = self.getCoordY()
@@ -277,6 +277,44 @@ class rook:
         
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
+    def pathToKing(self, board):
+        """
+        return a list of tiles between the rook and the opposit king if it puts the king in check
+        """
+        if self.getColor() == 'black':
+            king = board.bk
+        else:
+            king = board.wk
+
+        kX = king.getCoordX()
+        kY = king.getCoordY()
+        rX = self.getCoordX()
+        rY = self.getCoordY()
+
+        tiles = [(rY, rX)]
+
+        if self.canMove(kY, kX, board):
+            dX = abs(kX - rX)
+            dY = abs(kY - rY)
+            
+            if dY == 0:
+                for move in self.possibleMoves(board):
+                    piece = board.matrix[move[0]][move[1]]
+                    pX = abs(kX - piece.getCoordX())
+
+                    if pX < dX:
+                        tiles.append((piece.getCoordY(), piece.getCoordX()))
+            else:
+                for move in self.possibleMoves(board):
+                    piece = board.matrix[move[0]][move[1]]
+                    pY = abs(kY - piece.getCoordY())
+
+                    if pY < dY:
+                        tiles.append((piece.getCoordY(), piece.getCoordX()))
+
+
+        return tiles
+
 
 class bishop:
     def __init__(self, coordY, coordX, color):
@@ -360,6 +398,36 @@ class bishop:
                 pieceMoves.append((y, x))
         
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+
+    def pathToKing(self, board):
+        """
+        return a list of tiles between the bishop and the opposit king if it puts the king in check
+        """
+        if self.getColor() == 'black':
+            king = board.bk
+        else:
+            king = board.wk
+
+        kX = king.getCoordX()
+        kY = king.getCoordY()
+        bX = self.getCoordX()
+        bY = self.getCoordY()
+
+        tiles = [(bY, bX)]
+
+        if self.canMove(kY, kX, board):
+            dX = abs(kX - bX)
+            dY = abs(kY - bY)
+
+            for move in self.possibleMoves(board):
+                piece = board.matrix[move[0]][move[1]]
+                pX = abs(kX - piece.getCoordX())
+                pY = abs(kY - piece.getCoordY())
+
+                if pX < dX and pY < dY:
+                    tiles.append((piece.getCoordY(), piece.getCoordX()))
+
+        return tiles
 
 
 class queen:
@@ -483,6 +551,56 @@ class queen:
             pieceMoves.append((coordY, i))
 
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+        
+
+    def pathToKing(self, board):
+        """
+        return a list of tiles between the queen and the opposit king if it puts the king in check
+        """
+        if self.getColor() == 'black':
+            king = board.bk
+        else:
+            king = board.wk
+
+        kX = king.getCoordX()
+        kY = king.getCoordY()
+        qX = self.getCoordX()
+        qY = self.getCoordY()
+
+        tiles = [(qY, qX)]
+
+        if self.canMove(kY, kX, board):
+            dX = abs(kX - qX)
+            dY = abs(kY - qY)
+
+            if ((kX-qX)**2 != (kY-qY)**2):  # Bishop-like path
+
+                for move in self.possibleMoves(board):
+                    piece = board.matrix[move[0]][move[1]]
+                    pX = abs(kX - piece.getCoordX())
+                    pY = abs(kY - piece.getCoordY())
+
+                    if pX < dX and pY < dY:
+                        tiles.append((piece.getCoordY(), piece.getCoordX()))
+
+            else:   # Rook-like path
+
+                if dY == 0:
+                    for move in self.possibleMoves(board):
+                        piece = board.matrix[move[0]][move[1]]
+                        pX = abs(kX - piece.getCoordX())
+
+                        if pX < dX:
+                            tiles.append((piece.getCoordY(), piece.getCoordX()))
+                else:
+                    for move in self.possibleMoves(board):
+                        piece = board.matrix[move[0]][move[1]]
+                        pY = abs(kY - piece.getCoordY())
+
+                        if pY < dY:
+                            tiles.append((piece.getCoordY(), piece.getCoordX()))
+
+        return tiles
 
 
 class king:
