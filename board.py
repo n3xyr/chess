@@ -43,11 +43,17 @@ class board:
         for i in [2, 5]:                                              # white bishops
             self.matrix[7][i] = pieces.bishop(7, i, 'white')
 
-        self.matrix[0][3] = pieces.queen(0, 3, 'black')               # black queen
-        self.matrix[7][3] = pieces.queen(7, 3, 'white')               # white queen
 
-        self.matrix[0][4] = pieces.king(0, 4, 'black')                # black king
-        self.matrix[7][4] = pieces.king(7, 4, 'white')                # white king
+        self.bq = pieces.queen(0, 3, 'black')  
+        self.wq = pieces.queen(7, 3, 'white')  
+        self.matrix[0][3] = self.bq                                        # black queen
+        self.matrix[7][3] = self.wq                                        # white queen
+
+
+        self.bk = pieces.king(0, 4, 'black')
+        self.wk = pieces.king(7, 4, 'white')
+        self.matrix[0][4] = self.bk                                        # black king
+        self.matrix[7][4] = self.wk                                        # white king
 
 
     def getAvailableMoves(self, selectedTile):
@@ -83,6 +89,11 @@ class board:
         piece.setCoordY(y)
         piece.setCoordX(x)
 
+        # if self.turn == 'white':
+        #     oponentKing = self.bk
+        # else:
+        #     oponentKing = self.wk
+
         self.switchTurn()
 
         if target != None:
@@ -117,7 +128,7 @@ class board:
     def getClock(self, initialTime):
         currentTime = time.time()
         return int(currentTime - initialTime)
-
+    
 
 displayedBoard = board()
 displayedBoard.fillBoard()
