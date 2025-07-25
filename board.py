@@ -60,7 +60,7 @@ class board:
         if selectedTile == None:
             return []
         if selectedTile.getColor() == self.turn:
-           return selectedTile.possibleMoves(self.matrix)
+           return selectedTile.possibleMoves(self)
         return []
 
 
@@ -73,10 +73,13 @@ class board:
         piece.setCoordY(y)
         piece.setCoordX(x)
 
-        # if self.turn == 'white':
-        #     oponentKing = self.bk
-        # else:
-        #     oponentKing = self.wk
+        if self.turn == 'white':
+            oponentKing = self.bk
+        else:
+            oponentKing = self.wk
+
+        if self.isChecking(piece, oponentKing):
+            oponentKing.checked = True
 
         self.switchTurn()
 
@@ -87,6 +90,10 @@ class board:
         moveSound.play()
         return ''
     
+    
+    def isChecking(self, pieceChecking, pieceChecked):
+        return pieceChecking.canMove((pieceChecked.getCoordY(), pieceChecked.getCoordX()), self)
+
 
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
