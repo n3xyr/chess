@@ -64,22 +64,6 @@ class board:
         return []
 
 
-    def manageMove(self, selectedTile, mouseYTab, mouseXTab, moveList):
-        clickedTile = self.matrix[mouseYTab][mouseXTab]
-
-        if selectedTile != None:
-            if selectedTile.getColor() == self.turn and selectedTile.canMove(mouseYTab, mouseXTab, self.matrix):
-                act = self.movePiece(selectedTile, mouseYTab, mouseXTab)
-                moveList.append(selectedTile.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab))
-                print(moveList)
-                return None
-            elif clickedTile != None:
-                return clickedTile
-
-        else:
-            return clickedTile
-
-
     def movePiece(self, piece, y, x):
 
         target = self.matrix[y][x]
