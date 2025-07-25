@@ -46,14 +46,14 @@ class board:
 
         self.bq = pieces.queen(0, 3, 'black')  
         self.wq = pieces.queen(7, 3, 'white')  
-        self.matrix[0][3] = self.bq                                        # black queen
-        self.matrix[7][3] = self.wq                                        # white queen
+        self.matrix[0][3] = self.bq                                   # black queen
+        self.matrix[7][3] = self.wq                                   # white queen
 
 
         self.bk = pieces.king(0, 4, 'black')
         self.wk = pieces.king(7, 4, 'white')
-        self.matrix[0][4] = self.bk                                        # black king
-        self.matrix[7][4] = self.wk                                        # white king
+        self.matrix[0][4] = self.bk                                   # black king
+        self.matrix[7][4] = self.wk                                   # white king
 
 
     def getAvailableMoves(self, selectedTile):
@@ -107,7 +107,7 @@ class board:
         elif newPieceName == 'rook':
             self.matrix[coordY][coordX] = pieces.rook(coordY, coordX, color)
         elif newPieceName == 'bishop':
-            self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
+            self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)  
 
 
     def initClock(self):
@@ -119,6 +119,18 @@ class board:
     def getClock(self, initialTime):
         currentTime = time.time()
         return int(currentTime - initialTime)
+    
+    def generateIsCheckingPiecesList(self):
+        whiteList = []
+        blackList = []
+        for i in range(8):
+            for j in range(8):
+                if self.matrix[i][j] is not None:
+                    if self.matrix[i][j].canMove(self.wk.getCoordY(), self.wk.getCoordX(), self):
+                        blackList.append(self.matrix[i][j])
+                    elif self.matrix[i][j].canMove(self.bk.getCoordY(), self.bk.getCoordX(), self):
+                        whiteList.append(self.matrix[i][j])
+        return whiteList, blackList
     
 
 displayedBoard = board()

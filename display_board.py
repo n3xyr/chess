@@ -299,6 +299,7 @@ def main():
         drawBoard(GAME)
         displayAvailableMoves(availableMoves, selectedTile)
         
+        whiteList, blackList = board.displayedBoard.generateIsCheckingPiecesList()
         arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
         
         for arrow in arrows:
