@@ -53,5 +53,5 @@ This project is built to mimic a full-featured chess game, providing a playable 
 4. Start the game:
 
    ```bash
-   python display.py
+   python display_board.py
    ```
