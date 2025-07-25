@@ -544,5 +544,14 @@ class king:
         
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
+    def isChecked(self, board):
         """
+        Returns True if the king is in check, False otherwise.
         """
+        for piece in board:
+            if not(piece is None):
+                if piece.canMove((self.getCoordY(), self.getCoordX()), board):
+                    return True
+                
+    
+        
