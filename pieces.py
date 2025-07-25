@@ -681,7 +681,9 @@ class king:
         """
         Returns True if the king is in check, False otherwise.
         """
-        for piece in board:
-            if not(piece is None):
-                if piece.canMove((self.getCoordY(), self.getCoordX()), board):
-                    return True
+        for i in range(8):
+            for j in range(8):
+                piece = board.matrix[i][j]
+                if not(piece is None):
+                    if piece.canMove(self.getCoordY(), self.getCoordX(), board):
+                        return True

@@ -74,12 +74,12 @@ class board:
         piece.setCoordX(x)
 
         if self.turn == 'white':
-            oponentKing = self.bk
+            opponentKing = self.bk
         else:
-            oponentKing = self.wk
+            opponentKing = self.wk
 
-        # if self.isChecking(piece, oponentKing):
-        #     oponentKing.checked = True
+        if self.checkMate(opponentKing):
+            print(opponentKing.getColor(), "lost")
 
         self.switchTurn()
 
@@ -90,10 +90,6 @@ class board:
         moveSound.play()
         return ''
     
-    
-    # def isChecking(self, pieceChecking, pieceChecked):
-    #     return pieceChecking.canMove((pieceChecked.getCoordY(), pieceChecked.getCoordX()), self)
-
 
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
@@ -132,6 +128,34 @@ class board:
                         whiteList.append(self.matrix[i][j])
         return whiteList, blackList
     
+    def checkMate(self, king):
+        tileCoords = []
+        if king.isChecked(self):
+            if king.possibleMoves(self) == []:
+                whitePieces, blackPieces = board.displayedBoard.generateIsCheckingPiecesList()
+                if king.getColor() == 'black':
+                    for piece in whitePieces:
+                        if piece.getName() == 'Q' or piece.getName() == 'B' or piece.getName() == 'R':
+                            tileCoords + piece.pathToKing()
+                        else:
+                            tileCoords.append((piece.getCoordY(), piece.getCoordX()))
+                else:
+                    for piece in blackPieces:
+                        if piece.getName() == 'Q' or piece.getName() == 'B' or piece.getName() == 'R':
+                            tileCoords + piece.pathToKing()
+                        else:
+                            tileCoords.append((piece.getCoordY(), piece.getCoordX()))
+                for i in range(8):
+                    for j in range(8):
+                        case = self.matrix[i][j]
+                        if case is not None and case.getColor() == king.getColor():
+                            for coords in case.possibleMoves(self):
+                                if coords in tileCoords:
+                                    return False
+                return True
+            else:
+                return False
+        return False    
 
 displayedBoard = board()
 displayedBoard.fillBoard()
