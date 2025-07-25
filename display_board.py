@@ -269,11 +269,11 @@ def displayAvailableMoves(availableMoves, selectedTile):
             display_assistant.drawPossibleTile(GAME, move)
             
 
-def tryPromotion(selectedTile):
+def tryPromotion(promotingPawn):
     promoIconRects.clear()
-    if selectedTile is not None and selectedTile.name == 'P' and selectedTile.isAbleToPromote():
+    if promotingPawn is not None and promotingPawn.name == 'P' and promotingPawn.isAbleToPromote():
         pygame.draw.rect(GAME, WHITE, promoBackground)
-        for idx, img in enumerate(promoOrder[selectedTile.getColor()]):
+        for idx, img in enumerate(promoOrder[promotingPawn.getColor()]):
             img = pygame.transform.scale(img, (promoImageSize, promoImageSize))
             pos = promoIconPos[idx]
             rectBg = pygame.Rect(pos[0] - TILESIZE // 2, pos[1], TILESIZE, TILESIZE)
@@ -358,9 +358,9 @@ def main():
                 if promoIconRects:  # if a pawn is promoting
                     for rect, pieceName in promoIconRects:
                         if rect.collidepoint((mouseX, mouseY)):
-                            board.displayedBoard.promote(selectedTile, pieceName)
+                            board.displayedBoard.promote(promotingPawn, pieceName)
                             promoIconRects.clear()
-                            selectedTile = None
+                            promotingPawn = None
                             availableMoves = []
                             break
                     continue  # don't do anything if something else than a promotion is clicked
