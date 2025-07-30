@@ -64,6 +64,30 @@ class board:
         return []
 
 
+    def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, availableMoves):
+        if selectedTile:
+            if selectedTile.canMove(mouseYTab, mouseXTab, self) and selectedTile.getColor() == self.turn:
+                act = self.movePiece(selectedTile, mouseYTab, mouseXTab)
+                if self.matrix[mouseYTab][mouseXTab] is not None:
+                    movedPiece = self.matrix[mouseYTab][mouseXTab]
+
+                if movedPiece.name == 'P' and movedPiece.isAbleToPromote():
+                    promotingPawn = movedPiece
+                selectedTile = None
+
+                availableMoves = []
+                moveList.append(
+                    movedPiece.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab)
+                )
+                return None, availableMoves, promotingPawn
+
+            elif clickedTile:
+                return clickedTile, availableMoves, promotingPawn
+
+        else:
+            return clickedTile, availableMoves, promotingPawn
+
+
     def movePiece(self, piece, y, x):
 
         target = self.matrix[y][x]
@@ -116,6 +140,7 @@ class board:
         currentTime = time.time()
         return int(currentTime - initialTime)
     
+
     def generateIsCheckingPiecesList(self):
         whiteList = []
         blackList = []
@@ -127,12 +152,13 @@ class board:
                     elif self.matrix[i][j].canMove(self.bk.getCoordY(), self.bk.getCoordX(), self):
                         whiteList.append(self.matrix[i][j])
         return whiteList, blackList
-    
+
+
     def checkMate(self, king):
         tileCoords = []
         if king.isChecked(self):
             if king.possibleMoves(self) == []:
-                whitePieces, blackPieces = board.displayedBoard.generateIsCheckingPiecesList()
+                whitePieces, blackPieces = self.generateIsCheckingPiecesList()
                 if king.getColor() == 'black':
                     for piece in whitePieces:
                         if piece.getName() == 'Q' or piece.getName() == 'B' or piece.getName() == 'R':

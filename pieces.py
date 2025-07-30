@@ -365,6 +365,7 @@ class bishop:
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
+
         
         if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2 or (x == coordX and y == coordY):  #if it isn't in the board or if it doesn't move in a diagonal
             return False
@@ -608,7 +609,6 @@ class king:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.checked = False
         self.name  = 'K'
         self.value = 0
 
@@ -684,6 +684,9 @@ class king:
         for i in range(8):
             for j in range(8):
                 piece = board.matrix[i][j]
+
                 if not(piece is None):
                     if piece.canMove(self.getCoordY(), self.getCoordX(), board):
                         return True
+                    
+        return False
