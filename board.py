@@ -65,9 +65,9 @@ class board:
         return []
 
 
-    def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, availableMoves, promotingPawn):
+    def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn):
         if selectedTile:
-            if selectedTile.canMove(mouseYTab, mouseXTab, self, simulatedBoard) and selectedTile.getColor() == self.turn:
+            if selectedTile.canMove(mouseYTab, mouseXTab, self) and selectedTile.getColor() == self.turn:
                 act = self.movePiece(selectedTile, mouseYTab, mouseXTab)
                 if self.matrix[mouseYTab][mouseXTab] is not None:
                     movedPiece = self.matrix[mouseYTab][mouseXTab]
@@ -75,18 +75,15 @@ class board:
                 if movedPiece.name == 'P' and movedPiece.isAbleToPromote():
                     promotingPawn = movedPiece
                 selectedTile = None
-
-                availableMoves = []
                 moveList.append(
                     movedPiece.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab)
                 )
-                return None, availableMoves, promotingPawn
+                return selectedTile, promotingPawn
 
             elif clickedTile:
-                return clickedTile, availableMoves, promotingPawn
+                return clickedTile, promotingPawn
 
-        else:
-            return clickedTile, availableMoves, promotingPawn
+        return clickedTile, promotingPawn
 
 
     def movePiece(self, piece, y, x):

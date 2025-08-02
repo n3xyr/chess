@@ -64,13 +64,11 @@ class pawn:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         moves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2*direction, coordX)]
-        print(moves)
         # if board.nextMoveIsCheck(king, self, y, x):
         #     print('non1', (y, x))
         #     return False
 
         if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
-            print('non2', (y, x))
             return False
         
         if board.matrix[y][x]:
@@ -79,20 +77,15 @@ class pawn:
 
         if board.matrix[y][x] is None:
             if (y, x) == moves[2]:    # Goes forwards by one
-                print('oui1')
                 return True
             
             elif (y, x) == moves[3] and self.isFirstMove() and board.matrix[coordY + direction][coordX] is None:   # Goes forward by two
-                print('oui2')
                 return True
-            print('non4', (y, x))
             return False
         
         elif (y, x) in moves[:2]:
-            print('oui3')
             return True
         
-        print('non5', (y, x))
         return False
           
     def possibleMoves(self, board):
@@ -108,7 +101,6 @@ class pawn:
             direction = -1
         
         pieceMoves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2 * direction, coordX)]
-        print(pieceMoves)
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
     
 
