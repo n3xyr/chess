@@ -103,7 +103,6 @@ class board:
         else:
             opponentKing = self.wk
 
-        print(opponentKing.getColor(), "est-il checkmate ?", self.checkMate(opponentKing))
         if self.checkMate(opponentKing):
             print(opponentKing.getColor(), "lost")
 
