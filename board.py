@@ -1,6 +1,7 @@
 import pieces
 import pygame
 import time
+import copy
 
 pygame.mixer.init()
 moveSound = pygame.mixer.Sound('soundEffects/moveSound.wav')
@@ -102,6 +103,7 @@ class board:
         else:
             opponentKing = self.wk
 
+        print(opponentKing.getColor(), "est-il checkmate ?", self.checkMate(opponentKing))
         if self.checkMate(opponentKing):
             print(opponentKing.getColor(), "lost")
 
@@ -114,7 +116,12 @@ class board:
         moveSound.play()
         return ''
     
-
+    def simulateMovePiece(self, piece, y, x, simulatedBoard):
+        simulatedBoard.matrix[y][x] = piece
+        simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()] = None
+        piece.setCoordY(y)
+        piece.setCoordX(x)
+        
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
         coordY = piece.getCoordY()
@@ -142,6 +149,11 @@ class board:
     
 
     def generateIsCheckingPiecesList(self):
+        '''
+        Returns a list of pieces that can move to the king's position.
+        whiteList -> white pieces that can move to the black king's position
+        blackList -> black pieces that can move to the white king's position
+        '''
         whiteList = []
         blackList = []
         for i in range(8):
@@ -152,36 +164,51 @@ class board:
                     elif self.matrix[i][j].canMove(self.bk.getCoordY(), self.bk.getCoordX(), self):
                         whiteList.append(self.matrix[i][j])
         return whiteList, blackList
-
-
-    def checkMate(self, king):
-        tileCoords = []
-        if king.isChecked(self):
-            if king.possibleMoves(self) == []:
-                whitePieces, blackPieces = self.generateIsCheckingPiecesList()
-                if king.getColor() == 'black':
-                    for piece in whitePieces:
-                        if piece.getName() == 'Q' or piece.getName() == 'B' or piece.getName() == 'R':
-                            tileCoords + piece.pathToKing()
-                        else:
-                            tileCoords.append((piece.getCoordY(), piece.getCoordX()))
+    
+    def createSimulatedBoard(self):
+        for i in range(8):
+            for j in range(8):
+                piece = self.matrix[i][j]
+                if piece is None:
+                    simulatedBoard.matrix[i][j] = None
+                elif piece.getName() == 'K':
+                    if piece.getColor() == 'black':
+                        simulatedBoard.bk = pieces.king(i, j, piece.getColor())
+                        simulatedBoard.matrix[i][j] = simulatedBoard.bk
+                    else:
+                        simulatedBoard.wk = pieces.king(i, j, piece.getColor())
+                        simulatedBoard.matrix[i][j] = simulatedBoard.wk
                 else:
-                    for piece in blackPieces:
-                        if piece.getName() == 'Q' or piece.getName() == 'B' or piece.getName() == 'R':
-                            tileCoords + piece.pathToKing()
+                    simulatedBoard.matrix[i][j] = copy.deepcopy(piece)
+                    simulatedBoard.matrix[i][j].setCoordY(i)
+                    simulatedBoard.matrix[i][j].setCoordX(j)
+                        
+    def checkMate(self, king):
+        if king.isChecked(self) == False:
+            return False
+        else:
+            simulatedBoard.createSimulatedBoard()
+            pieces = []
+            for i in range(8):
+                for j in range(8):
+                    currentPiece = simulatedBoard.matrix[i][j]
+                    if currentPiece is not None and currentPiece.getColor() == king.getColor():
+                        if currentPiece.getName() == 'K':
+                            simulatedKing = currentPiece
                         else:
-                            tileCoords.append((piece.getCoordY(), piece.getCoordX()))
-                for i in range(8):
-                    for j in range(8):
-                        case = self.matrix[i][j]
-                        if case is not None and case.getColor() == king.getColor():
-                            for coords in case.possibleMoves(self):
-                                if coords in tileCoords:
-                                    return False
-                return True
-            else:
-                return False
-        return False    
-
+                            pieces.append(currentPiece)
+                            
+            for j in range(len(pieces)):
+                initialY = pieces[j].getCoordY()
+                initialX = pieces[j].getCoordX()
+                currentPiecePossibleMoves = pieces[j].possibleMoves(simulatedBoard)
+                for i in range(len(currentPiecePossibleMoves)):
+                    simulatedBoard.simulateMovePiece(currentPiece, currentPiecePossibleMoves[i][0], currentPiecePossibleMoves[i][1], simulatedBoard)
+                    if simulatedKing.isChecked(simulatedBoard) == False:
+                        return False
+                simulatedBoard.simulateMovePiece(pieces[j], initialY, initialX, simulatedBoard)
+            return True
+        
 displayedBoard = board()
 displayedBoard.fillBoard()
+simulatedBoard = board()
