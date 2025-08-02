@@ -372,10 +372,7 @@ def main():
 
                     selectedTile, promotingPawn = board.displayedBoard.manageMove(selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn)
                     
-                    if selectedTile and selectedTile.getColor() == board.displayedBoard.turn:
-                        availableMoves = selectedTile.possibleMoves(board.displayedBoard)
-                    else:
-                        availableMoves = []
+                    availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
 
         pygame_widgets.update(events)
         pygame.display.update()
