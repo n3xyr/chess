@@ -174,11 +174,14 @@ class board:
                             pieces.append(currentPiece)
                             
             for j in range(len(pieces)):
+                initialY = pieces[j].getCoordY()
+                initialX = pieces[j].getCoordX()
                 currentPiecePossibleMoves = pieces[j].possibleMoves(simulatedBoard)
                 for i in range(len(currentPiecePossibleMoves)):
                     simulatedBoard.simulateMovePiece(currentPiece, currentPiecePossibleMoves[i][0], currentPiecePossibleMoves[i][1], simulatedBoard)
                     if simulatedKing.isChecked(simulatedBoard) == False:
                         return False
+                simulatedBoard.simulateMovePiece(pieces[j], initialY, initialX, simulatedBoard)
             return True
         
 displayedBoard = board()
