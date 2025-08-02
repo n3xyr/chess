@@ -49,7 +49,7 @@ class pawn:
         return False
 
 
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -64,9 +64,11 @@ class pawn:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         moves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2*direction, coordX)]
-        # if board.nextMoveIsCheck(king, self, y, x):
-        #     print('non1', (y, x))
-        #     return False
+        
+        # if checkNext:
+        #     if board.nextMoveIsCheck(king, self, y, x):
+        #         print('nonononononono', (y, x))
+        #         return False
 
         if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
             return False
@@ -157,7 +159,7 @@ class knight:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -230,7 +232,7 @@ class rook:
     def setCoordY(self, y):
         self.__coordinateY = y
     
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -362,7 +364,7 @@ class bishop:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -479,7 +481,7 @@ class queen:
     def setCoordY(self, y):
         self.__coordinateY = y
         
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -655,7 +657,7 @@ class king:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -698,8 +700,9 @@ class king:
             for j in range(8):
                 piece = board.matrix[i][j]
 
-                if not(piece is None):
-                    if piece.canMove(self.getCoordY(), self.getCoordX(), board):
+                if piece:
+                    print('everything is fine')
+                    if piece.canMove(self.getCoordY(), self.getCoordX(), board, False):
                         return True
         return False
     
