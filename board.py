@@ -67,7 +67,7 @@ class board:
 
     def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, availableMoves):
         if selectedTile:
-            if selectedTile.canMove(mouseYTab, mouseXTab, self) and selectedTile.getColor() == self.turn:
+            if selectedTile.canMove(mouseYTab, mouseXTab, self, simulatedBoard) and selectedTile.getColor() == self.turn:
                 act = self.movePiece(selectedTile, mouseYTab, mouseXTab)
                 if self.matrix[mouseYTab][mouseXTab] is not None:
                     movedPiece = self.matrix[mouseYTab][mouseXTab]
@@ -181,7 +181,14 @@ class board:
                     simulatedBoard.matrix[i][j] = copy.deepcopy(piece)
                     simulatedBoard.matrix[i][j].setCoordY(i)
                     simulatedBoard.matrix[i][j].setCoordX(j)
-                        
+    
+    def nextMoveIsCheck(self, king):
+        self.createSimulatedBoard()
+        if king.isChecked(simulatedBoard):
+            return True
+        else:
+            return False
+
     def checkMate(self, king):
         if king.isChecked(self):
             self.createSimulatedBoard()

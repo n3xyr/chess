@@ -371,7 +371,7 @@ def main():
                     clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
 
                     if selectedTile:
-                        if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
+                        if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard, board.simulatedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
                             act = board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
                             if board.displayedBoard.matrix[mouseYTab][mouseXTab] is not None:
                                 movedPiece = board.displayedBoard.matrix[mouseYTab][mouseXTab]

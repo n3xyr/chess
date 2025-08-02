@@ -65,6 +65,9 @@ class pawn:
         coordY = self.getCoordY()
         moves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2*direction, coordX)]
         
+        if board.nextMoveIsCheck(king):
+            return False
+
         if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
             return False
         
@@ -168,6 +171,9 @@ class knight:
         coordY = self.getCoordY()
         color = self.getColor()
         moves = [(coordX + 1, coordY + 2), (coordX - 1, coordY + 2), (coordX + 2, coordY + 1), (coordX + 2, coordY - 1), (coordX - 2, coordY + 1), (coordX - 2, coordY - 1), (coordX + 1, coordY - 2), (coordX - 1, coordY - 2)]
+                
+        if board.nextMoveIsCheck(king):
+            return False
         
         if (x, y) in moves and 0 <= x <= 7 and 0 <= y <= 7:
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
@@ -237,7 +243,10 @@ class rook:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
-
+        
+        if board.nextMoveIsCheck(king):
+            return False
+        
         if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
             if x == coordX and (y != coordY and (y <= 7 and y >= 0)):
                 directionY = int((y - coordY)/abs(y - coordY))  # Y vector
@@ -365,7 +374,9 @@ class bishop:
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
-
+        
+        if board.nextMoveIsCheck(king):
+            return False
         
         if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2 or (x == coordX and y == coordY):  #if it isn't in the board or if it doesn't move in a diagonal
             return False
@@ -480,6 +491,9 @@ class queen:
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
+                
+        if board.nextMoveIsCheck(king):
+            return False
         
         if x < 0 or x > 7 or y < 0 or y > 7:  #if it isn't in the board or if it doesn't move in a diagonal nor in a straight line
             return False
