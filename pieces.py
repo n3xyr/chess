@@ -687,3 +687,4 @@ class king:
                 if not(piece is None):
                     if piece.canMove(self.getCoordY(), self.getCoordX(), board):
                         return True
+        return False

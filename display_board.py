@@ -381,9 +381,7 @@ def main():
                             selectedTile = None
 
                             availableMoves = []
-                            moveList.append(
-                                movedPiece.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab)
-                            )
+                            moveList.append(movedPiece.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab))
 
                         elif clickedTile:
                             selectedTile = clickedTile
