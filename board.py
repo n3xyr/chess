@@ -180,13 +180,19 @@ class board:
                     simulatedBoard.matrix[i][j].setCoordX(j)
     
     def nextMoveIsCheck(self, king, piece, y, x):
+        print('tu me cherches, eh bah non')
+
         self.createSimulatedBoard()
-        
+
         if simulatedBoard.matrix[y][x] == piece:
             print('too far')
             return False
 
         self.simulateMovePiece(piece, y, x)
+
+        # print('simboard----------------------------------')
+        # simulatedBoard.consoleDisplay()
+        # print(king.isChecked(simulatedBoard))
 
         if king.isChecked(simulatedBoard):
             return True
@@ -216,7 +222,16 @@ class board:
             return True
         else:
             return False
-        
+    
+    def consoleDisplay(self):
+        for i in range(len(self.matrix)):
+            for j in range(len(self.matrix[i])):
+                if self.matrix[i][j] is not None:
+                    print(self.matrix[i][j].name.lower(), ' ', end='')
+                else:
+                    print('   ', end='')
+            print('')
+
 displayedBoard = board()
 displayedBoard.fillBoard()
 simulatedBoard = board()

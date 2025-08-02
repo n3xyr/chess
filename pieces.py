@@ -75,19 +75,25 @@ class pawn:
         
         if board.matrix[y][x]:
             if board.matrix[y][x].getColor() == self.getColor():
+                if (y, x) == moves[3]:
+                    print('here1')
                 return False
-
-        if board.matrix[y][x] is None:
+        
+            elif (y, x) in moves[:2]:
+                return True
+        
+        else:
             if (y, x) == moves[2]:    # Goes forwards by one
                 return True
             
             elif (y, x) == moves[3] and self.isFirstMove() and board.matrix[coordY + direction][coordX] is None:   # Goes forward by two
                 return True
+            if (y, x) == moves[3]:
+                print('here2')
             return False
         
-        elif (y, x) in moves[:2]:
-            return True
-        
+        if (y, x) == moves[3]:
+            print('here3')
         return False
           
     def possibleMoves(self, board):
@@ -103,6 +109,7 @@ class pawn:
             direction = -1
         
         pieceMoves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2 * direction, coordX)]
+        print('oh ahahah i see...')
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
     
 
@@ -701,7 +708,6 @@ class king:
                 piece = board.matrix[i][j]
 
                 if piece:
-                    print('everything is fine')
                     if piece.canMove(self.getCoordY(), self.getCoordX(), board, False):
                         return True
         return False
