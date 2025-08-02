@@ -370,8 +370,11 @@ def main():
                     mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
                     clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
 
+                    # board.displayedBoard.manageMove(selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, availableMoves, promotingPawn)
+
                     if selectedTile:
-                        if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard, board.simulatedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
+                        print('wtf1', (mouseYTab, mouseXTab))
+                        if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
                             act = board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
                             if board.displayedBoard.matrix[mouseYTab][mouseXTab] is not None:
                                 movedPiece = board.displayedBoard.matrix[mouseYTab][mouseXTab]
@@ -390,6 +393,7 @@ def main():
                         selectedTile = clickedTile
 
                     if selectedTile and selectedTile.getColor() == board.displayedBoard.turn:
+                        print('wtf2', (mouseYTab, mouseXTab))
                         availableMoves = selectedTile.possibleMoves(board.displayedBoard)
                     else:
                         availableMoves = []

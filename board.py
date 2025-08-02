@@ -65,7 +65,7 @@ class board:
         return []
 
 
-    def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, availableMoves):
+    def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, availableMoves, promotingPawn):
         if selectedTile:
             if selectedTile.canMove(mouseYTab, mouseXTab, self, simulatedBoard) and selectedTile.getColor() == self.turn:
                 act = self.movePiece(selectedTile, mouseYTab, mouseXTab)
@@ -115,7 +115,7 @@ class board:
         moveSound.play()
         return ''
     
-    def simulateMovePiece(self, piece, y, x, simulatedBoard):
+    def simulateMovePiece(self, piece, y, x):
         simulatedBoard.matrix[y][x] = piece
         simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()] = None
         piece.setCoordY(y)
@@ -182,8 +182,15 @@ class board:
                     simulatedBoard.matrix[i][j].setCoordY(i)
                     simulatedBoard.matrix[i][j].setCoordX(j)
     
-    def nextMoveIsCheck(self, king):
+    def nextMoveIsCheck(self, king, piece, y, x):
         self.createSimulatedBoard()
+        
+        if simulatedBoard.matrix[y][x] == piece:
+            print('too far')
+            return False
+
+        self.simulateMovePiece(piece, y, x)
+
         if king.isChecked(simulatedBoard):
             return True
         else:
