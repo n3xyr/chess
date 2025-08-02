@@ -183,30 +183,28 @@ class board:
                     simulatedBoard.matrix[i][j].setCoordX(j)
                         
     def checkMate(self, king):
-        if king.isChecked(self) == False:
-            return False
-        else:
-            simulatedBoard.createSimulatedBoard()
+        if king.isChecked(self):
+            self.createSimulatedBoard()
             pieces = []
             for i in range(8):
-                for j in range(8):
-                    currentPiece = simulatedBoard.matrix[i][j]
-                    if currentPiece is not None and currentPiece.getColor() == king.getColor():
-                        if currentPiece.getName() == 'K':
-                            simulatedKing = currentPiece
-                        else:
-                            pieces.append(currentPiece)
+                for i in range(8):
+                    currentPiece = simulatedBoard.matrix[i][i]
+                    if not(currentPiece is None) and (currentPiece.getColor() == king.getColor()):
+                        pieces.append(currentPiece)
                             
-            for j in range(len(pieces)):
-                initialY = pieces[j].getCoordY()
-                initialX = pieces[j].getCoordX()
-                currentPiecePossibleMoves = pieces[j].possibleMoves(simulatedBoard)
+            for i in range(len(pieces)):
+                initialY = pieces[i].getCoordY()
+                initialX = pieces[i].getCoordX()
+                currentPiecePossibleMoves = pieces[i].possibleMoves(simulatedBoard)
                 for i in range(len(currentPiecePossibleMoves)):
                     simulatedBoard.simulateMovePiece(currentPiece, currentPiecePossibleMoves[i][0], currentPiecePossibleMoves[i][1], simulatedBoard)
-                    if simulatedKing.isChecked(simulatedBoard) == False:
+                    if king.isChecked(simulatedBoard) == False:
                         return False
-                simulatedBoard.simulateMovePiece(pieces[j], initialY, initialX, simulatedBoard)
+                simulatedBoard.simulateMovePiece(pieces[i], initialY, initialX, simulatedBoard)
+
             return True
+        else:
+            return False
         
 displayedBoard = board()
 displayedBoard.fillBoard()
