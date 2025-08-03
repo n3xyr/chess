@@ -100,6 +100,7 @@ class board:
         else:
             opponentKing = self.wk
 
+        print('is', opponentKing.getColor(), 'getting checkmated ?', self.checkMate(opponentKing))
         if self.checkMate(opponentKing):
             print(opponentKing.getColor(), "lost")
 
@@ -111,12 +112,6 @@ class board:
                 return 'x'
         moveSound.play()
         return ''
-    
-    def simulateMovePiece(self, piece, y, x):
-        simulatedBoard.matrix[y][x] = piece
-        simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()] = None
-        piece.setCoordY(y)
-        piece.setCoordX(x)
         
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
@@ -160,65 +155,57 @@ class board:
                     elif self.matrix[i][j].canMove(self.bk.getCoordY(), self.bk.getCoordX(), self):
                         whiteList.append(self.matrix[i][j])
         return whiteList, blackList
-    
+
     def createSimulatedBoard(self):
+        simulatedBoard = board()
+        simulatedBoard.matrix = [[None for _ in range(8)] for _ in range(8)]
         for i in range(8):
             for j in range(8):
                 piece = self.matrix[i][j]
-                if piece is None:
-                    simulatedBoard.matrix[i][j] = None
-                elif piece.getName() == 'K':
-                    if piece.getColor() == 'black':
-                        simulatedBoard.bk = pieces.king(i, j, piece.getColor())
-                        simulatedBoard.matrix[i][j] = simulatedBoard.bk
-                    else:
-                        simulatedBoard.wk = pieces.king(i, j, piece.getColor())
-                        simulatedBoard.matrix[i][j] = simulatedBoard.wk
-                else:
-                    simulatedBoard.matrix[i][j] = copy.deepcopy(piece)
-                    simulatedBoard.matrix[i][j].setCoordY(i)
-                    simulatedBoard.matrix[i][j].setCoordX(j)
-    
+                if piece is not None:
+                    simulatedPiece = copy.deepcopy(piece)
+                    simulatedBoard.matrix[i][j] = simulatedPiece
+                    simulatedPiece.setCoordY(i)
+                    simulatedPiece.setCoordX(j)
+        simulatedBoard.wk = copy.deepcopy(self.wk)
+        simulatedBoard.bk = copy.deepcopy(self.bk)
+        return simulatedBoard
+
+    def simulateMovePiece(self, piece, y, x, boardToSimulate):
+        boardToSimulate.matrix[y][x] = piece
+        boardToSimulate.matrix[piece.getCoordY()][piece.getCoordX()] = None
+        piece.setCoordY(y)
+        piece.setCoordX(x)
+
     def nextMoveIsCheck(self, king, piece, y, x):
-        print('tu me cherches, eh bah non')
-
-        self.createSimulatedBoard()
-
-        if simulatedBoard.matrix[y][x] == piece:
-            print('too far')
-            return False
-
-        self.simulateMovePiece(piece, y, x)
-
-        # print('simboard----------------------------------')
-        # simulatedBoard.consoleDisplay()
-        # print(king.isChecked(simulatedBoard))
-
-        if king.isChecked(simulatedBoard):
-            return True
+        simulatedBoard = self.createSimulatedBoard()
+        simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
+        simulatedBoard.simulateMovePiece(simPiece, y, x, simulatedBoard)
+        if king.getColor() == 'white':
+            simKing = simulatedBoard.wk
         else:
-            return False
+            simKing = simulatedBoard.bk
+        return simKing.isChecked(simulatedBoard, checkNext=False)
 
     def checkMate(self, king):
         if king.isChecked(self):
-            self.createSimulatedBoard()
             pieces = []
             for i in range(8):
-                for i in range(8):
-                    currentPiece = simulatedBoard.matrix[i][i]
-                    if not(currentPiece is None) and (currentPiece.getColor() == king.getColor()):
+                for j in range(8):
+                    currentPiece = self.matrix[i][j]
+                    if currentPiece is not None and currentPiece.getColor() == king.getColor():
                         pieces.append(currentPiece)
-                            
-            for i in range(len(pieces)):
-                initialY = pieces[i].getCoordY()
-                initialX = pieces[i].getCoordX()
-                currentPiecePossibleMoves = pieces[i].possibleMoves(simulatedBoard)
-                for i in range(len(currentPiecePossibleMoves)):
-                    simulatedBoard.simulateMovePiece(currentPiece, currentPiecePossibleMoves[i][0], currentPiecePossibleMoves[i][1], simulatedBoard)
-                    if king.isChecked(simulatedBoard) == False:
+            for piece in pieces:
+                initialY = piece.getCoordY()
+                initialX = piece.getCoordX()
+                possibleMoves = piece.possibleMoves(self)
+                for move in possibleMoves:
+                    simulatedBoard = self.createSimulatedBoard()
+                    simPiece = simulatedBoard.matrix[initialY][initialX]
+                    simulatedBoard.simulateMovePiece(simPiece, move[0], move[1], simulatedBoard)
+                    simKing = simulatedBoard.wk if king.getColor() == 'white' else simulatedBoard.bk
+                    if not simKing.isChecked(simulatedBoard, checkNext=False):
                         return False
-                simulatedBoard.simulateMovePiece(pieces[i], initialY, initialX, simulatedBoard)
-
             return True
         else:
             return False

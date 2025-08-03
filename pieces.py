@@ -65,18 +65,15 @@ class pawn:
         coordY = self.getCoordY()
         moves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2*direction, coordX)]
         
-        # if checkNext:
-        #     if board.nextMoveIsCheck(king, self, y, x):
-        #         print('nonononononono', (y, x))
-        #         return False
+        if checkNext:
+            if board.nextMoveIsCheck(king, self, y, x):
+                return False
 
         if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
             return False
         
         if board.matrix[y][x]:
             if board.matrix[y][x].getColor() == self.getColor():
-                if (y, x) == moves[3]:
-                    print('here1')
                 return False
         
             elif (y, x) in moves[:2]:
@@ -88,12 +85,8 @@ class pawn:
             
             elif (y, x) == moves[3] and self.isFirstMove() and board.matrix[coordY + direction][coordX] is None:   # Goes forward by two
                 return True
-            if (y, x) == moves[3]:
-                print('here2')
             return False
         
-        if (y, x) == moves[3]:
-            print('here3')
         return False
           
     def possibleMoves(self, board):
@@ -109,8 +102,7 @@ class pawn:
             direction = -1
         
         pieceMoves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2 * direction, coordX)]
-        print('oh ahahah i see...')
-        return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+        return [move for move in pieceMoves if self.canMove(move[0], move[1], board, checkNext = False)]
     
 
     def isAbleToPromote(self):
@@ -180,8 +172,9 @@ class knight:
         color = self.getColor()
         moves = [(coordX + 1, coordY + 2), (coordX - 1, coordY + 2), (coordX + 2, coordY + 1), (coordX + 2, coordY - 1), (coordX - 2, coordY + 1), (coordX - 2, coordY - 1), (coordX + 1, coordY - 2), (coordX - 1, coordY - 2)]
                 
-        # if board.nextMoveIsCheck(king, self, y, x):
-        #     return False
+        if checkNext:
+            if board.nextMoveIsCheck(king, self, y, x):
+                return False
         
         if (x, y) in moves and 0 <= x <= 7 and 0 <= y <= 7:
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
@@ -198,7 +191,7 @@ class knight:
 
         pieceMoves = [(coordY + 2, coordX + 1), (coordY + 2, coordX - 1), (coordY + 1, coordX + 2), (coordY - 1, coordX + 2), (coordY + 1, coordX - 2), (coordY - 1, coordX - 2), (coordY - 2, coordX + 1), (coordY - 2, coordX - 1)]
         
-        return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+        return [move for move in pieceMoves if self.canMove(move[0], move[1], board, checkNext = False)]
 
 
 class rook:
@@ -252,8 +245,9 @@ class rook:
         coordY = self.getCoordY()
         color = self.getColor()
         
-        # if board.nextMoveIsCheck(king, self, y, x):
-        #     return False
+        if checkNext:
+            if board.nextMoveIsCheck(king, self, y, x):
+                return False
         
         if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
             if x == coordX and (y != coordY and (y <= 7 and y >= 0)):
@@ -292,7 +286,7 @@ class rook:
             pieceMoves.append((i, coordX))
             pieceMoves.append((coordY, i))
         
-        return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+        return [move for move in pieceMoves if self.canMove(move[0], move[1], board, checkNext = False)]
 
     def pathToKing(self, board):
         """
@@ -383,8 +377,9 @@ class bishop:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         
-        # if board.nextMoveIsCheck(king, self, y, x):
-        #     return False
+        if checkNext:
+            if board.nextMoveIsCheck(king, self, y, x):
+                return False
         
         if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2 or (x == coordX and y == coordY):  #if it isn't in the board or if it doesn't move in a diagonal
             return False
@@ -417,7 +412,7 @@ class bishop:
             if (coordX-x)**2 == (coordY-y)**2:
                 pieceMoves.append((y, x))
         
-        return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+        return [move for move in pieceMoves if self.canMove(move[0], move[1], board, checkNext = False)]
 
     def pathToKing(self, board):
         """
@@ -500,8 +495,9 @@ class queen:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
                 
-        # if board.nextMoveIsCheck(king, self, y, x):
-        #     return False
+        if checkNext:
+            if board.nextMoveIsCheck(king, self, y, x):
+                return False
         
         if x < 0 or x > 7 or y < 0 or y > 7:  #if it isn't in the board or if it doesn't move in a diagonal nor in a straight line
             return False
@@ -573,7 +569,7 @@ class queen:
             pieceMoves.append((i, coordX))
             pieceMoves.append((coordY, i))
 
-        return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+        return [move for move in pieceMoves if self.canMove(move[0], move[1], board, checkNext = False)]
         
 
     def pathToKing(self, board):
@@ -672,7 +668,7 @@ class king:
             king = board.bk
         else:
             king = board.wk
-            
+
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
@@ -697,18 +693,16 @@ class king:
 
         pieceMoves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
         
-        return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
+        return [move for move in pieceMoves if self.canMove(move[0], move[1], board, checkNext = False)]
 
-    def isChecked(self, board):
+    def isChecked(self, board, checkNext = True):
         """
         Returns True if the king is in check, False otherwise.
         """
         for i in range(8):
             for j in range(8):
                 piece = board.matrix[i][j]
-
-                if piece:
-                    if piece.canMove(self.getCoordY(), self.getCoordX(), board, False):
+                if piece is not None and piece.getColor() != self.getColor():
+                    if piece.canMove(self.getCoordY(), self.getCoordX(), board, checkNext):
                         return True
-        return False
-    
+        return
