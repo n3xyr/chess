@@ -113,6 +113,7 @@ class board:
         moveSound.play()
         return ''
         
+        
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
         coordY = piece.getCoordY()
@@ -156,6 +157,7 @@ class board:
                         whiteList.append(self.matrix[i][j])
         return whiteList, blackList
 
+
     def createSimulatedBoard(self):
         simulatedBoard = board()
         for i in range(8):
@@ -172,6 +174,7 @@ class board:
                         else:
                             simulatedBoard.bk = simulatedPiece
         return simulatedBoard
+
 
     def simulateMovePiece(self, piece, y, x, boardToSimulate):
         if piece is None:
@@ -196,6 +199,7 @@ class board:
             simKing = simulatedBoard.bk
 
         return simKing.isChecked(simulatedBoard, checkNext=False)
+    
 
     def checkMate(self, king):
         if king.isChecked(self):
@@ -230,6 +234,7 @@ class board:
             return True
         else:
             return False
+        
     
     def consoleDisplay(self):
         for i in range(len(self.matrix)):
@@ -239,6 +244,7 @@ class board:
                 else:
                     print('   ', end='')
             print('')
+
 
 displayedBoard = board()
 displayedBoard.fillBoard()

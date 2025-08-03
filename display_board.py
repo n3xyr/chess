@@ -16,6 +16,7 @@ def getMonitorResolution():
         if m.is_primary:
             return m.width, m.height
 
+
 def adjustWindowSize(newWidth, newHeight):
     global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME, BIGCLOCKWIDTH, SMALLCLOCKWIDTH, BIGCLOCKPOS, SMALLCLOCKPOS, CLOCKHEIGHT, robotoFont
     global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr
@@ -55,6 +56,7 @@ def adjustWindowSize(newWidth, newHeight):
     wn = pygame.transform.scale(pygame.image.load("piecesImages/wn.png"), (TILESIZE, TILESIZE))
     wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
     wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
+
 
 def adjustPromoSize():
     global pieces, promoImageSize, promoImageSpacing, promoInnerMargin, promoBlockWidth, promoBlockHeight, promoBlockX, promoBlockY, promoBackground, promoIconPos, promoOrder, promoIconRects, pos, img, img_rect
@@ -194,6 +196,7 @@ for i in range(len(pieces)):
 
 display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 adjustPromoSize()
+
 
 def drawBoard(game):
     """
