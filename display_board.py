@@ -6,6 +6,7 @@ import pygame_widgets
 from screeninfo import get_monitors
 from pygame_widgets.button import Button
 import display_assistant
+import startup_screen
 
 # Initialize Pygame
 pygame.init()
@@ -284,7 +285,6 @@ def tryPromotion(promotingPawn):
             GAME.blit(img, (pos[0] - TILESIZE // 2, pos[1]))
             promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
 
-
 def main():
     clock = pygame.time.Clock()
     run = True
@@ -296,9 +296,11 @@ def main():
     arrows = []
     promotingPawn = None
 
+    startup_screen.show_startup_screen(GAME, WIDTH, HEIGHT, SCALE, TILESIZE, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN)
+
     while run:
         clock.tick(60)  # 60 FPS cap
-
+        
         drawBoard(GAME)
         displayAvailableMoves(availableMoves, selectedTile)
         
