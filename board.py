@@ -172,7 +172,6 @@ class board:
         return simulatedBoard
 
     def simulateMovePiece(self, piece, y, x, boardToSimulate):
-        print(piece.name)
         initalY = piece.getCoordY()
         initalX = piece.getCoordX()
         boardToSimulate.matrix[y][x] = piece
