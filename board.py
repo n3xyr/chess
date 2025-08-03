@@ -82,7 +82,6 @@ class board:
                 king =  self.bk
 
             if self.nextMoveIsCheck(king, piece, y, x):
-                print('This puts the king in check')
                 if self.checkMate(king):
                     return '#'
                 else:
@@ -111,7 +110,6 @@ class board:
                 )
 
                 self.movePiece(selectedTile, mouseYTab, mouseXTab)
-                print(moveList)
 
                 if self.matrix[mouseYTab][mouseXTab] is not None:
                     movedPiece = self.matrix[mouseYTab][mouseXTab]
