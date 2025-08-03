@@ -250,7 +250,7 @@ class board:
             if king.getColor() == 'white':
                 simKing = simulatedBoard.wk
             else:
-                simKing =  simulatedBoard.bk
+                simKing = simulatedBoard.bk   
 
             for i in range(8):
                 for j in range(8):
