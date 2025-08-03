@@ -234,9 +234,9 @@ class board:
         simulatedBoard.simulateMovePiece(simPiece, y, x, simulatedBoard)
 
         if piece.getColor() == 'white':
-            simKing = self.wk
+            simKing = simulatedBoard.wk
         else:
-            simKing =  self.bk
+            simKing =  simulatedBoard.bk
 
         return simKing.isChecked(simulatedBoard, checkNext=False)
     
