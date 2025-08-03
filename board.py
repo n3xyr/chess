@@ -158,7 +158,6 @@ class board:
 
     def createSimulatedBoard(self):
         simulatedBoard = board()
-        simulatedBoard.matrix = [[None for _ in range(8)] for _ in range(8)]
         for i in range(8):
             for j in range(8):
                 piece = self.matrix[i][j]
@@ -201,15 +200,20 @@ class board:
     def checkMate(self, king):
         if king.isChecked(self):
             pieces = []
+            
+            simulatedBoard = self.createSimulatedBoard()
+
+            if king.getColor() == 'white':
+                simKing = simulatedBoard.wk
+            else:
+                simKing = simulatedBoard.bk   
+
             for i in range(8):
                 for j in range(8):
-                    currentPiece = self.matrix[i][j]
-                    if currentPiece is not None and currentPiece.getColor() == king.getColor() and currentPiece.getName() != 'K':
+                    currentPiece = simulatedBoard.matrix[i][j]
+                    if currentPiece is not None and currentPiece.getColor() == simKing.getColor():
                         pieces.append(currentPiece)
-                    elif currentPiece is not None and currentPiece.getColor() == king.getColor() and currentPiece.getName() == 'K':
-                        simKing = currentPiece
-                        pieces.append(simKing)
-                    
+            
             for piece in pieces:
                 initialY = piece.getCoordY()
                 initialX = piece.getCoordX()
@@ -219,7 +223,8 @@ class board:
                     simulatedBoard.simulateMovePiece(piece, move[0], move[1], simulatedBoard)
                     if not simKing.isChecked(simulatedBoard, checkNext=False):
                         return False
-                    simulatedBoard.simulateMovePiece(piece, initialY, initialX, simulatedBoard)
+                    piece.setCoordY(initialY)
+                    piece.setCoordX(initialX)
             return True
         else:
             return False

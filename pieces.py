@@ -170,9 +170,9 @@ class knight:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
-        moves = [(coordX + 1, coordY + 2), (coordX - 1, coordY + 2), (coordX + 2, coordY + 1), (coordX + 2, coordY - 1), (coordX - 2, coordY + 1), (coordX - 2, coordY - 1), (coordX + 1, coordY - 2), (coordX - 1, coordY - 2)]
-                
-        if (x, y) in moves and 0 <= x <= 7 and 0 <= y <= 7:
+        moves = [(coordY + 2, coordX + 1), (coordY + 2, coordX - 1), (coordY + 1, coordX + 2), (coordY - 1, coordX + 2), (coordY + 1, coordX - 2), (coordY - 1, coordX - 2), (coordY - 2, coordX + 1), (coordY - 2, coordX - 1)]
+
+        if (y, x) in moves and 0 <= x <= 7 and 0 <= y <= 7:
             if checkNext:
                 if board.nextMoveIsCheck(king, self, y, x):
                     return False
@@ -190,7 +190,6 @@ class knight:
         coordY = self.getCoordY()
 
         pieceMoves = [(coordY + 2, coordX + 1), (coordY + 2, coordX - 1), (coordY + 1, coordX + 2), (coordY - 1, coordX + 2), (coordY + 1, coordX - 2), (coordY - 1, coordX - 2), (coordY - 2, coordX + 1), (coordY - 2, coordX - 1)]
-        
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
 
