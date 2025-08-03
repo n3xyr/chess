@@ -295,7 +295,6 @@ def main():
     rightClickDown = False
     arrows = []
     promotingPawn = None
-    lastPromotion = None
 
     while run:
         clock.tick(60)  # 60 FPS cap
@@ -313,7 +312,7 @@ def main():
 
         if not firstMovePlayed and len(moveList) != 0:
             firstMovePlayed = True
-            initialTime, lastTime = board.displayedBoard.initClock()
+            initialTime = board.displayedBoard.initClock()
         elif firstMovePlayed:
             timer = board.displayedBoard.getClock(initialTime)
             displayTime(timer)
@@ -363,10 +362,19 @@ def main():
                 if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
                     mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
                     mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
-                    clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
                     lastSelectedTile = selectedTile
-                    selectedTile, promotingPawn = board.displayedBoard.manageMove(selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn)
                     
+                    selectedTile, movingPiece = board.displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
+                    print(selectedTile, movingPiece)
+
+                    if movingPiece:
+                        print(selectedTile.name, movingPiece)
+                        if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
+                            board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                            if selectedTile.name == '' and selectedTile.isAbleToPromote():
+                                promotingPawn = selectedTile
+                            selectedTile, movingPiece = (None, False)
+                            
                     availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
 
                 if promoIconRects:  # if a pawn is promoting
@@ -378,10 +386,11 @@ def main():
                             availableMoves = []
                             break
                     continue  # don't do anything if something else than a promotion is clicked
+
                 if lastSelectedTile:
                     board.displayedBoard.addMoveToHistoric(moveList, lastSelectedTile, mouseYTab, mouseXTab)
 
-                print(moveList)
+                # print(moveList)
 
         pygame_widgets.update(events)
         pygame.display.update()

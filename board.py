@@ -146,26 +146,13 @@ class board:
         moveList.append(resultMove)
 
 
-    def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn):
-        if selectedTile:
-            if selectedTile.canMove(mouseYTab, mouseXTab, self) and selectedTile.getColor() == self.turn:
+    def manageSelection(self, selectedTile, y, x):
+        clickedTile = self.matrix[y][x]
 
-                self.movePiece(selectedTile, mouseYTab, mouseXTab)
-
-                if self.matrix[mouseYTab][mouseXTab] is not None:
-                    movedPiece = self.matrix[mouseYTab][mouseXTab]
-
-                if movedPiece.name == '' and movedPiece.isAbleToPromote():
-                    promotingPawn = movedPiece
-
-                selectedTile = None
-
-                return selectedTile, promotingPawn
-
-            elif clickedTile:
-                return clickedTile, promotingPawn
-
-        return clickedTile, promotingPawn
+        if selectedTile and selectedTile.canMove(y, x, self) and selectedTile.getColor() == self.turn:
+            return selectedTile, True
+        
+        return clickedTile, False
 
     
     def playSound(self, act):
@@ -215,8 +202,7 @@ class board:
 
     def initClock(self):
         initialTime = time.time()
-        lastTime = initialTime
-        return initialTime, lastTime
+        return initialTime
 
 
     def getClock(self, initialTime):
