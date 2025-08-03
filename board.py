@@ -209,7 +209,6 @@ class board:
                     elif currentPiece is not None and currentPiece.getColor() == king.getColor() and currentPiece.getName() == 'K':
                         simKing = currentPiece
                         pieces.append(simKing)
-                    
             for piece in pieces:
                 initialY = piece.getCoordY()
                 initialX = piece.getCoordX()
@@ -218,6 +217,8 @@ class board:
                     simulatedBoard = self.createSimulatedBoard()
                     simulatedBoard.simulateMovePiece(piece, move[0], move[1], simulatedBoard)
                     if not simKing.isChecked(simulatedBoard, checkNext=False):
+                        simulatedBoard = self.createSimulatedBoard()
+                        simulatedBoard.simulateMovePiece(piece, initialY, initialX, simulatedBoard)
                         return False
                     simulatedBoard.simulateMovePiece(piece, initialY, initialX, simulatedBoard)
             return True
