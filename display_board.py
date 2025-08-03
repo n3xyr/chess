@@ -305,7 +305,7 @@ def main():
         arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
         
         for arrow in arrows:
-            display_assistant.drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1])
+            display_assistant.drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1], TILESIZE / 5, 43 * TILESIZE / 100, 35.5)
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
