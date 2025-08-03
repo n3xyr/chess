@@ -100,8 +100,9 @@ class board:
         else:
             opponentKing = self.wk
 
-        print('is', opponentKing.getColor(), 'getting checkmated ?', self.checkMate(opponentKing))
-        if self.checkMate(opponentKing):
+        isCheckemated = self.checkMate(opponentKing)
+        print('is', opponentKing.getColor(), 'getting checkmated ?', isCheckemated)
+        if isCheckemated:
             print(opponentKing.getColor(), "lost")
 
         self.switchTurn()
@@ -172,8 +173,10 @@ class board:
         return simulatedBoard
 
     def simulateMovePiece(self, piece, y, x, boardToSimulate):
+        initalY = piece.getCoordY()
+        initalX = piece.getCoordX()
         boardToSimulate.matrix[y][x] = piece
-        boardToSimulate.matrix[piece.getCoordY()][piece.getCoordX()] = None
+        boardToSimulate.matrix[initalY][initalX] = None
         piece.setCoordY(y)
         piece.setCoordX(x)
 
@@ -193,19 +196,24 @@ class board:
             for i in range(8):
                 for j in range(8):
                     currentPiece = self.matrix[i][j]
-                    if currentPiece is not None and currentPiece.getColor() == king.getColor():
+                    if currentPiece is not None and currentPiece.getColor() == king.getColor() and currentPiece.getName() != 'K':
                         pieces.append(currentPiece)
+                    elif currentPiece is not None and currentPiece.getColor() == king.getColor() and currentPiece.getName() == 'K':
+                        simKing = currentPiece
+                        pieces.append(simKing)
+                    
             for piece in pieces:
                 initialY = piece.getCoordY()
                 initialX = piece.getCoordX()
                 possibleMoves = piece.possibleMoves(self)
                 for move in possibleMoves:
                     simulatedBoard = self.createSimulatedBoard()
-                    simPiece = simulatedBoard.matrix[initialY][initialX]
-                    simulatedBoard.simulateMovePiece(simPiece, move[0], move[1], simulatedBoard)
-                    simKing = simulatedBoard.wk if king.getColor() == 'white' else simulatedBoard.bk
+                    simulatedBoard.consoleDisplay()
+                    simulatedBoard.simulateMovePiece(piece, move[0], move[1], simulatedBoard)
+                    simulatedBoard.consoleDisplay()
                     if not simKing.isChecked(simulatedBoard, checkNext=False):
                         return False
+                    simulatedBoard.simulateMovePiece(piece, initialY, initialX, simulatedBoard)
             return True
         else:
             return False
