@@ -47,7 +47,7 @@ def drawTiltedRect(surface, color, center, height, angleRad, width = 20):
 
 
 def drawKnightArrow(surface, color, arrowStartXY, arrowEndXY, headHeight, width):
-        length =  2 * TILESIZE - headHeight / 2 + width / 2
+        length =  1.5 * TILESIZE + width
         dX = arrowEndXY[0] - arrowStartXY[0]
         dY = arrowEndXY[1] - arrowStartXY[1]
 
@@ -106,10 +106,11 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
         arrowAngle = angle + math.radians(90)
         
         # Drawing the rectangle
-        arrowEndWithHeadXY = (arrowEndXY[0] - headHeight * math.cos(angle), arrowEndXY[1] - headHeight * math.sin(angle)) # We remove some length so it doesn t go on arrow head
+        rectEndXY = (arrowEndXY[0] - headHeight * math.cos(angle), arrowEndXY[1] - headHeight * math.sin(angle))
+        rectStartXY = (arrowStartXY[0] + ((TILESIZE - width) / 2) * math.cos(angle), arrowStartXY[1] + ((TILESIZE - width) / 2) * math.sin(angle))
         
-        center = ((arrowStartXY[0] + arrowEndXY[0]) / 2, (arrowStartXY[1] + arrowEndXY[1]) / 2) # head is part of the arrow
-        length = ((arrowStartXY[0] - arrowEndWithHeadXY[0]) ** 2 + (arrowStartXY[1] - arrowEndWithHeadXY[1]) ** 2) ** (1/2)
+        length = ((rectEndXY[0] - rectStartXY[0]) ** 2 +(rectEndXY[1] - rectStartXY[1]) ** 2) ** (1/2)
+        center = ((rectEndXY[0] + rectStartXY[0]) / 2, (rectEndXY[1] + rectStartXY[1]) / 2)
 
         drawTiltedRect(surface, color, center, length, arrowAngle, width)
 
