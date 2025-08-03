@@ -87,13 +87,7 @@ class board:
                     result += '+,'
                 
         if self.matrix[y][x]:
-            if self.nextMoveGivesCheck(piece, y, x):
-                if self.checkMate(king):
-                    result += '#,'
-                else:
-                    result += '+,'
-            else:
-                result += 'x,'
+            result += 'x,'
 
         elif piece.name == 'K':
             if (piece.getCoordX() - x) ** 2 > 1:
@@ -104,6 +98,7 @@ class board:
 
         elif piece.name == '':
             if piece.getCoordY() == 0:
+                print('Pawn promotion')
                 result += '=,'
             elif (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
                 result += 'e.p,'
@@ -182,7 +177,7 @@ class board:
 
     def movePiece(self, piece, y, x):
 
-        target = self.matrix[y][x]
+        actList = self.getActTypes(piece, y, x)
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
@@ -199,8 +194,7 @@ class board:
             print(opponentKing.getColor(), "lost")
 
         self.switchTurn()
-
-        actList = self.getActTypes(piece, y, x)
+        
         self.playSound(actList.split(','))
         
 
@@ -216,7 +210,7 @@ class board:
         elif newPieceName == 'rook':
             self.matrix[coordY][coordX] = pieces.rook(coordY, coordX, color)
         elif newPieceName == 'bishop':
-            self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)  
+            self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
 
 
     def initClock(self):

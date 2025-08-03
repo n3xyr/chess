@@ -272,7 +272,7 @@ def displayAvailableMoves(availableMoves, selectedTile):
             display_assistant.drawPossibleTile(GAME, move)
             
 
-def tryPromotion(promotingPawn):
+def tryDrawPromotionMenu(promotingPawn):
     promoIconRects.clear()
     if promotingPawn is not None and promotingPawn.name == '' and promotingPawn.isAbleToPromote():
         pygame.draw.rect(GAME, WHITE, promoBackground)
@@ -295,6 +295,7 @@ def main():
     rightClickDown = False
     arrows = []
     promotingPawn = None
+    lastPromotion = None
 
     while run:
         clock.tick(60)  # 60 FPS cap
@@ -317,7 +318,7 @@ def main():
             timer = board.displayedBoard.getClock(initialTime)
             displayTime(timer)
 
-        tryPromotion(promotingPawn)
+        tryDrawPromotionMenu(promotingPawn)
 
         events = pygame.event.get()
         for event in events:
@@ -357,16 +358,6 @@ def main():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 mouseX, mouseY = pygame.mouse.get_pos()
                 arrows = []
-
-                if promoIconRects:  # if a pawn is promoting
-                    for rect, pieceName in promoIconRects:
-                        if rect.collidepoint((mouseX, mouseY)):
-                            board.displayedBoard.promote(promotingPawn, pieceName)
-                            promoIconRects.clear()
-                            promotingPawn = None
-                            availableMoves = []
-                            break
-                    continue  # don't do anything if something else than a promotion is clicked
                     
 
                 if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
@@ -378,8 +369,19 @@ def main():
                     
                     availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
 
+                if promoIconRects:  # if a pawn is promoting
+                    for rect, pieceName in promoIconRects:
+                        if rect.collidepoint((mouseX, mouseY)):
+                            board.displayedBoard.promote(promotingPawn, pieceName)
+                            promoIconRects.clear()
+                            promotingPawn = None
+                            availableMoves = []
+                            break
+                    continue  # don't do anything if something else than a promotion is clicked
+                if lastSelectedTile:
                     board.displayedBoard.addMoveToHistoric(moveList, lastSelectedTile, mouseYTab, mouseXTab)
-                    print(moveList)
+
+                print(moveList)
 
         pygame_widgets.update(events)
         pygame.display.update()
