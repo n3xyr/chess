@@ -222,6 +222,8 @@ class board:
                     simulatedBoard = self.createSimulatedBoard()
                     simulatedBoard.simulateMovePiece(piece, move[0], move[1], simulatedBoard)
                     if not simKing.isChecked(simulatedBoard, checkNext=False):
+                        simulatedBoard = self.createSimulatedBoard()
+                        simulatedBoard.simulateMovePiece(piece, initialY, initialX, simulatedBoard)
                         return False
                     piece.setCoordY(initialY)
                     piece.setCoordX(initialX)
