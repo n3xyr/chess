@@ -180,13 +180,17 @@ class board:
         piece.setCoordX(x)
 
     def nextMoveIsCheck(self, king, piece, y, x):
+        # if piece.name.lower() == 'k':
+        #     print('Verifies nextMoveIsCheck on: ', (y, x))
         simulatedBoard = self.createSimulatedBoard()
         simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
         simulatedBoard.simulateMovePiece(simPiece, y, x, simulatedBoard)
+
         if king.getColor() == 'white':
             simKing = simulatedBoard.wk
         else:
             simKing = simulatedBoard.bk
+
         return simKing.isChecked(simulatedBoard, checkNext=False)
 
     def checkMate(self, king):

@@ -677,15 +677,12 @@ class king:
         if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7): 
             if checkNext:
                 if board.nextMoveIsCheck(king, self, y, x):
+                    print('King would be in check at: ', (y, x))
                     return False
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
                 return True
             
-            else:
-                return False
-        
-        else:
-            return False
+        return False
         
     def possibleMoves(self, board):
         """
