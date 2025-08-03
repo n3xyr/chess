@@ -64,13 +64,13 @@ class pawn:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         moves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2*direction, coordX)]
+
+        if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
+            return False
         
         if checkNext:
             if board.nextMoveIsCheck(king, self, y, x):
                 return False
-
-        if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
-            return False
         
         if board.matrix[y][x]:
             if board.matrix[y][x].getColor() == self.getColor():
@@ -677,7 +677,7 @@ class king:
         if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7): 
             if checkNext:
                 if board.nextMoveIsCheck(king, self, y, x):
-                    print('King would be in check at: ', (y, x))
+                    # print('King would be in check at: ', (y, x))
                     return False
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
                 return True
