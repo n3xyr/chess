@@ -101,7 +101,6 @@ class board:
             opponentKing = self.wk
 
         isCheckemated = self.checkMate(opponentKing)
-        print('is', opponentKing.getColor(), 'getting checkmated ?', isCheckemated)
         if isCheckemated:
             print(opponentKing.getColor(), "lost")
 
@@ -208,9 +207,7 @@ class board:
                 possibleMoves = piece.possibleMoves(self)
                 for move in possibleMoves:
                     simulatedBoard = self.createSimulatedBoard()
-                    simulatedBoard.consoleDisplay()
                     simulatedBoard.simulateMovePiece(piece, move[0], move[1], simulatedBoard)
-                    simulatedBoard.consoleDisplay()
                     if not simKing.isChecked(simulatedBoard, checkNext=False):
                         return False
                     simulatedBoard.simulateMovePiece(piece, initialY, initialX, simulatedBoard)
