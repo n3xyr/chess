@@ -172,12 +172,15 @@ class board:
         return simulatedBoard
 
     def simulateMovePiece(self, piece, y, x, boardToSimulate):
-        initalY = piece.getCoordY()
-        initalX = piece.getCoordX()
-        boardToSimulate.matrix[y][x] = piece
-        boardToSimulate.matrix[initalY][initalX] = None
-        piece.setCoordY(y)
-        piece.setCoordX(x)
+        if piece is None:
+            return
+        else:
+            initalY = piece.getCoordY()
+            initalX = piece.getCoordX()
+            boardToSimulate.matrix[y][x] = piece
+            boardToSimulate.matrix[initalY][initalX] = None
+            piece.setCoordY(y)
+            piece.setCoordX(x)
 
     def nextMoveIsCheck(self, king, piece, y, x):
         # if piece.name.lower() == 'k':
