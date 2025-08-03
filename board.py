@@ -72,51 +72,95 @@ class board:
             return self.bk
 
 
-    def getActType(self, piece, y, x):
+    def getActTypes(self, piece, y, x):
+        result = ''
 
-        if self.matrix[y][x]:
+        if piece.getColor() == 'white':
+            king = self.wk
+        else:
+            king =  self.bk
 
-            if piece.getColor() == 'white':
-                king = self.wk
-            else:
-                king =  self.bk
-
-            if self.nextMoveIsCheck(king, piece, y, x):
-                print('This puts the king in check')
+        if self.nextMoveGivesCheck(piece, y, x):
                 if self.checkMate(king):
-                    return '#'
+                    result += '#,'
                 else:
-                    return '+'
+                    result += '+,'
+                
+        if self.matrix[y][x]:
+            if self.nextMoveGivesCheck(piece, y, x):
+                if self.checkMate(king):
+                    result += '#,'
+                else:
+                    result += '+,'
             else:
-                return 'x'
+                result += 'x,'
+
         elif piece.name == 'K':
             if (piece.getCoordX() - x) ** 2 > 1:
                 if piece.getCoordX() - x > 0:
-                    return 'O-O-O'
+                    result += 'O-O-O,'
                 else:
-                    return 'O-O'
-        elif piece.name == 'P':
+                    result += 'O-O,'
+
+        elif piece.name == '':
             if piece.getCoordY() == 0:
-                return '='
+                result += '=,'
             elif (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
-                return 'e.p'
-        return ''
+                result += 'e.p,'
+
+        return result
+
+
+    def addMoveToHistoric(self, moveList, piece, y, x):
+        actList = self.getActTypes(piece, y, x).split(',')
+        resultMove = piece.name
+
+
+        if resultMove == '' and 'x' in actList:
+            resultMove += chr(97 + piece.getCoordX())
+        for i in range(len(self.matrix)):
+            for j in range(len(self.matrix)):
+                matrixPiece = self.matrix[i][j]
+                if matrixPiece:
+                    if matrixPiece.name == piece.name:
+                        if matrixPiece.canMove(y, x, self):
+                            if matrixPiece.getCoordX() != piece.getCoordX():
+                                resultMove += chr(97 + piece.getCoordX())
+                            elif matrixPiece.getCoordY() != piece.getCoordY():
+                                resultMove += str(8 - piece.getCoordY())
+
+
+        if 'x' in actList:
+            resultMove += 'x'
+        
+        resultMove += chr(97 + x) + str(8 - y)
+
+        if '=' in actList:
+            resultMove += '=' + piece.name
+
+        if 'O-O-O' in actList:
+            resultMove = 'O-O-O' + resultMove
+        elif 'O-O' in actList:
+            resultMove = 'O-O' + resultMove
+        
+        if '+' in actList:
+            resultMove += '+'
+        elif '#' in actList:
+            resultMove += '#'
+
+        moveList.append(resultMove)
 
 
     def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn):
         if selectedTile:
             if selectedTile.canMove(mouseYTab, mouseXTab, self) and selectedTile.getColor() == self.turn:
-                moveList.append(
-                    selectedTile.getName() + self.getActType(selectedTile, mouseYTab, mouseXTab) + chr(97 + mouseXTab) + str(8 - mouseYTab)
-                )
 
                 self.movePiece(selectedTile, mouseYTab, mouseXTab)
-                print(moveList)
 
                 if self.matrix[mouseYTab][mouseXTab] is not None:
                     movedPiece = self.matrix[mouseYTab][mouseXTab]
 
-                if movedPiece.name == 'P' and movedPiece.isAbleToPromote():
+                if movedPiece.name == '' and movedPiece.isAbleToPromote():
                     promotingPawn = movedPiece
 
                 selectedTile = None
@@ -127,6 +171,13 @@ class board:
                 return clickedTile, promotingPawn
 
         return clickedTile, promotingPawn
+
+    
+    def playSound(self, act):
+        if 'x' in act:
+            eatSound.play()
+        else:
+            moveSound.play()
 
 
     def movePiece(self, piece, y, x):
@@ -143,15 +194,14 @@ class board:
             opponentKing =  self.bk
 
         isCheckemated = self.checkMate(opponentKing)
+
         if isCheckemated:
             print(opponentKing.getColor(), "lost")
 
         self.switchTurn()
 
-        if target != None:
-            if target.getColor() != piece.getColor():
-                eatSound.play()
-        moveSound.play()
+        actList = self.getActTypes(piece, y, x)
+        self.playSound(actList.split(','))
         
 
     def promote(self, piece, newPieceName):
@@ -216,22 +266,33 @@ class board:
         return simulatedBoard
 
 
-    def simulateMovePiece(self, piece, y, x, boardToSimulate):
-        if piece is None:
-            return
-        else:
+    def simulateMovePiece(self, piece, y, x):
+        if piece:
             initalY = piece.getCoordY()
             initalX = piece.getCoordX()
-            boardToSimulate.matrix[y][x] = piece
-            boardToSimulate.matrix[initalY][initalX] = None
+            self.matrix[y][x] = piece
+            self.matrix[initalY][initalX] = None
             piece.setCoordY(y)
             piece.setCoordX(x)
 
 
-    def nextMoveIsCheck(self, king, piece, y, x):
+    def nextMoveGivesCheck(self, piece, y, x):
+            simulatedBoard = self.createSimulatedBoard()
+            simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
+            simulatedBoard.simulateMovePiece(simPiece, y, x)
+
+            if piece.getColor() == 'white':
+                simKing = simulatedBoard.bk
+            else:
+                simKing =  simulatedBoard.wk
+
+            return simKing.isChecked(simulatedBoard, checkNext=False)
+
+
+    def nextMoveIsCheck(self, piece, y, x):
         simulatedBoard = self.createSimulatedBoard()
         simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
-        simulatedBoard.simulateMovePiece(simPiece, y, x, simulatedBoard)
+        simulatedBoard.simulateMovePiece(simPiece, y, x)
 
         if piece.getColor() == 'white':
             simKing = simulatedBoard.wk
@@ -264,7 +325,7 @@ class board:
                 possibleMoves = piece.possibleMoves(self)
                 for move in possibleMoves:
                     simulatedBoard = self.createSimulatedBoard()
-                    simulatedBoard.simulateMovePiece(piece, move[0], move[1], simulatedBoard)
+                    simulatedBoard.simulateMovePiece(piece, move[0], move[1])
                     if not simKing.isChecked(simulatedBoard, checkNext=False):
                         return False
                     piece.setCoordY(initialY)

@@ -217,7 +217,7 @@ def drawBoard(game):
                         game.blit(bn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black knight
                     if currentLoadingPiece.name == 'R':
                         game.blit(br, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black rook
-                    if currentLoadingPiece.name == 'P':
+                    if currentLoadingPiece.name == '':
                         game.blit(bp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black pawn
                     if currentLoadingPiece.name == 'B':
                         game.blit(bb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black bishop
@@ -230,7 +230,7 @@ def drawBoard(game):
                         game.blit(wn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white knight
                     if currentLoadingPiece.name == 'R':
                         game.blit(wr, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white rook
-                    if currentLoadingPiece.name == 'P':
+                    if currentLoadingPiece.name == '':
                         game.blit(wp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white pawn
                     if currentLoadingPiece.name == 'B':
                         game.blit(wb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white bishop
@@ -274,7 +274,7 @@ def displayAvailableMoves(availableMoves, selectedTile):
 
 def tryPromotion(promotingPawn):
     promoIconRects.clear()
-    if promotingPawn is not None and promotingPawn.name == 'P' and promotingPawn.isAbleToPromote():
+    if promotingPawn is not None and promotingPawn.name == '' and promotingPawn.isAbleToPromote():
         pygame.draw.rect(GAME, WHITE, promoBackground)
         for idx, img in enumerate(promoOrder[promotingPawn.getColor()]):
             img = pygame.transform.scale(img, (promoImageSize, promoImageSize))
@@ -367,15 +367,19 @@ def main():
                             availableMoves = []
                             break
                     continue  # don't do anything if something else than a promotion is clicked
+                    
 
                 if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
                     mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
                     mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
                     clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
-
+                    lastSelectedTile = selectedTile
                     selectedTile, promotingPawn = board.displayedBoard.manageMove(selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn)
                     
                     availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
+
+                    board.displayedBoard.addMoveToHistoric(moveList, lastSelectedTile, mouseYTab, mouseXTab)
+                    print(moveList)
 
         pygame_widgets.update(events)
         pygame.display.update()
