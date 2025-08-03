@@ -82,6 +82,7 @@ class board:
                 king =  self.bk
 
             if self.nextMoveIsCheck(king, piece, y, x):
+                print('This puts the king in check')
                 if self.checkMate(king):
                     return '#'
                 else:
@@ -245,7 +246,8 @@ class board:
             pieces = []
             
             simulatedBoard = self.createSimulatedBoard()
-            if piece.getColor() == 'white':
+
+            if king.getColor() == 'white':
                 simKing = self.wk
             else:
                 simKing =  self.bk
@@ -264,8 +266,6 @@ class board:
                     simulatedBoard = self.createSimulatedBoard()
                     simulatedBoard.simulateMovePiece(piece, move[0], move[1], simulatedBoard)
                     if not simKing.isChecked(simulatedBoard, checkNext=False):
-                        simulatedBoard = self.createSimulatedBoard()
-                        simulatedBoard.simulateMovePiece(piece, initialY, initialX, simulatedBoard)
                         return False
                     piece.setCoordY(initialY)
                     piece.setCoordX(initialX)
