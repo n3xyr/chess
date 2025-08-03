@@ -167,8 +167,11 @@ class board:
                     simulatedBoard.matrix[i][j] = simulatedPiece
                     simulatedPiece.setCoordY(i)
                     simulatedPiece.setCoordX(j)
-        simulatedBoard.wk = copy.deepcopy(self.wk)
-        simulatedBoard.bk = copy.deepcopy(self.bk)
+                    if simulatedPiece.name == 'K':
+                        if simulatedPiece.getColor() == 'white':
+                            simulatedBoard.wk = simulatedPiece
+                        else:
+                            simulatedBoard.bk = simulatedPiece
         return simulatedBoard
 
     def simulateMovePiece(self, piece, y, x, boardToSimulate):
@@ -182,9 +185,8 @@ class board:
             piece.setCoordY(y)
             piece.setCoordX(x)
 
+
     def nextMoveIsCheck(self, king, piece, y, x):
-        # if piece.name.lower() == 'k':
-        #     print('Verifies nextMoveIsCheck on: ', (y, x))
         simulatedBoard = self.createSimulatedBoard()
         simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
         simulatedBoard.simulateMovePiece(simPiece, y, x, simulatedBoard)
