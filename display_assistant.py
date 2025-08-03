@@ -64,7 +64,7 @@ def drawKnightArrow(surface, color, arrowStartXY, arrowEndXY, headHeight, width)
 
             # Second rectangle
             length = TILESIZE - headHeight + width / 2
-            center = (arrowEndXY[0] - ((TILESIZE + width / 2) / 2) * (dX / abs(dX)), arrowEndXY[1])
+            center = (arrowEndXY[0] - ((TILESIZE + width / 2 + headHeight) / 2) * (dX / abs(dX)), arrowEndXY[1])
             angle = angleX
             drawTiltedRect(surface, color, center, length, angle, width)
 
@@ -79,7 +79,7 @@ def drawKnightArrow(surface, color, arrowStartXY, arrowEndXY, headHeight, width)
 
             # Second rectangle
             length = TILESIZE - headHeight + width / 2
-            center = (arrowEndXY[0], arrowEndXY[1] - ((TILESIZE + width / 2) / 2) * (dY / abs(dY)))
+            center = (arrowEndXY[0], arrowEndXY[1] - ((TILESIZE + width / 2 + headHeight) / 2) * (dY / abs(dY)))
             angle = angleY
             drawTiltedRect(surface, color, center, length, angle, width)
 
@@ -87,7 +87,7 @@ def drawKnightArrow(surface, color, arrowStartXY, arrowEndXY, headHeight, width)
             return angle + math.radians(90)
 
 
-def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30):
+def drawArrow(surface, color, start, end, width = 20, headLength=50, headAngle=30):
 
     headHeight = abs(headLength * math.cos(headAngle/2))
 
@@ -108,7 +108,7 @@ def drawArrow(surface, color, start, end, width=20, headLength=40, headAngle=30)
         # Drawing the rectangle
         rectEndXY = (arrowEndXY[0] - headHeight * math.cos(angle), arrowEndXY[1] - headHeight * math.sin(angle))
         rectStartXY = (arrowStartXY[0] + ((TILESIZE - width) / 2) * math.cos(angle), arrowStartXY[1] + ((TILESIZE - width) / 2) * math.sin(angle))
-        
+
         length = ((rectEndXY[0] - rectStartXY[0]) ** 2 +(rectEndXY[1] - rectStartXY[1]) ** 2) ** (1/2)
         center = ((rectEndXY[0] + rectStartXY[0]) / 2, (rectEndXY[1] + rectStartXY[1]) / 2)
 
