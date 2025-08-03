@@ -105,7 +105,6 @@ class board:
     def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn):
         if selectedTile:
             if selectedTile.canMove(mouseYTab, mouseXTab, self) and selectedTile.getColor() == self.turn:
-                print(self.getActType(selectedTile, mouseYTab, mouseXTab))
                 moveList.append(
                     selectedTile.getName() + self.getActType(selectedTile, mouseYTab, mouseXTab) + chr(97 + mouseXTab) + str(8 - mouseYTab)
                 )
