@@ -49,7 +49,7 @@ class pawn:
         return False
 
 
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -64,24 +64,28 @@ class pawn:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         moves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2*direction, coordX)]
-        
+
         if not ((y, x) in moves) or (x < 0) or (x > 7) or (y < 0) or (y > 7):
             return False
         
-        if board.matrix[y][x] != None:
+        if checkNext:
+            if board.nextMoveIsCheck(king, self, y, x):
+                return False
+        
+        if board.matrix[y][x]:
             if board.matrix[y][x].getColor() == self.getColor():
                 return False
-
-        if board.matrix[y][x] is None:
+        
+            elif (y, x) in moves[:2]:
+                return True
+        
+        else:
             if (y, x) == moves[2]:    # Goes forwards by one
                 return True
             
             elif (y, x) == moves[3] and self.isFirstMove() and board.matrix[coordY + direction][coordX] is None:   # Goes forward by two
                 return True
             return False
-        
-        elif (y, x) in moves[:2]:
-            return True
         
         return False
           
@@ -98,7 +102,6 @@ class pawn:
             direction = -1
         
         pieceMoves = [(coordY + direction, coordX + 1), (coordY + direction, coordX - 1), (coordY + direction, coordX), (coordY + 2 * direction, coordX)]
-
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
     
 
@@ -155,7 +158,7 @@ class knight:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -167,12 +170,16 @@ class knight:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
-        moves = [(coordX + 1, coordY + 2), (coordX - 1, coordY + 2), (coordX + 2, coordY + 1), (coordX + 2, coordY - 1), (coordX - 2, coordY + 1), (coordX - 2, coordY - 1), (coordX + 1, coordY - 2), (coordX - 1, coordY - 2)]
-        
-        if (x, y) in moves and 0 <= x <= 7 and 0 <= y <= 7:
+        moves = [(coordY + 2, coordX + 1), (coordY + 2, coordX - 1), (coordY + 1, coordX + 2), (coordY - 1, coordX + 2), (coordY + 1, coordX - 2), (coordY - 1, coordX - 2), (coordY - 2, coordX + 1), (coordY - 2, coordX - 1)]
+
+        if (y, x) in moves and 0 <= x <= 7 and 0 <= y <= 7:
+            if checkNext:
+                if board.nextMoveIsCheck(king, self, y, x):
+                    return False
+                
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
                 return True
-            
+                        
         return False
 
     def possibleMoves(self, board):
@@ -183,7 +190,6 @@ class knight:
         coordY = self.getCoordY()
 
         pieceMoves = [(coordY + 2, coordX + 1), (coordY + 2, coordX - 1), (coordY + 1, coordX + 2), (coordY - 1, coordX + 2), (coordY + 1, coordX - 2), (coordY - 1, coordX - 2), (coordY - 2, coordX + 1), (coordY - 2, coordX - 1)]
-        
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
 
@@ -225,7 +231,7 @@ class rook:
     def setCoordY(self, y):
         self.__coordinateY = y
     
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -237,7 +243,11 @@ class rook:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
-
+        
+        if checkNext:
+            if board.nextMoveIsCheck(king, self, y, x):
+                return False
+        
         if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
             if x == coordX and (y != coordY and (y <= 7 and y >= 0)):
                 directionY = int((y - coordY)/abs(y - coordY))  # Y vector
@@ -354,7 +364,7 @@ class bishop:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -365,6 +375,10 @@ class bishop:
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
+        
+        if checkNext:
+            if board.nextMoveIsCheck(king, self, y, x):
+                return False
         
         if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2 or (x == coordX and y == coordY):  #if it isn't in the board or if it doesn't move in a diagonal
             return False
@@ -468,7 +482,7 @@ class queen:
     def setCoordY(self, y):
         self.__coordinateY = y
         
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -479,6 +493,10 @@ class queen:
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
+                
+        if checkNext:
+            if board.nextMoveIsCheck(king, self, y, x):
+                return False
         
         if x < 0 or x > 7 or y < 0 or y > 7:  #if it isn't in the board or if it doesn't move in a diagonal nor in a straight line
             return False
@@ -608,7 +626,6 @@ class king:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.checked = False
         self.name  = 'K'
         self.value = 0
 
@@ -642,7 +659,7 @@ class king:
     def setCoordY(self, y):
         self.__coordinateY = y
 
-    def canMove(self, y, x, board):
+    def canMove(self, y, x, board, checkNext = True):
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
@@ -650,21 +667,20 @@ class king:
             king = board.bk
         else:
             king = board.wk
-            
+
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
         moves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
-        
-        if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
+            
+        if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7): 
+            if checkNext:
+                if board.nextMoveIsCheck(king, self, y, x):
+                    return False
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
                 return True
             
-            else:
-                return False
-        
-        else:
-            return False
+        return False
         
     def possibleMoves(self, board):
         """
@@ -677,11 +693,14 @@ class king:
         
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
-    def isChecked(self, board):
+    def isChecked(self, board, checkNext = True):
         """
         Returns True if the king is in check, False otherwise.
         """
-        for piece in board:
-            if not(piece is None):
-                if piece.canMove((self.getCoordY(), self.getCoordX()), board):
-                    return True
+        for i in range(8):
+            for j in range(8):
+                piece = board.matrix[i][j]
+                if piece is not None and piece.getColor() != self.getColor():
+                    if piece.canMove(self.getCoordY(), self.getCoordX(), board, checkNext):
+                        return True
+        return False

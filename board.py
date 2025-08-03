@@ -1,6 +1,7 @@
 import pieces
 import pygame
 import time
+import copy
 
 pygame.mixer.init()
 moveSound = pygame.mixer.Sound('soundEffects/moveSound.wav')
@@ -64,6 +65,27 @@ class board:
         return []
 
 
+    def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn):
+        if selectedTile:
+            if selectedTile.canMove(mouseYTab, mouseXTab, self) and selectedTile.getColor() == self.turn:
+                act = self.movePiece(selectedTile, mouseYTab, mouseXTab)
+                if self.matrix[mouseYTab][mouseXTab] is not None:
+                    movedPiece = self.matrix[mouseYTab][mouseXTab]
+
+                if movedPiece.name == 'P' and movedPiece.isAbleToPromote():
+                    promotingPawn = movedPiece
+                selectedTile = None
+                moveList.append(
+                    movedPiece.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab)
+                )
+                return selectedTile, promotingPawn
+
+            elif clickedTile:
+                return clickedTile, promotingPawn
+
+        return clickedTile, promotingPawn
+
+
     def movePiece(self, piece, y, x):
 
         target = self.matrix[y][x]
@@ -74,12 +96,13 @@ class board:
         piece.setCoordX(x)
 
         if self.turn == 'white':
-            oponentKing = self.bk
+            opponentKing = self.bk
         else:
-            oponentKing = self.wk
+            opponentKing = self.wk
 
-        # if self.isChecking(piece, oponentKing):
-        #     oponentKing.checked = True
+        isCheckemated = self.checkMate(opponentKing)
+        if isCheckemated:
+            print(opponentKing.getColor(), "lost")
 
         self.switchTurn()
 
@@ -89,12 +112,7 @@ class board:
                 return 'x'
         moveSound.play()
         return ''
-    
-    
-    # def isChecking(self, pieceChecking, pieceChecked):
-    #     return pieceChecking.canMove((pieceChecked.getCoordY(), pieceChecked.getCoordX()), self)
-
-
+        
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
         coordY = piece.getCoordY()
@@ -120,7 +138,13 @@ class board:
         currentTime = time.time()
         return int(currentTime - initialTime)
     
+
     def generateIsCheckingPiecesList(self):
+        '''
+        Returns a list of pieces that can move to the king's position.
+        whiteList -> white pieces that can move to the black king's position
+        blackList -> black pieces that can move to the white king's position
+        '''
         whiteList = []
         blackList = []
         for i in range(8):
@@ -131,7 +155,91 @@ class board:
                     elif self.matrix[i][j].canMove(self.bk.getCoordY(), self.bk.getCoordX(), self):
                         whiteList.append(self.matrix[i][j])
         return whiteList, blackList
+
+    def createSimulatedBoard(self):
+        simulatedBoard = board()
+        for i in range(8):
+            for j in range(8):
+                piece = self.matrix[i][j]
+                if piece is not None:
+                    simulatedPiece = copy.deepcopy(piece)
+                    simulatedBoard.matrix[i][j] = simulatedPiece
+                    simulatedPiece.setCoordY(i)
+                    simulatedPiece.setCoordX(j)
+                    if simulatedPiece.name == 'K':
+                        if simulatedPiece.getColor() == 'white':
+                            simulatedBoard.wk = simulatedPiece
+                        else:
+                            simulatedBoard.bk = simulatedPiece
+        return simulatedBoard
+
+    def simulateMovePiece(self, piece, y, x, boardToSimulate):
+        if piece is None:
+            return
+        else:
+            initalY = piece.getCoordY()
+            initalX = piece.getCoordX()
+            boardToSimulate.matrix[y][x] = piece
+            boardToSimulate.matrix[initalY][initalX] = None
+            piece.setCoordY(y)
+            piece.setCoordX(x)
+
+
+    def nextMoveIsCheck(self, king, piece, y, x):
+        simulatedBoard = self.createSimulatedBoard()
+        simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
+        simulatedBoard.simulateMovePiece(simPiece, y, x, simulatedBoard)
+
+        if king.getColor() == 'white':
+            simKing = simulatedBoard.wk
+        else:
+            simKing = simulatedBoard.bk
+
+        return simKing.isChecked(simulatedBoard, checkNext=False)
+
+    def checkMate(self, king):
+        if king.isChecked(self):
+            pieces = []
+            
+            simulatedBoard = self.createSimulatedBoard()
+
+            if king.getColor() == 'white':
+                simKing = simulatedBoard.wk
+            else:
+                simKing = simulatedBoard.bk   
+
+            for i in range(8):
+                for j in range(8):
+                    currentPiece = simulatedBoard.matrix[i][j]
+                    if currentPiece is not None and currentPiece.getColor() == simKing.getColor():
+                        pieces.append(currentPiece)
+            
+            for piece in pieces:
+                initialY = piece.getCoordY()
+                initialX = piece.getCoordX()
+                possibleMoves = piece.possibleMoves(self)
+                for move in possibleMoves:
+                    simulatedBoard = self.createSimulatedBoard()
+                    simulatedBoard.simulateMovePiece(piece, move[0], move[1], simulatedBoard)
+                    if not simKing.isChecked(simulatedBoard, checkNext=False):
+                        simulatedBoard = self.createSimulatedBoard()
+                        simulatedBoard.simulateMovePiece(piece, initialY, initialX, simulatedBoard)
+                        return False
+                    piece.setCoordY(initialY)
+                    piece.setCoordX(initialX)
+            return True
+        else:
+            return False
     
+    def consoleDisplay(self):
+        for i in range(len(self.matrix)):
+            for j in range(len(self.matrix[i])):
+                if self.matrix[i][j] is not None:
+                    print(self.matrix[i][j].name.lower(), ' ', end='')
+                else:
+                    print('   ', end='')
+            print('')
 
 displayedBoard = board()
 displayedBoard.fillBoard()
+simulatedBoard = board()
