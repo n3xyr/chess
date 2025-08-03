@@ -97,7 +97,7 @@ class board:
         elif piece.name == 'P':
             if piece.getCoordY() == 0:
                 return '='
-            elif (piece.getCoordY() - y) ** 2 > 1:
+            elif (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
                 return 'e.p'
         return ''
 
@@ -110,6 +110,7 @@ class board:
                 )
 
                 self.movePiece(selectedTile, mouseYTab, mouseXTab)
+                print(moveList)
 
                 if self.matrix[mouseYTab][mouseXTab] is not None:
                     movedPiece = self.matrix[mouseYTab][mouseXTab]
