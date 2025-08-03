@@ -53,10 +53,10 @@ class pawn:
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
+
         if self.getColor() == 'black':
             direction = 1
-            king = board.bk
-        
+            king =  board.bk
         else:
             direction = -1
             king = board.wk
@@ -162,10 +162,10 @@ class knight:
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
-        if self.getColor() == 'black':
-            king = board.bk
-        else:
+        if self.getColor() == 'white':
             king = board.wk
+        else:
+            king =  board.bk
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
@@ -235,10 +235,10 @@ class rook:
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
-        if self.getColor() == 'black':
-            king = board.bk
-        else:
+        if self.getColor() == 'white':
             king = board.wk
+        else:
+            king =  board.bk
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
@@ -272,10 +272,10 @@ class rook:
         """
         returns a list of coordinates corresponding to the available moves
         """
-        if self.getColor() == 'black':
-            king = board.bk
-        else:
+        if self.getColor() == 'white':
             king = board.wk
+        else:
+            king =  board.bk
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
@@ -291,10 +291,10 @@ class rook:
         """
         return a list of tiles between the rook and the opposit king if it puts the king in check
         """
-        if self.getColor() == 'black':
-            king = board.bk
-        else:
+        if self.getColor() == 'white':
             king = board.wk
+        else:
+            king =  board.bk
 
         kX = king.getCoordX()
         kY = king.getCoordY()
@@ -368,10 +368,10 @@ class bishop:
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
-        if self.getColor() == 'black':
-            king = board.bk
-        else:
+        if self.getColor() == 'white':
             king = board.wk
+        else:
+            king =  board.bk
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
@@ -417,10 +417,10 @@ class bishop:
         """
         return a list of tiles between the bishop and the opposit king if it puts the king in check
         """
-        if self.getColor() == 'black':
-            king = board.bk
-        else:
+        if self.getColor() == 'white':
             king = board.wk
+        else:
+            king =  board.bk
 
         kX = king.getCoordX()
         kY = king.getCoordY()
@@ -486,10 +486,10 @@ class queen:
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
-        if self.getColor() == 'black':
-            king = board.bk
-        else:
+        if self.getColor() == 'white':
             king = board.wk
+        else:
+            king =  board.bk
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()
@@ -575,10 +575,10 @@ class queen:
         """
         return a list of tiles between the queen and the opposit king if it puts the king in check
         """
-        if self.getColor() == 'black':
-            king = board.bk
-        else:
+        if self.getColor() == 'white':
             king = board.wk
+        else:
+            king =  board.bk
 
         kX = king.getCoordX()
         kY = king.getCoordY()
@@ -663,10 +663,10 @@ class king:
         """
         returns True if the piece can move to the tile(x, y) False otherwise
         """
-        if self.getColor() == 'black':
-            king = board.bk
-        else:
+        if self.getColor() == 'white':
             king = board.wk
+        else:
+            king =  board.bk
 
         coordX = self.getCoordX()
         coordY = self.getCoordY()

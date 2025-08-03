@@ -65,19 +65,61 @@ class board:
         return []
 
 
+    def getKing(self, piece):
+        if piece.getColor() == 'white':
+            return self.wk
+        else:
+            return self.bk
+
+
+    def getActType(self, piece, y, x):
+
+        if self.matrix[y][x]:
+
+            if piece.getColor() == 'white':
+                king = self.wk
+            else:
+                king =  self.bk
+
+            if self.nextMoveIsCheck(king, piece, y, x):
+                if self.checkMate(king):
+                    return '#'
+                else:
+                    return '+'
+            else:
+                return 'x'
+        elif piece.name == 'K':
+            if (piece.getCoordX() - x) ** 2 > 1:
+                if piece.getCoordX() - x > 0:
+                    return 'O-O-O'
+                else:
+                    return 'O-O'
+        elif piece.name == 'P':
+            if piece.getCoordY() == 0:
+                return '='
+            elif (piece.getCoordY() - y) ** 2 > 1:
+                return 'e.p'
+        return ''
+
+
     def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn):
         if selectedTile:
             if selectedTile.canMove(mouseYTab, mouseXTab, self) and selectedTile.getColor() == self.turn:
-                act = self.movePiece(selectedTile, mouseYTab, mouseXTab)
+                print(self.getActType(selectedTile, mouseYTab, mouseXTab))
+                moveList.append(
+                    selectedTile.getName() + self.getActType(selectedTile, mouseYTab, mouseXTab) + chr(97 + mouseXTab) + str(8 - mouseYTab)
+                )
+
+                self.movePiece(selectedTile, mouseYTab, mouseXTab)
+
                 if self.matrix[mouseYTab][mouseXTab] is not None:
                     movedPiece = self.matrix[mouseYTab][mouseXTab]
 
                 if movedPiece.name == 'P' and movedPiece.isAbleToPromote():
                     promotingPawn = movedPiece
+
                 selectedTile = None
-                moveList.append(
-                    movedPiece.getName() + act + chr(97 + mouseXTab) + str(8 - mouseYTab)
-                )
+
                 return selectedTile, promotingPawn
 
             elif clickedTile:
@@ -94,11 +136,10 @@ class board:
 
         piece.setCoordY(y)
         piece.setCoordX(x)
-
-        if self.turn == 'white':
-            opponentKing = self.bk
-        else:
+        if piece.getColor() == 'white':
             opponentKing = self.wk
+        else:
+            opponentKing =  self.bk
 
         isCheckemated = self.checkMate(opponentKing)
         if isCheckemated:
@@ -109,11 +150,9 @@ class board:
         if target != None:
             if target.getColor() != piece.getColor():
                 eatSound.play()
-                return 'x'
         moveSound.play()
-        return ''
         
-        
+
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
         coordY = piece.getCoordY()
@@ -193,10 +232,10 @@ class board:
         simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
         simulatedBoard.simulateMovePiece(simPiece, y, x, simulatedBoard)
 
-        if king.getColor() == 'white':
-            simKing = simulatedBoard.wk
+        if piece.getColor() == 'white':
+            simKing = self.wk
         else:
-            simKing = simulatedBoard.bk
+            simKing =  self.bk
 
         return simKing.isChecked(simulatedBoard, checkNext=False)
     
@@ -206,11 +245,10 @@ class board:
             pieces = []
             
             simulatedBoard = self.createSimulatedBoard()
-
-            if king.getColor() == 'white':
-                simKing = simulatedBoard.wk
+            if piece.getColor() == 'white':
+                simKing = self.wk
             else:
-                simKing = simulatedBoard.bk   
+                simKing =  self.bk
 
             for i in range(8):
                 for j in range(8):
