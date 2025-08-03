@@ -248,9 +248,9 @@ class board:
             simulatedBoard = self.createSimulatedBoard()
 
             if king.getColor() == 'white':
-                simKing = self.wk
+                simKing = simulatedBoard.wk
             else:
-                simKing =  self.bk
+                simKing =  simulatedBoard.bk
 
             for i in range(8):
                 for j in range(8):
