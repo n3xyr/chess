@@ -89,40 +89,38 @@ class board:
         if self.matrix[y][x]:
             result += 'x,'
 
-        elif piece.name == 'K':
+        if piece.name == 'K':
             if (piece.getCoordX() - x) ** 2 > 1:
                 if piece.getCoordX() - x > 0:
                     result += 'O-O-O,'
                 else:
                     result += 'O-O,'
 
-        elif piece.name == '':
-            if piece.getCoordY() == 0:
-                print('Pawn promotion')
+        if piece.name == '':
+            if y in (0, 7):
                 result += '=,'
             elif (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
                 result += 'e.p,'
 
-        return result
+        return result[0:-1]
 
 
-    def addMoveToHistoric(self, moveList, piece, y, x):
-        actList = self.getActTypes(piece, y, x).split(',')
+    def addMoveToHistoric(self, moveList, actList, piece, y, x):
         resultMove = piece.name
-
 
         if resultMove == '' and 'x' in actList:
             resultMove += chr(97 + piece.getCoordX())
-        for i in range(len(self.matrix)):
-            for j in range(len(self.matrix)):
-                matrixPiece = self.matrix[i][j]
-                if matrixPiece:
-                    if matrixPiece.name == piece.name:
-                        if matrixPiece.canMove(y, x, self):
-                            if matrixPiece.getCoordX() != piece.getCoordX():
-                                resultMove += chr(97 + piece.getCoordX())
-                            elif matrixPiece.getCoordY() != piece.getCoordY():
-                                resultMove += str(8 - piece.getCoordY())
+        if piece.name != '':
+            for i in range(len(self.matrix)):
+                for j in range(len(self.matrix)):
+                    matrixPiece = self.matrix[i][j]
+                    if matrixPiece:
+                        if matrixPiece.name == piece.name:
+                            if matrixPiece.canMove(y, x, self):
+                                if matrixPiece.getCoordX() != piece.getCoordX():
+                                    resultMove += chr(97 + piece.getCoordX())
+                                elif matrixPiece.getCoordY() != piece.getCoordY():
+                                    resultMove += str(8 - piece.getCoordY())
 
 
         if 'x' in actList:
@@ -131,7 +129,8 @@ class board:
         resultMove += chr(97 + x) + str(8 - y)
 
         if '=' in actList:
-            resultMove += '=' + piece.name
+            resultMove += '=' + self.matrix[piece.getCoordY()][piece.getCoordX()].name
+            print(resultMove)
 
         if 'O-O-O' in actList:
             resultMove = 'O-O-O' + resultMove
@@ -163,8 +162,8 @@ class board:
 
 
     def movePiece(self, piece, y, x):
-
         actList = self.getActTypes(piece, y, x)
+
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
