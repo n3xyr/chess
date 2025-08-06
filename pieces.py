@@ -3,6 +3,8 @@ class pawn:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectX = 0
         self.name  = ''
         self.value = 1
 
@@ -125,6 +127,8 @@ class knight:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'N'
         self.value = 3
 
@@ -198,6 +202,8 @@ class rook:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'R'
         self.value = 5
 
@@ -331,6 +337,8 @@ class bishop:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'B'
         self.value = 3
 
@@ -449,6 +457,8 @@ class queen:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'Q'
         self.value = 9
 
@@ -626,6 +636,8 @@ class king:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'K'
         self.value = 0
 
