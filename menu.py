@@ -36,7 +36,8 @@ class Button:
     def draw(self, surface):
         mouse_pos = pygame.mouse.get_pos()
         color = DARKGREEN if self.rect.collidepoint(mouse_pos) else GREEN
-        pygame.draw.rect(surface, color, self.rect, border_radius=38)
+        pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
+        pygame.draw.rect(surface, color, (self.rect.x + BORDER_WIDTH, self.rect.y + BORDER_WIDTH, self.rect.width - BORDER_WIDTH * 2, self.rect.height - BORDER_WIDTH * 2), border_radius=int(0.036 * HEIGHT - 2 * BORDER_WIDTH))
         txt_surf = self.font.render(self.text, True, WHITE)
         txt_rect = txt_surf.get_rect(center=self.rect.center)
         surface.blit(txt_surf, txt_rect)
