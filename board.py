@@ -6,6 +6,7 @@ import copy
 pygame.mixer.init()
 moveSound = pygame.mixer.Sound('soundEffects/moveSound.wav')
 eatSound = pygame.mixer.Sound('soundEffects/eatSound.wav')
+castleSound = pygame.mixer.Sound('soundEffects/castleSound.wav')
 
 class board:
     def __init__(self):
@@ -62,6 +63,19 @@ class board:
 
         self.boardHistoric = [copy.deepcopy(self.matrix)]  # Initial historic state
         self.historicIndic = len(self.boardHistoric) - 1
+
+
+    def getPieces(self, color):
+        """
+        Returns a list of pieces of the specified color.
+        """
+        piecesList = []
+        for i in range(8):
+            for j in range(8):
+                piece = self.matrix[i][j]
+                if piece and piece.getColor() == color:
+                    piecesList.append(piece)
+        return piecesList
 
 
     def getAvailableMoves(self, selectedTile):
@@ -163,6 +177,8 @@ class board:
     def playSound(self, act):
         if 'x' in act:
             eatSound.play()
+        elif 'O-O' in act or 'O-O-O' in act:
+            castleSound.play()
         else:
             moveSound.play()
 
@@ -174,14 +190,34 @@ class board:
             self.soundHistoric.append('')
 
 
-    def movePiece(self, piece, y, x):
+    def isCastleMove(self, piece, x):
+        if piece.name == 'K':
+            if (piece.getCoordX() - x) ** 2 > 1:
+                return True
+        return False
+    
+    def isEnPassantMove(self, piece, y, x):
+        if piece.name == '':
+            if y in (0, 7):
+                return False
+            if (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
+                return True
+        return False
+
+    def movePiece(self, piece, y, x, doSound=True):
         actList = self.getActTypes(piece, y, x)
 
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
+        if piece.name == 'K':
+            piece.hasMoved = True
+        if piece.name == 'R':
+            piece.hasMoved = True
+
         piece.setCoordY(y)
         piece.setCoordX(x)
+
 
         if piece.getColor() == 'white':
             opponentKing = self.wk
@@ -193,9 +229,9 @@ class board:
         if isCheckemated:
             print(opponentKing.getColor(), "lost")
 
+        if doSound:
+            self.playSound(actList.split(','))
         self.switchTurn()
-        
-        self.playSound(actList.split(','))
         self.addSoundToHistoric(actList.split(','))
 
 
