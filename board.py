@@ -58,6 +58,7 @@ class board:
         self.wk = pieces.king(7, 4, 'white')
         self.matrix[0][4] = self.bk                                   # black king
         self.matrix[7][4] = self.wk                                   # white king
+        
 
         self.boardHistoric = [copy.deepcopy(self.matrix)]  # Initial historic state
         self.historicIndic = len(self.boardHistoric) - 1

@@ -199,10 +199,7 @@ display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, L
 adjustPromoSize()
 
 
-def drawBoard(game):
-    """
-    Draw board
-    """
+def drawBoard(game, skipPiece=None):
     game.fill(BACKGROUND)
     for row in range(ROWS):
         for col in range(COLS):
@@ -211,34 +208,28 @@ def drawBoard(game):
             else:
                 pygame.draw.rect(game, LIGHT, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
 
+            # Draw tiles
             currentLoadingPiece = board.displayedBoard.matrix[row][col]
-            if currentLoadingPiece != None:
-                if currentLoadingPiece.getColor() == 'black':
-                    if currentLoadingPiece.name == 'N':
-                        game.blit(bn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black knight
-                    if currentLoadingPiece.name == 'R':
-                        game.blit(br, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black rook
-                    if currentLoadingPiece.name == '':
-                        game.blit(bp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black pawn
-                    if currentLoadingPiece.name == 'B':
-                        game.blit(bb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black bishop
-                    if currentLoadingPiece.name == 'Q':
-                        game.blit(bq, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black queen
-                    if currentLoadingPiece.name == 'K':
-                        game.blit(bk, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black king
+            if currentLoadingPiece:
+                if skipPiece:
+                    print((skipPiece.getCoordX(), skipPiece.getCoordY()), (currentLoadingPiece.getCoordX(), currentLoadingPiece.getCoordY()))
+                    if not(skipPiece.getCoordX() == currentLoadingPiece.getCoordX() and skipPiece.getCoordY() == currentLoadingPiece.getCoordY()):
+                        game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
+                    else:
+                        print("Skipping piece at", currentLoadingPiece.getCoordX(), currentLoadingPiece.getCoordY())
                 else:
-                    if currentLoadingPiece.name == 'N':
-                        game.blit(wn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white knight
-                    if currentLoadingPiece.name == 'R':
-                        game.blit(wr, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white rook
-                    if currentLoadingPiece.name == '':
-                        game.blit(wp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white pawn
-                    if currentLoadingPiece.name == 'B':
-                        game.blit(wb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white bishop
-                    if currentLoadingPiece.name == 'Q':
-                        game.blit(wq, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white queen
-                    if currentLoadingPiece.name == 'K':
-                        game.blit(wk, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white king
+                    game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
+
+def setPiecesCoordinates():
+    """
+    Initialize pieces coordinates
+    """
+    for row in range(ROWS):
+        for col in range(COLS):
+            currentLoadingPiece = board.displayedBoard.matrix[row][col]
+            if currentLoadingPiece is not None:
+                currentLoadingPiece.rectX = col * TILESIZE + LEFTMARGIN
+                currentLoadingPiece.rectY = row * TILESIZE + TOPMARGIN
 
 
 def getTileColor(coordinates):
@@ -313,6 +304,58 @@ def tryMoveThroughHistoric(event):
                 board.displayedBoard.playSound('')
 
 
+def getPieceImage(piece):
+    """
+    Get the image of a piece based on its color and name.
+    """
+    if piece.getColor() == 'black':
+        if piece.name == 'N':
+            return bn
+        elif piece.name == 'R':
+            return br
+        elif piece.name == '':
+            return bp
+        elif piece.name == 'B':
+            return bb
+        elif piece.name == 'Q':
+            return bq
+        elif piece.name == 'K':
+            return bk
+    else:
+        if piece.name == 'N':
+            return wn
+        elif piece.name == 'R':
+            return wr
+        elif piece.name == '':
+            return wp
+        elif piece.name == 'B':
+            return wb
+        elif piece.name == 'Q':
+            return wq
+        elif piece.name == 'K':
+            return wk
+    return None
+
+
+def slidePieceToTile(piece, targetTile):
+    """
+    Slide a piece to a target tile.
+    """
+    startX, startY = piece.getCoordX() * TILESIZE + LEFTMARGIN, piece.getCoordY() * TILESIZE + TOPMARGIN
+    targetX, targetY = targetTile[0] * TILESIZE + LEFTMARGIN, targetTile[1] * TILESIZE + TOPMARGIN
+    deltaX, deltaY = targetX - startX, targetY - startY
+
+    steps = 12  # Number of steps for the sliding animation
+    for step in range(steps):
+        piece.rectX += deltaX / steps
+        piece.rectY += deltaY / steps
+        drawBoard(GAME, skipPiece=piece)
+        GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
+        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+        pygame.display.flip()
+        pygame.time.delay(4)  # Delay for animation effect
+
+
 def main():
     clock = pygame.time.Clock()
     run = True
@@ -325,6 +368,7 @@ def main():
     promotingPawn = None
     movingPiece = False
     canPlay = True
+    setPiecesCoordinates()
 
     while run:
         clock.tick(60)  # 60 FPS cap
@@ -335,6 +379,7 @@ def main():
             canPlay = True
 
         drawBoard(GAME)
+
         displayAvailableMoves(availableMoves, selectedTile)
         
         arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
@@ -343,7 +388,6 @@ def main():
             display_assistant.drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1], TILESIZE / 5, 43 * TILESIZE / 100, 35.5)
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
-
 
         if not firstMovePlayed and len(moveList) != 0:
             firstMovePlayed = True
@@ -407,7 +451,9 @@ def main():
                     if movingPiece:
                         if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
                             actList = (board.displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
+                            slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
                             board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                            
                             if selectedTile.name == '' and selectedTile.isAbleToPromote():
                                 promotingPawn = selectedTile
                             selectedTile = None
