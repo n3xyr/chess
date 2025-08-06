@@ -11,7 +11,9 @@ class board:
     def __init__(self):
         self.matrix = [[None for _ in range(8)] for _ in range(8)]
         self.turn = 'white'
-        self.historic = []
+        self.boardHistoric = []
+        self.soundHistoric = []
+        self.historicIndic = 0
 
 
     def switchTurn(self):
@@ -57,7 +59,8 @@ class board:
         self.matrix[0][4] = self.bk                                   # black king
         self.matrix[7][4] = self.wk                                   # white king
 
-        self.historic = [copy.deepcopy(self.matrix)]  # Initial historic state
+        self.boardHistoric = [copy.deepcopy(self.matrix)]  # Initial historic state
+        self.historicIndic = len(self.boardHistoric) - 1
 
 
     def getAvailableMoves(self, selectedTile):
@@ -164,6 +167,13 @@ class board:
             moveSound.play()
 
 
+    def addSoundToHistoric(self, act):
+        if 'x' in act:
+            self.soundHistoric.append('x')
+        else:
+            self.soundHistoric.append('')
+
+
     def movePiece(self, piece, y, x):
         actList = self.getActTypes(piece, y, x)
 
@@ -173,7 +183,8 @@ class board:
         piece.setCoordY(y)
         piece.setCoordX(x)
 
-        self.historic.append(copy.deepcopy(self.matrix))
+        self.boardHistoric.append(copy.deepcopy(self.matrix))
+        self.historicIndic = len(self.boardHistoric) - 1
 
         if piece.getColor() == 'white':
             opponentKing = self.wk
@@ -188,7 +199,8 @@ class board:
         self.switchTurn()
         
         self.playSound(actList.split(','))
-        
+        self.addSoundToHistoric(actList.split(','))
+
 
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
@@ -314,7 +326,7 @@ class board:
 
     def consoleDisplayHistoric(self):
         print('Historic:')
-        for i, state in enumerate(self.historic):
+        for i, state in enumerate(self.boardHistoric):
             print(f'State {i}:')
             for row in state:
                 for piece in row:
