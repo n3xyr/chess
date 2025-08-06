@@ -212,11 +212,8 @@ def drawBoard(game, skipPiece=None):
             currentLoadingPiece = board.displayedBoard.matrix[row][col]
             if currentLoadingPiece:
                 if skipPiece:
-                    print((skipPiece.getCoordX(), skipPiece.getCoordY()), (currentLoadingPiece.getCoordX(), currentLoadingPiece.getCoordY()))
                     if not(skipPiece.getCoordX() == currentLoadingPiece.getCoordX() and skipPiece.getCoordY() == currentLoadingPiece.getCoordY()):
                         game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
-                    else:
-                        print("Skipping piece at", currentLoadingPiece.getCoordX(), currentLoadingPiece.getCoordY())
                 else:
                     game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
 
@@ -467,6 +464,7 @@ def main():
                             board.displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
                             board.displayedBoard.boardHistoric.append(deepcopy(board.displayedBoard.matrix))
                             board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
+                            setPiecesCoordinates()
                             promoIconRects.clear()
                             movingPiece = False
                             promotingPawn = None
