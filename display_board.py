@@ -211,7 +211,11 @@ def drawBoard(game, skipPiece=None):
             # Draw tiles
             currentLoadingPiece = board.displayedBoard.matrix[row][col]
             if currentLoadingPiece:
-                game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
+                if skipPiece:
+                    if not(skipPiece.getCoordX() == currentLoadingPiece.getCoordX() and skipPiece.getCoordY() == currentLoadingPiece.getCoordY()):
+                        game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
+                else:
+                    game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
 
 def setPiecesCoordinates():
     """
@@ -338,7 +342,7 @@ def slidePieceToTile(piece, targetTile):
     targetX, targetY = targetTile[0] * TILESIZE + LEFTMARGIN, targetTile[1] * TILESIZE + TOPMARGIN
     deltaX, deltaY = targetX - startX, targetY - startY
 
-    steps = 24  # Number of steps for the sliding animation
+    steps = 12  # Number of steps for the sliding animation
     for step in range(steps):
         piece.rectX += deltaX / steps
         piece.rectY += deltaY / steps
@@ -346,7 +350,7 @@ def slidePieceToTile(piece, targetTile):
         GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
         pygame.display.flip()
-        pygame.time.delay(8)  # Delay for animation effect
+        pygame.time.delay(4)  # Delay for animation effect
 
     setPiecesCoordinates()  # Update the coordinates after sliding
 
