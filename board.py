@@ -131,12 +131,11 @@ class board:
 
         if 'x' in actList:
             resultMove += 'x'
-        
+
         resultMove += chr(97 + x) + str(8 - y)
 
         if '=' in actList:
             resultMove += '=' + self.matrix[piece.getCoordY()][piece.getCoordX()].name
-            print(resultMove)
 
         if 'O-O-O' in actList:
             resultMove = 'O-O-O' + resultMove
@@ -182,9 +181,6 @@ class board:
 
         piece.setCoordY(y)
         piece.setCoordX(x)
-
-        self.boardHistoric.append(copy.deepcopy(self.matrix))
-        self.historicIndic = len(self.boardHistoric) - 1
 
         if piece.getColor() == 'white':
             opponentKing = self.wk
