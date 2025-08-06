@@ -10,6 +10,7 @@ import startup_screen
 
 # Initialize Pygame
 pygame.init()
+pygame.font.init()
 
 # Get monitor(s) specs
 def getMonitorResolution():
@@ -42,6 +43,7 @@ def adjustWindowSize(newWidth, newHeight):
     BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * BASESCALE), int(23 * BASESCALE)), (int(630 * BASESCALE), int(23 * BASESCALE))
 
     GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+    pygame.font.init()
     
     robotoFont = pygame.font.SysFont('Roboto', int(50 * BASESCALE))
     
