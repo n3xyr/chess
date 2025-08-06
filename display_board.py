@@ -286,6 +286,28 @@ def tryDrawPromotionMenu(promotingPawn):
             promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
 
 
+def tryMoveThroughHistoric(event):            
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:  # Go back one move
+            if len(board.displayedBoard.boardHistoric) > 1 and board.displayedBoard.historicIndic > 0:
+                board.displayedBoard.historicIndic -= 1
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic])
+
+        if event.key == pygame.K_RIGHT:  # Go forward one move
+            if len(board.displayedBoard.boardHistoric) - 1 > board.displayedBoard.historicIndic:
+                board.displayedBoard.historicIndic += 1
+                print(board.displayedBoard.historicIndic, len(board.displayedBoard.boardHistoric), len(board.displayedBoard.soundHistoric))
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic - 1])
+
+        if event.key == pygame.K_UP:  # Go to the last move
+            if len(board.displayedBoard.boardHistoric) > 0:
+                board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound('')
+
+
 def main():
     clock = pygame.time.Clock()
     run = True
@@ -325,26 +347,8 @@ def main():
         for event in events:
             if event.type == pygame.QUIT:
                 run = False
-            
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_LEFT:  # Go back one move
-                    if len(board.displayedBoard.boardHistoric) > 1 and board.displayedBoard.historicIndic > 0:
-                        board.displayedBoard.historicIndic -= 1
-                        board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
-                        board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic])
 
-                if event.key == pygame.K_RIGHT:  # Go forward one move
-                    if len(board.displayedBoard.boardHistoric) - 1 > board.displayedBoard.historicIndic:
-                        board.displayedBoard.historicIndic += 1
-                        print(board.displayedBoard.historicIndic, len(board.displayedBoard.boardHistoric), len(board.displayedBoard.soundHistoric))
-                        board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
-                        board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic - 1])
-
-                if event.key == pygame.K_UP:  # Go to the last move
-                    if len(board.displayedBoard.boardHistoric) > 0:
-                        board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
-                        board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
-                        board.displayedBoard.playSound('')
+            tryMoveThroughHistoric(event)
 
             if event.type == pygame.VIDEORESIZE:
                 adjustWindowSize(event.w, event.h)
