@@ -11,6 +11,7 @@ class board:
     def __init__(self):
         self.matrix = [[None for _ in range(8)] for _ in range(8)]
         self.turn = 'white'
+        self.historic = []
 
 
     def switchTurn(self):
@@ -55,6 +56,8 @@ class board:
         self.wk = pieces.king(7, 4, 'white')
         self.matrix[0][4] = self.bk                                   # black king
         self.matrix[7][4] = self.wk                                   # white king
+
+        self.historic = [copy.deepcopy(self.matrix)]  # Initial historic state
 
 
     def getAvailableMoves(self, selectedTile):
@@ -169,6 +172,9 @@ class board:
 
         piece.setCoordY(y)
         piece.setCoordX(x)
+
+        self.historic.append(copy.deepcopy(self.matrix))
+
         if piece.getColor() == 'white':
             opponentKing = self.wk
         else:
@@ -207,24 +213,6 @@ class board:
     def getClock(self, initialTime):
         currentTime = time.time()
         return int(currentTime - initialTime)
-    
-
-    def generateIsCheckingPiecesList(self):
-        '''
-        Returns a list of pieces that can move to the king's position.
-        whiteList -> white pieces that can move to the black king's position
-        blackList -> black pieces that can move to the white king's position
-        '''
-        whiteList = []
-        blackList = []
-        for i in range(8):
-            for j in range(8):
-                if self.matrix[i][j] is not None:
-                    if self.matrix[i][j].canMove(self.wk.getCoordY(), self.wk.getCoordX(), self):
-                        blackList.append(self.matrix[i][j])
-                    elif self.matrix[i][j].canMove(self.bk.getCoordY(), self.bk.getCoordX(), self):
-                        whiteList.append(self.matrix[i][j])
-        return whiteList, blackList
 
 
     def createSimulatedBoard(self):
@@ -322,6 +310,23 @@ class board:
                 else:
                     print('   ', end='')
             print('')
+
+
+    def consoleDisplayHistoric(self):
+        print('Historic:')
+        for i, state in enumerate(self.historic):
+            print(f'State {i}:')
+            for row in state:
+                for piece in row:
+                    if piece is not None:
+                        if piece.name == '':
+                            print('p', ' ', end='')
+                        else:
+                            print(piece.name.lower(), ' ', end='')
+                    else:
+                        print('   ', end='')
+                print('')
+            print('---')
 
 
 displayedBoard = board()
