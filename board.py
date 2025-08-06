@@ -87,10 +87,10 @@ class board:
             king =  self.bk
 
         if self.nextMoveGivesCheck(piece, y, x):
-                if self.checkMate(king):
-                    result += '#,'
-                else:
-                    result += '+,'
+            if self.checkMate(king):
+                result += '#,'
+            else:
+                result += '+,'
                 
         if self.matrix[y][x]:
             result += 'x,'
