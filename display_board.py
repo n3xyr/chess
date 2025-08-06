@@ -343,7 +343,7 @@ def slidePieceToTile(piece, targetTile):
         piece.rectX += deltaX / steps
         piece.rectY += deltaY / steps
         drawBoard(GAME, skipPiece=piece)
-        # GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
+        GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
         pygame.display.flip()
         pygame.time.delay(8)  # Delay for animation effect
