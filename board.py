@@ -6,6 +6,7 @@ import copy
 pygame.mixer.init()
 moveSound = pygame.mixer.Sound('soundEffects/moveSound.wav')
 eatSound = pygame.mixer.Sound('soundEffects/eatSound.wav')
+castleSound = pygame.mixer.Sound('soundEffects/castleSound.wav')
 
 class board:
     def __init__(self):
@@ -176,6 +177,8 @@ class board:
     def playSound(self, act):
         if 'x' in act:
             eatSound.play()
+        elif 'O-O' in act or 'O-O-O' in act:
+            castleSound.play()
         else:
             moveSound.play()
 
@@ -201,12 +204,8 @@ class board:
                 return True
         return False
 
-    def movePiece(self, piece, y, x):
+    def movePiece(self, piece, y, x, doSound=True):
         actList = self.getActTypes(piece, y, x)
-        doSound = True
-        
-        if self.isCastleMove(piece, x):
-            doSound = False
 
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
@@ -232,7 +231,7 @@ class board:
 
         if doSound:
             self.playSound(actList.split(','))
-        # self.switchTurn()
+        self.switchTurn()
         self.addSoundToHistoric(actList.split(','))
 
 
