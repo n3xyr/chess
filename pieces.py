@@ -3,7 +3,7 @@ class pawn:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.name  = 'P'
+        self.name  = ''
         self.value = 1
 
     def getCoordX(self):
@@ -69,7 +69,7 @@ class pawn:
             return False
         
         if checkNext:
-            if board.nextMoveIsCheck(king, self, y, x):
+            if board.nextMoveIsCheck(self, y, x):
                 return False
         
         if board.matrix[y][x]:
@@ -174,7 +174,7 @@ class knight:
 
         if (y, x) in moves and 0 <= x <= 7 and 0 <= y <= 7:
             if checkNext:
-                if board.nextMoveIsCheck(king, self, y, x):
+                if board.nextMoveIsCheck(self, y, x):
                     return False
                 
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
@@ -245,7 +245,7 @@ class rook:
         color = self.getColor()
         
         if checkNext:
-            if board.nextMoveIsCheck(king, self, y, x):
+            if board.nextMoveIsCheck(self, y, x):
                 return False
         
         if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
@@ -377,7 +377,7 @@ class bishop:
         coordY = self.getCoordY()
         
         if checkNext:
-            if board.nextMoveIsCheck(king, self, y, x):
+            if board.nextMoveIsCheck(self, y, x):
                 return False
         
         if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2 or (x == coordX and y == coordY):  #if it isn't in the board or if it doesn't move in a diagonal
@@ -495,7 +495,7 @@ class queen:
         coordY = self.getCoordY()
                 
         if checkNext:
-            if board.nextMoveIsCheck(king, self, y, x):
+            if board.nextMoveIsCheck(self, y, x):
                 return False
         
         if x < 0 or x > 7 or y < 0 or y > 7:  #if it isn't in the board or if it doesn't move in a diagonal nor in a straight line
@@ -675,7 +675,7 @@ class king:
             
         if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7): 
             if checkNext:
-                if board.nextMoveIsCheck(king, self, y, x):
+                if board.nextMoveIsCheck(self, y, x):
                     return False
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
                 return True

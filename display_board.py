@@ -6,6 +6,7 @@ import pygame_widgets
 from screeninfo import get_monitors
 from pygame_widgets.button import Button
 import display_assistant
+from copy import deepcopy
 
 # Initialize Pygame
 pygame.init()
@@ -217,7 +218,7 @@ def drawBoard(game):
                         game.blit(bn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black knight
                     if currentLoadingPiece.name == 'R':
                         game.blit(br, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black rook
-                    if currentLoadingPiece.name == 'P':
+                    if currentLoadingPiece.name == '':
                         game.blit(bp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black pawn
                     if currentLoadingPiece.name == 'B':
                         game.blit(bb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black bishop
@@ -230,7 +231,7 @@ def drawBoard(game):
                         game.blit(wn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white knight
                     if currentLoadingPiece.name == 'R':
                         game.blit(wr, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white rook
-                    if currentLoadingPiece.name == 'P':
+                    if currentLoadingPiece.name == '':
                         game.blit(wp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white pawn
                     if currentLoadingPiece.name == 'B':
                         game.blit(wb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white bishop
@@ -272,9 +273,9 @@ def displayAvailableMoves(availableMoves, selectedTile):
             display_assistant.drawPossibleTile(GAME, move)
             
 
-def tryPromotion(promotingPawn):
+def tryDrawPromotionMenu(promotingPawn):
     promoIconRects.clear()
-    if promotingPawn is not None and promotingPawn.name == 'P' and promotingPawn.isAbleToPromote():
+    if promotingPawn is not None and promotingPawn.name == '' and promotingPawn.isAbleToPromote():
         pygame.draw.rect(GAME, WHITE, promoBackground)
         for idx, img in enumerate(promoOrder[promotingPawn.getColor()]):
             img = pygame.transform.scale(img, (promoImageSize, promoImageSize))
@@ -283,6 +284,33 @@ def tryPromotion(promotingPawn):
             pygame.draw.rect(GAME, LIGHTGREY, rectBg)
             GAME.blit(img, (pos[0] - TILESIZE // 2, pos[1]))
             promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
+
+
+def tryMoveThroughHistoric(event):            
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:  # Go back one move
+            if len(board.displayedBoard.boardHistoric) > 1 and board.displayedBoard.historicIndic > 0:
+                board.displayedBoard.historicIndic -= 1
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic])
+
+        if event.key == pygame.K_RIGHT:  # Go forward one move
+            if len(board.displayedBoard.boardHistoric) - 1 > board.displayedBoard.historicIndic:
+                board.displayedBoard.historicIndic += 1
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic - 1])
+
+        if event.key == pygame.K_UP:  # Go to the last move
+            if len(board.displayedBoard.boardHistoric) > 0:
+                board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound('')
+
+        if event.key == pygame.K_DOWN:  # Go to the first move
+            if len(board.displayedBoard.boardHistoric) > 0:
+                board.displayedBoard.historicIndic = 0
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound('')
 
 
 def main():
@@ -295,9 +323,16 @@ def main():
     rightClickDown = False
     arrows = []
     promotingPawn = None
+    movingPiece = False
+    canPlay = True
 
     while run:
         clock.tick(60)  # 60 FPS cap
+
+        if board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
+            canPlay = False
+        else:
+            canPlay = True
 
         drawBoard(GAME)
         displayAvailableMoves(availableMoves, selectedTile)
@@ -312,18 +347,20 @@ def main():
 
         if not firstMovePlayed and len(moveList) != 0:
             firstMovePlayed = True
-            initialTime, lastTime = board.displayedBoard.initClock()
+            initialTime = board.displayedBoard.initClock()
         elif firstMovePlayed:
             timer = board.displayedBoard.getClock(initialTime)
             displayTime(timer)
 
-        tryPromotion(promotingPawn)
+        tryDrawPromotionMenu(promotingPawn)
 
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 run = False
-                
+
+            tryMoveThroughHistoric(event)
+
             if event.type == pygame.VIDEORESIZE:
                 adjustWindowSize(event.w, event.h)
                 adjustPromoSize()
@@ -355,27 +392,47 @@ def main():
                         arrows.append((arrowStart, arrowEnd))
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                mouseX, mouseY = pygame.mouse.get_pos()
                 arrows = []
+                    
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and canPlay:
+                mouseX, mouseY = pygame.mouse.get_pos()
+
+                if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
+                    mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                    mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
+                    lastSelectedTile = deepcopy(selectedTile)
+                    
+                    selectedTile, movingPiece = board.displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
+
+                    if movingPiece:
+                        if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
+                            actList = (board.displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
+                            board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                            if selectedTile.name == '' and selectedTile.isAbleToPromote():
+                                promotingPawn = selectedTile
+                            selectedTile = None
+                            
+                    availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
 
                 if promoIconRects:  # if a pawn is promoting
                     for rect, pieceName in promoIconRects:
                         if rect.collidepoint((mouseX, mouseY)):
                             board.displayedBoard.promote(promotingPawn, pieceName)
+                            board.displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
+                            board.displayedBoard.boardHistoric.append(deepcopy(board.displayedBoard.matrix))
+                            board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
                             promoIconRects.clear()
+                            movingPiece = False
                             promotingPawn = None
                             availableMoves = []
                             break
                     continue  # don't do anything if something else than a promotion is clicked
 
-                if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
-                    mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
-                    mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
-                    clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
-
-                    selectedTile, promotingPawn = board.displayedBoard.manageMove(selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn)
-                    
-                    availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
+                if movingPiece and not promotingPawn:
+                    board.displayedBoard.boardHistoric.append(deepcopy(board.displayedBoard.matrix))
+                    board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
+                    board.displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
+                    movingPiece = False
 
         pygame_widgets.update(events)
         pygame.display.update()
