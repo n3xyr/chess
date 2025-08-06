@@ -132,6 +132,9 @@ def main():
                 if newWidth < 40 or newHeight < 50:
                     newWidth = 40
                     newHeight = 50
+                elif newWidth > SCREENWIDTH or newHeight > SCREENHEIGHT:
+                    newWidth = SCREENWIDTH
+                    newHeight = SCREENHEIGHT
                 if newWidth == WIDTH and newHeight != HEIGHT:
                     SCALE = newHeight / 1000
                 else:
