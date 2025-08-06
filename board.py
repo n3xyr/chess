@@ -64,6 +64,19 @@ class board:
         self.historicIndic = len(self.boardHistoric) - 1
 
 
+    def getPieces(self, color):
+        """
+        Returns a list of pieces of the specified color.
+        """
+        piecesList = []
+        for i in range(8):
+            for j in range(8):
+                piece = self.matrix[i][j]
+                if piece and piece.getColor() == color:
+                    piecesList.append(piece)
+        return piecesList
+
+
     def getAvailableMoves(self, selectedTile):
         if selectedTile == None:
             return []
@@ -174,14 +187,38 @@ class board:
             self.soundHistoric.append('')
 
 
+    def isCastleMove(self, piece, x):
+        if piece.name == 'K':
+            if (piece.getCoordX() - x) ** 2 > 1:
+                return True
+        return False
+    
+    def isEnPassantMove(self, piece, y, x):
+        if piece.name == '':
+            if y in (0, 7):
+                return False
+            if (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
+                return True
+        return False
+
     def movePiece(self, piece, y, x):
         actList = self.getActTypes(piece, y, x)
+        doSound = True
+        
+        if self.isCastleMove(piece, x):
+            doSound = False
 
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
+        if piece.name == 'K':
+            piece.hasMoved = True
+        if piece.name == 'R':
+            piece.hasMoved = True
+
         piece.setCoordY(y)
         piece.setCoordX(x)
+
 
         if piece.getColor() == 'white':
             opponentKing = self.wk
@@ -193,9 +230,9 @@ class board:
         if isCheckemated:
             print(opponentKing.getColor(), "lost")
 
-        self.switchTurn()
-        
-        self.playSound(actList.split(','))
+        if doSound:
+            self.playSound(actList.split(','))
+        # self.switchTurn()
         self.addSoundToHistoric(actList.split(','))
 
 

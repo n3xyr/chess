@@ -353,6 +353,31 @@ def slidePieceToTile(piece, targetTile):
         pygame.time.delay(4)  # Delay for animation effect
 
 
+def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
+    """
+    Slide two pieces to their respective target tiles.
+    """
+    startX1, startY1 = piece1.getCoordX() * TILESIZE + LEFTMARGIN, piece1.getCoordY() * TILESIZE + TOPMARGIN
+    startX2, startY2 = piece2.getCoordX() * TILESIZE + LEFTMARGIN, piece2.getCoordY() * TILESIZE + TOPMARGIN
+    targetX1, targetY1 = targetTile1[0] * TILESIZE + LEFTMARGIN, targetTile1[1] * TILESIZE + TOPMARGIN
+    targetX2, targetY2 = targetTile2[0] * TILESIZE + LEFTMARGIN, targetTile2[1] * TILESIZE + TOPMARGIN
+    deltaX1, deltaY1 = targetX1 - startX1, targetY1 - startY1
+    deltaX2, deltaY2 = targetX2 - startX2, targetY2 - startY2
+
+    steps = 12  # Number of steps for the sliding animation
+    for step in range(steps):
+        piece1.rectX += deltaX1 / steps
+        piece1.rectY += deltaY1 / steps
+        piece2.rectX += deltaX2 / steps
+        piece2.rectY += deltaY2 / steps
+        drawBoard(GAME)
+        GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
+        GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
+        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+        pygame.display.flip()
+        pygame.time.delay(4)  # Delay for animation effect
+
+
 def main():
     clock = pygame.time.Clock()
     run = True
@@ -370,10 +395,10 @@ def main():
     while run:
         clock.tick(60)  # 60 FPS cap
 
-        if board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
-            canPlay = False
-        else:
-            canPlay = True
+        # if board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
+        #     canPlay = False
+        # else:
+        #     canPlay = True
 
         drawBoard(GAME)
 
@@ -448,9 +473,24 @@ def main():
                     if movingPiece:
                         if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
                             actList = (board.displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
-                            slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
-                            board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                            
+
+                            if board.displayedBoard.isCastleMove(lastSelectedTile, mouseXTab):
+
+                                if selectedTile.getCoordX() > mouseXTab:
+                                    rook = board.displayedBoard.matrix[mouseYTab][0]
+                                    slideBothPiecesToTile(rook, selectedTile, (mouseXTab + 1, mouseYTab), (mouseXTab, mouseYTab))
+                                    board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                    board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1)
+
+                                else:
+                                    rook = board.displayedBoard.matrix[mouseYTab][7]
+                                    slideBothPiecesToTile(rook, selectedTile, (mouseXTab - 1, mouseYTab), (mouseXTab, mouseYTab))
+                                    board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                    board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1)
+                            else:
+                                slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
+                                board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+
                             if selectedTile.name == '' and selectedTile.isAbleToPromote():
                                 promotingPawn = selectedTile
                             selectedTile = None
