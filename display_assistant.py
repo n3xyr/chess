@@ -1,7 +1,6 @@
 import math
 import pygame
 
-
 def displayAssistantConstructor(tileSize, topMargin, leftMargin, lightSelect, darkSelect):
     global TILESIZE, LIGHTSELECT, LEFTMARGIN, TOPMARGIN, DARKSELECT
     TILESIZE = tileSize

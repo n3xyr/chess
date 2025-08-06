@@ -297,13 +297,18 @@ def tryMoveThroughHistoric(event):
         if event.key == pygame.K_RIGHT:  # Go forward one move
             if len(board.displayedBoard.boardHistoric) - 1 > board.displayedBoard.historicIndic:
                 board.displayedBoard.historicIndic += 1
-                print(board.displayedBoard.historicIndic, len(board.displayedBoard.boardHistoric), len(board.displayedBoard.soundHistoric))
                 board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
                 board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic - 1])
 
         if event.key == pygame.K_UP:  # Go to the last move
             if len(board.displayedBoard.boardHistoric) > 0:
                 board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound('')
+
+        if event.key == pygame.K_DOWN:  # Go to the first move
+            if len(board.displayedBoard.boardHistoric) > 0:
+                board.displayedBoard.historicIndic = 0
                 board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
                 board.displayedBoard.playSound('')
 
@@ -319,9 +324,15 @@ def main():
     arrows = []
     promotingPawn = None
     movingPiece = False
+    canPlay = True
 
     while run:
         clock.tick(60)  # 60 FPS cap
+
+        if board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
+            canPlay = False
+        else:
+            canPlay = True
 
         drawBoard(GAME)
         displayAvailableMoves(availableMoves, selectedTile)
@@ -381,15 +392,15 @@ def main():
                         arrows.append((arrowStart, arrowEnd))
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                mouseX, mouseY = pygame.mouse.get_pos()
                 arrows = []
                     
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and canPlay:
+                mouseX, mouseY = pygame.mouse.get_pos()
 
                 if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
                     mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
                     mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
                     lastSelectedTile = deepcopy(selectedTile)
-                    clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
                     
                     selectedTile, movingPiece = board.displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
 
@@ -408,6 +419,8 @@ def main():
                         if rect.collidepoint((mouseX, mouseY)):
                             board.displayedBoard.promote(promotingPawn, pieceName)
                             board.displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
+                            board.displayedBoard.boardHistoric.append(deepcopy(board.displayedBoard.matrix))
+                            board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
                             promoIconRects.clear()
                             movingPiece = False
                             promotingPawn = None
@@ -416,6 +429,8 @@ def main():
                     continue  # don't do anything if something else than a promotion is clicked
 
                 if movingPiece and not promotingPawn:
+                    board.displayedBoard.boardHistoric.append(deepcopy(board.displayedBoard.matrix))
+                    board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
                     board.displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
                     movingPiece = False
 
