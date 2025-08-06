@@ -301,13 +301,13 @@ def tryMoveThroughHistoric(event):
                 board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic - 1])
 
         if event.key == pygame.K_UP:  # Go to the last move
-            if len(board.displayedBoard.boardHistoric) > 0:
+            if len(board.displayedBoard.boardHistoric) > 0 and board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
                 board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
                 board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
                 board.displayedBoard.playSound('')
 
         if event.key == pygame.K_DOWN:  # Go to the first move
-            if len(board.displayedBoard.boardHistoric) > 0:
+            if len(board.displayedBoard.boardHistoric) > 0 and board.displayedBoard.historicIndic != 0:
                 board.displayedBoard.historicIndic = 0
                 board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
                 board.displayedBoard.playSound('')
