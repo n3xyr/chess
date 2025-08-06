@@ -34,8 +34,8 @@ class Button:
         self.font = pygame.font.SysFont(None, 40)
 
     def draw(self, surface):
-        mouse_pos = pygame.mouse.get_pos()
-        color = DARKGREEN if self.rect.collidepoint(mouse_pos) else GREEN
+        mouseX, mouseY = pygame.mouse.get_pos()
+        color = DARKGREEN if self.rect.collidepoint((mouseX - LEFT, mouseY - TOP)) else GREEN
         pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
         pygame.draw.rect(surface, color, (self.rect.x + BORDER_WIDTH, self.rect.y + BORDER_WIDTH, self.rect.width - BORDER_WIDTH * 2, self.rect.height - BORDER_WIDTH * 2), border_radius=int(0.036 * HEIGHT - 2 * BORDER_WIDTH))
         txt_surf = self.font.render(self.text, True, WHITE)
