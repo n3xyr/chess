@@ -212,8 +212,11 @@ def drawBoard(game, skipPiece=None):
             currentLoadingPiece = board.displayedBoard.matrix[row][col]
             if currentLoadingPiece:
                 if skipPiece:
+                    print((skipPiece.getCoordX(), skipPiece.getCoordY()), (currentLoadingPiece.getCoordX(), currentLoadingPiece.getCoordY()))
                     if not(skipPiece.getCoordX() == currentLoadingPiece.getCoordX() and skipPiece.getCoordY() == currentLoadingPiece.getCoordY()):
                         game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
+                    else:
+                        print("Skipping piece at", currentLoadingPiece.getCoordX(), currentLoadingPiece.getCoordY())
                 else:
                     game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
 
@@ -352,8 +355,6 @@ def slidePieceToTile(piece, targetTile):
         pygame.display.flip()
         pygame.time.delay(4)  # Delay for animation effect
 
-    setPiecesCoordinates()  # Update the coordinates after sliding
-
 
 def main():
     clock = pygame.time.Clock()
@@ -450,8 +451,8 @@ def main():
                     if movingPiece:
                         if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
                             actList = (board.displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
+                            slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
                             board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                            slidePieceToTile(lastSelectedTile, (mouseXTab, mouseYTab))
                             
                             if selectedTile.name == '' and selectedTile.isAbleToPromote():
                                 promotingPawn = selectedTile
