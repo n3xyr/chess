@@ -16,11 +16,13 @@ ALPHABET_KEYS = (
     pygame.K_z, pygame.K_SPACE
 )
 
+pygame.display.set_caption("Chess")
 SCREENWIDTH, SCREENHEIGHT = getMonitorResolution()
 SCALE = float(SCREENHEIGHT * 0.8) / 1000
 HEIGHT = int(1000 * SCALE)
 WIDTH = int(800 * SCALE)
 clock = pygame.time.Clock()
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 
 pygame.init()
 
@@ -68,11 +70,11 @@ def resizeWindow():
     buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: print("Start Game"))
     
     BUTTON_INDIC += 1
-    buttonTimeSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: timeIsTyping)
+    buttonTimeSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: getTypedTextTime())
 
     BUTTON_INDIC += 1
-    buttonIncrementSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: incrementIsTyping)
-    
+    buttonIncrementSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: getTypedTextIncrement())
+
     BUTTON_INDIC += 1
     buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"))
 
@@ -122,9 +124,12 @@ class Button:
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
-            print(f"Button '{self.text}' clicked")
-            self.callback()
+            self.callback() 
 
+    def set_text(self, new_text):
+        self.text = new_text
+        self.text_surface = self.font.render(self.text, True, (255, 255, 255))
+        
 resizeWindow()
 
 def drawButtons(surface):
@@ -134,24 +139,45 @@ def drawButtons(surface):
         buttonSettings.draw(surface, BUTTON_BG, BORDER, BUTTON_TEXT)
 
 
-def timeIsTyping():
-    global timeIsTyping
-    timeIsTyping = True
+def getTypedTextTime():
+    global screen
+    run = True
+    inputText = ''
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                run = False
+            if event.type == pygame.KEYDOWN:
+                if event.key in ALPHABET_KEYS:
+                    inputText += pygame.key.name(event.key)
+                if event.key == pygame.K_BACKSPACE:
+                    inputText = inputText[:-1]
+                if event.key == pygame.K_RETURN:
+                    run = False
+        buttonTimeSetting.set_text(inputText if inputText else "10")
+        drawButtons(menuRGBA)
+        screen.blit(menuRGBA, (LEFT, TOP))
+        pygame.display.flip()
 
 
-def resetTimeIsTyping():
-    global timeIsTyping
-    timeIsTyping = False
-
-
-def incrementIsTyping():
-    global incrementIsTyping
-    incrementIsTyping = True
-
-
-def resetIncrementIsTyping():
-    global incrementIsTyping
-    incrementIsTyping = False
+def getTypedTextIncrement():
+    run = True
+    inputText = ''
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                run = False
+            if event.type == pygame.KEYDOWN:
+                if event.key in ALPHABET_KEYS:
+                    inputText += pygame.key.name(event.key)
+                if event.key == pygame.K_BACKSPACE:
+                    inputText = inputText[:-1]
+                if event.key == pygame.K_RETURN:
+                    run = False
+        buttonIncrementSetting.set_text(inputText if inputText else "5")
+        drawButtons(menuRGBA)
+        screen.blit(menuRGBA, (LEFT, TOP))
+        pygame.display.flip()
 
 
 def getPressedKeys(keys):
@@ -163,11 +189,9 @@ def getPressedKeys(keys):
 
 
 def main():
-    global SCALE
+    global SCALE, screen
     clock.tick(60)
     time_delta = clock.tick(60) / 1000
-    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-    pygame.display.set_caption("Chess")
     running = True
     incrementIsTyping = False
     timeIsTyping = False
@@ -186,12 +210,6 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-
-            print(timeIsTyping, ' ', incrementIsTyping)
-
-            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-                resetIncrementIsTyping()
-                resetTimeIsTyping()
 
             if timeIsTyping:
                 print("Time is typing")
