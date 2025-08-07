@@ -1,6 +1,7 @@
 import pygame
 from screeninfo import get_monitors
 import webbrowser
+import pygame_gui
 
 def getMonitorResolution():
     for m in get_monitors():
@@ -11,6 +12,9 @@ SCREENWIDTH, SCREENHEIGHT = getMonitorResolution()
 SCALE = float(SCREENHEIGHT * 0.8) / 1000
 HEIGHT = int(1000 * SCALE)
 WIDTH = int(800 * SCALE)
+pygame.init()
+window_surface = pygame.display.set_mode((WIDTH, HEIGHT))
+manager = pygame_gui.UIManager((WIDTH, HEIGHT))
 
 def resizeWindow():
     global HEIGHT, WIDTH, background, BORDER_WIDTH, BORDER_RADIUS, BUTTON_NUMBER, BUTTON_INDIC
@@ -54,10 +58,12 @@ def resizeWindow():
     buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: print("Start Game"))
     BUTTON_INDIC += 1
     buttonTimeSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "30", lambda: print("Time Setting"))
+    timeTextEntry = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((button_x(), button_y(BUTTON_INDIC)), (button_w(), button_h())), manager=manager)
     BUTTON_INDIC += 1
     buttonIncrementSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: print("Increment Setting"))
     BUTTON_INDIC += 1
     buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"))
+
 
 PANEL_BG = (31, 31, 28, 192)
 BORDER = pygame.Color("#5E5D5B")
@@ -80,7 +86,7 @@ class Button:
 
     def draw(self, surface, BG_COLOR, BORDER_COLOR, TEXT_COLOR_1, TEXT_COLOR_2=None, LINE_COLOR=None, LABEL=None, UNIT=None):
         pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
-        pygame.draw.rect(surface, BG_COLOR, (self.rect.x + BORDER_WIDTH, self.rect.y + BORDER_WIDTH, self.rect.width - BORDER_WIDTH * 2, self.rect.height - BORDER_WIDTH * 2), border_radius=int(0.038 * HEIGHT - 2 * BORDER_WIDTH))
+        pygame.draw.rect(surface, BG_COLOR, (self.rect.x + BORDER_WIDTH, self.rect.y + BORDER_WIDTH, self.rect.width - BORDER_WIDTH * 2, self.rect.height - BORDER_WIDTH * 2), border_radius=int(0.036 * HEIGHT - 2 * BORDER_WIDTH))
         if TEXT_COLOR_2 is not None:
             txt_surf = self.font.render(self.text, True, TEXT_COLOR_1)
             txt_rect = txt_surf.get_rect(center=self.rect.center)
@@ -99,14 +105,13 @@ class Button:
             surface.blit(txt_surf, txt_rect)
 
     def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(event.pos):
+        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
             self.callback()
 
 resizeWindow()
 
 def main():
     global SCALE
-    pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
     pygame.display.set_caption("Chess")
     running = True
