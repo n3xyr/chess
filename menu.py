@@ -7,6 +7,15 @@ def getMonitorResolution():
         if m.is_primary:
             return m.width, m.height
 
+ALPHABET_KEYS = (
+    pygame.K_a, pygame.K_b, pygame.K_c, pygame.K_d, pygame.K_e,
+    pygame.K_f, pygame.K_g, pygame.K_h, pygame.K_i, pygame.K_j,
+    pygame.K_k, pygame.K_l, pygame.K_m, pygame.K_n, pygame.K_o,
+    pygame.K_p, pygame.K_q, pygame.K_r, pygame.K_s, pygame.K_t,
+    pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y,
+    pygame.K_z, pygame.K_SPACE
+)
+
 SCREENWIDTH, SCREENHEIGHT = getMonitorResolution()
 SCALE = float(SCREENHEIGHT * 0.8) / 1000
 HEIGHT = int(1000 * SCALE)
@@ -17,7 +26,7 @@ pygame.init()
 
 def resizeWindow():
     global HEIGHT, WIDTH, background, BORDER_WIDTH, BORDER_RADIUS, BUTTON_NUMBER, BUTTON_INDIC
-    global menuX, menuY, LEFT, TOP, menuRGBA, textBoxesRGBA
+    global menuX, menuY, LEFT, TOP, menuRGBA
     global robotoMedium, robotoMediumUnderline
     global buttonStart, buttonTimeSetting, buttonIncrementSetting, buttonSettings
     global timeSettingTextEntry
@@ -55,27 +64,14 @@ def resizeWindow():
     def button_h():
         return int(0.076 * HEIGHT)
 
-    def centeredTextEntry_x():
-        return int((1/3 * menuX))
-    
-    def centeredTextEntry_y(BUTTON_INDIC):
-        return int((1/(BUTTON_NUMBER + 1) * menuY + int(0.076 * HEIGHT)) * BUTTON_INDIC - int(0.076 * HEIGHT))
-    
-    def centeredTextEntry_w():
-        return int((1/3) * button_w())
-    
-    def centeredTextEntry_h():
-        return int(3/5 * button_h())
-
     BUTTON_INDIC = 1
     buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: print("Start Game"))
     
     BUTTON_INDIC += 1
-    buttonTimeSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: print("Time Setting"))
-    timeSettingTextEntry = textEntry(buttonTimeSetting, "10")
+    buttonTimeSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: timeIsTyping)
 
     BUTTON_INDIC += 1
-    buttonIncrementSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: print("Increment Setting"))
+    buttonIncrementSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: incrementIsTyping)
     
     BUTTON_INDIC += 1
     buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"))
@@ -92,32 +88,6 @@ TEXTBOX_TEXT = (94, 93, 91)
 TEXTBOX_LINE = (94, 93, 91, 102)
 LINK_COLOR = pygame.Color("#C6C6C6")
 
-
-class textEntry:
-    def __init__(self, button, initial_text=""):
-        self.rect = button.rect
-        self.text = initial_text
-        self.isEntrying = False
-        self.font = pygame.font.Font('fonts/Roboto-Medium.ttf', int(22 * SCALE))
-        self.button = button
-
-    def draw(self, surface):
-        pygame.draw.rect(surface, (255, 255, 255, 0), self.rect)
-
-        if self.isEntrying:
-            text_surface = self.font.render(self.text, True, (128, 255, 128, 128))
-            
-        else:
-            text_surface = self.font.render(self.text, True, (255, 255, 255, 128))
-
-        text_rect = text_surface.get_rect(center=self.rect.center)
-        surface.blit(text_surface, text_rect.center)
-
-    def testEntrying(self, pos):
-        if self.rect.collidepoint(pos):
-            self.isEntrying = True
-        else:
-            self.isEntrying = False
 
 class Button:
     def __init__(self, x, y, w, h, text, callback):
@@ -152,6 +122,7 @@ class Button:
 
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
+            print(f"Button '{self.text}' clicked")
             self.callback()
 
 resizeWindow()
@@ -161,6 +132,26 @@ def drawButtons(surface):
         buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="time", UNIT="min")
         buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="incr.", UNIT="sec")
         buttonSettings.draw(surface, BUTTON_BG, BORDER, BUTTON_TEXT)
+
+
+def timeIsTyping():
+    global timeIsTyping
+    timeIsTyping = True
+
+
+def resetTimeIsTyping():
+    global timeIsTyping
+    timeIsTyping = False
+
+
+def incrementIsTyping():
+    global incrementIsTyping
+    incrementIsTyping = True
+
+
+def resetIncrementIsTyping():
+    global incrementIsTyping
+    incrementIsTyping = False
 
 
 def getPressedKeys(keys):
@@ -178,35 +169,57 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
     pygame.display.set_caption("Chess")
     running = True
+    incrementIsTyping = False
+    timeIsTyping = False
+
     while running:
         screen.blit(background, (0, 0))
         pygame.draw.rect(menuRGBA, BORDER, (0, int(80 * SCALE), menuX, menuY), border_radius=BORDER_RADIUS)
         pygame.draw.rect(menuRGBA, PANEL_BG, (BORDER_WIDTH, int(81 * SCALE), menuX - BORDER_WIDTH * 2, menuY - BORDER_WIDTH * 2), border_radius=BORDER_RADIUS - 2 * BORDER_WIDTH)
         
         drawButtons(menuRGBA)
-        timeSettingTextEntry.draw(textBoxesRGBA)
         
         github_text = robotoMediumUnderline.render("View on GitHub", True, LINK_COLOR)
         github_rect = github_text.get_rect(center=(WIDTH // 2, int(0.95 * HEIGHT)))
         githubLink = screen.blit(github_text, github_rect)
         screen.blit(menuRGBA, (LEFT, TOP))
-        screen.blit(textBoxesRGBA, (LEFT, TOP))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
-            timeSettingTextEntry.testEntrying(pygame.mouse.get_pos())
+            print(timeIsTyping, ' ', incrementIsTyping)
 
-            if timeSettingTextEntry.isEntrying:
-                print("Entering text")
-                if event.type == pygame.KEYDOWN:
-                    keys = pygame.key.get_pressed()
-                    pressedKeys = getPressedKeys(keys)
-                    for key in pressedKeys:
-                        print(key)
-                        # timeSettingTextEntry.text += key
-                    
-                    
+            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                resetIncrementIsTyping()
+                resetTimeIsTyping()
+
+            if timeIsTyping:
+                print("Time is typing")
+                pressedKeys = getPressedKeys(pygame.key.get_pressed())
+                inputText = ''
+                for key in pressedKeys:
+                    if key in ALPHABET_KEYS:
+                        inputText += key
+                    elif key == pygame.K_BACKSPACE:
+                        inputText = inputText[:-1]
+                    elif key == pygame.K_RETURN:
+                        timeIsTyping = False
+                print(inputText)
+                buttonTimeSetting.text = inputText if inputText else "10"
+
+            if incrementIsTyping:
+                print("Increment is typing")
+                pressedKeys = getPressedKeys(pygame.key.get_pressed())
+                inputText = ''
+                for key in pressedKeys:
+                    if key in ALPHABET_KEYS:
+                        inputText += key
+                    elif key == pygame.K_BACKSPACE:
+                        inputText = inputText[:-1]
+                    elif key == pygame.K_RETURN:
+                        incrementIsTyping = False
+                print(inputText)
+                buttonIncrementSetting.text = inputText if inputText else "5"
 
             if event.type == pygame.VIDEORESIZE:
                 newHeight = event.h
