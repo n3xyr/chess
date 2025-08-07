@@ -1,0 +1,12 @@
+{
+    "#invisible_entry": {
+        "colours": {
+            "dark_bg": "#00000000",
+            "selected_text": "#FFFFFF",
+            "selected_bg": "#055D0090",
+            "text_cursor": "#00000000"
+
+        },
+        "border_width": 0
+    }
+}

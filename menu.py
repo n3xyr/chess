@@ -12,15 +12,18 @@ SCREENWIDTH, SCREENHEIGHT = getMonitorResolution()
 SCALE = float(SCREENHEIGHT * 0.8) / 1000
 HEIGHT = int(1000 * SCALE)
 WIDTH = int(800 * SCALE)
+clock = pygame.time.Clock()
+
 pygame.init()
 window_surface = pygame.display.set_mode((WIDTH, HEIGHT))
-manager = pygame_gui.UIManager((WIDTH, HEIGHT))
+manager = pygame_gui.UIManager((WIDTH, HEIGHT), "theme.json")
 
 def resizeWindow():
     global HEIGHT, WIDTH, background, BORDER_WIDTH, BORDER_RADIUS, BUTTON_NUMBER, BUTTON_INDIC
     global menuX, menuY, LEFT, TOP, menuRGBA
     global robotoMedium, robotoMediumUnderline
     global buttonStart, buttonTimeSetting, buttonIncrementSetting, buttonSettings
+    global timeTextEntry
 
     HEIGHT = int(1000 * SCALE)
     WIDTH = int(800 * SCALE)
@@ -56,11 +59,14 @@ def resizeWindow():
 
     BUTTON_INDIC = 1
     buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: print("Start Game"))
+    
     BUTTON_INDIC += 1
-    buttonTimeSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "30", lambda: print("Time Setting"))
-    timeTextEntry = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((button_x(), button_y(BUTTON_INDIC)), (button_w(), button_h())), manager=manager)
+    buttonTimeSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: print("Time Setting"))
+    timeTextEntry = pygame_gui.elements.UITextEntryLine(relative_rect=pygame.Rect((button_x() + LEFT + (1/3) * WIDTH * 0.375, button_y(BUTTON_INDIC) + TOP + (1/5) * HEIGHT * 0.076), ((1/3) * WIDTH * 0.375, (3/5) * HEIGHT * 0.076)), manager=manager,)
+    
     BUTTON_INDIC += 1
-    buttonIncrementSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: print("Increment Setting"))
+    buttonIncrementSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: print("Increment Setting"))
+    
     BUTTON_INDIC += 1
     buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"))
 
@@ -90,12 +96,16 @@ class Button:
         if TEXT_COLOR_2 is not None:
             txt_surf = self.font.render(self.text, True, TEXT_COLOR_1)
             txt_rect = txt_surf.get_rect(center=self.rect.center)
+            
             label_surf = robotoMedium.render(LABEL, True, TEXT_COLOR_2)
             label_rect = label_surf.get_rect(midleft=(self.rect.left + int(30 * SCALE), self.rect.centery))
+            
             unit_surf = robotoMedium.render(UNIT, True, TEXT_COLOR_2)
             unit_rect = unit_surf.get_rect(midright=(self.rect.right - int(30 * SCALE), self.rect.centery))
+            
             pygame.draw.line(surface, LINE_COLOR, (self.rect.left + int(85 * SCALE), self.rect.centery + int(19 * SCALE)), (self.rect.left + int(85 * SCALE), self.rect.centery - int(19 * SCALE)))
             pygame.draw.line(surface, LINE_COLOR, (self.rect.right - int(85 * SCALE), self.rect.centery + int(19 * SCALE)), (self.rect.right - int(85 * SCALE), self.rect.centery - int(19 * SCALE)))
+            
             surface.blit(txt_surf, txt_rect)
             surface.blit(label_surf, label_rect)
             surface.blit(unit_surf, unit_rect)
@@ -110,8 +120,17 @@ class Button:
 
 resizeWindow()
 
+def drawButtons(surface):
+        buttonStart.draw(surface, DARKGREEN, GREEN, GREEN)
+        buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="time", UNIT="min")
+        buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="incr.", UNIT="sec")
+        buttonSettings.draw(surface, BUTTON_BG, BORDER, BUTTON_TEXT)
+
+
 def main():
     global SCALE
+    clock.tick(60)
+    time_delta = clock.tick(60) / 1000
     screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
     pygame.display.set_caption("Chess")
     running = True
@@ -119,10 +138,7 @@ def main():
         screen.blit(background, (0, 0))
         pygame.draw.rect(menuRGBA, BORDER, (0, int(80 * SCALE), menuX, menuY), border_radius=BORDER_RADIUS)
         pygame.draw.rect(menuRGBA, PANEL_BG, (BORDER_WIDTH, int(81 * SCALE), menuX - BORDER_WIDTH * 2, menuY - BORDER_WIDTH * 2), border_radius=BORDER_RADIUS - 2 * BORDER_WIDTH)
-        buttonStart.draw(menuRGBA, DARKGREEN, GREEN, GREEN)
-        buttonTimeSetting.draw(menuRGBA, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="time", UNIT="min")
-        buttonIncrementSetting.draw(menuRGBA, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="incr.", UNIT="sec")
-        buttonSettings.draw(menuRGBA, BUTTON_BG, BORDER, BUTTON_TEXT)
+        drawButtons(menuRGBA)
         github_text = robotoMediumUnderline.render("View on GitHub", True, LINK_COLOR)
         github_rect = github_text.get_rect(center=(WIDTH // 2, int(0.95 * HEIGHT)))
         githubLink = screen.blit(github_text, github_rect)
@@ -130,7 +146,14 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-                
+            
+            # Process events for the GUI manager
+            manager.process_events(event)
+
+            if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+                if event.ui_element == timeTextEntry:
+                    print("You hit Enter! Text:", event.text)
+
             if event.type == pygame.VIDEORESIZE:
                 newHeight = event.h
                 newWidth = event.w
@@ -155,7 +178,12 @@ def main():
                 buttonTimeSetting.handle_event(event)
                 buttonIncrementSetting.handle_event(event)
                 buttonSettings.handle_event(event)
+        
+            
+        manager.update(time_delta)
+        manager.draw_ui(window_surface)  # Draw UI
         pygame.display.flip()
+
     pygame.quit()
 
 if __name__ == "__main__":
