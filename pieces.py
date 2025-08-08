@@ -702,22 +702,25 @@ class king:
         moves = [(coordY, coordX - 2), (coordY, coordX + 2), (coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
             
         if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
-            if (self.getCoordX() - x) ** 2 > 1 and self.hasMoved == False:  # Castling
-                if self.getCoordX() - x > 0:
-                    rook = board.matrix[self.getCoordY()][0]
-                    if rook.name == 'R' and rook.hasMoved == False:
-                        for i in range(1, self.getCoordX() - x + 1):
-                            if board.matrix[self.getCoordY()][i] is not None or isTileTarget(self.getCoordY(), i, oppositeColor, board):
-                                return False
-                        return True
+            if (self.getCoordX() - x) ** 2 > 1:  # Castling
+                if not self.hasMoved:
+                    if self.getCoordX() - x > 0:
+                        rook = board.matrix[self.getCoordY()][0]
+                        if rook.name == 'R' and rook.hasMoved == False:
+                            for i in range(1, self.getCoordX() - x + 1):
+                                if board.matrix[self.getCoordY()][i] is not None or isTileTarget(self.getCoordY(), i, oppositeColor, board):
+                                    return False
+                            return True
+                    else:
+                        rook = board.matrix[self.getCoordY()][7]
+                        if rook.name == 'R' and rook.hasMoved == False:
+                            for i in range(self.getCoordX() + 1, 7):
+                                if board.matrix[self.getCoordY()][i] is not None or isTileTarget(self.getCoordY(), i, oppositeColor, board):
+                                    return False
+                            return True
+                    return False
                 else:
-                    rook = board.matrix[self.getCoordY()][7]
-                    if rook.name == 'R' and rook.hasMoved == False:
-                        for i in range(self.getCoordX() + 1, 7):
-                            if board.matrix[self.getCoordY()][i] is not None or isTileTarget(self.getCoordY(), i, oppositeColor, board):
-                                return False
-                        return True
-                return False
+                    return False
             if checkNext:
                 if board.nextMoveIsCheck(self, y, x):
                     return False
