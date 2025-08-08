@@ -162,8 +162,9 @@ def getPressedKeys(keys):
 
 def drawCursor(textBox):
     center = textBox.rect.center
+    textWidth = textBox.font.size(textBox.text)[0]
     textLength = len(textBox.text)
-    cursorX = int(center[0] + (textLength - 0.5) / 2 * int(22 * SCALE))
+    cursorX = int(center[0] + textWidth / 2 + 0.5 * textWidth / textLength)
     cursorY1 = int(center[1] - 2 / 5 * int(22 * SCALE))
     cursorY2 = int(center[1] + 2 / 5 * int(22 * SCALE))
     pygame.draw.line(menuRGBA, TEXTBOX_TEXT, (cursorX, cursorY1), (cursorX, cursorY2))
