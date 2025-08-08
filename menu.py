@@ -7,13 +7,12 @@ def getMonitorResolution():
         if m.is_primary:
             return m.width, m.height
 
-ALPHABET_KEYS = (
-    pygame.K_a, pygame.K_b, pygame.K_c, pygame.K_d, pygame.K_e,
-    pygame.K_f, pygame.K_g, pygame.K_h, pygame.K_i, pygame.K_j,
-    pygame.K_k, pygame.K_l, pygame.K_m, pygame.K_n, pygame.K_o,
-    pygame.K_p, pygame.K_q, pygame.K_r, pygame.K_s, pygame.K_t,
-    pygame.K_u, pygame.K_v, pygame.K_w, pygame.K_x, pygame.K_y,
-    pygame.K_z, pygame.K_SPACE
+NUMBER_KEYS_WITH_NUMPAD = (
+    pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
+    pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9,
+    pygame.K_KP0, pygame.K_KP1, pygame.K_KP2, pygame.K_KP3, pygame.K_KP4,
+    pygame.K_KP5, pygame.K_KP6, pygame.K_KP7, pygame.K_KP8, pygame.K_KP9,
+    pygame.K_SPACE
 )
 
 pygame.display.set_caption("Chess")
@@ -71,9 +70,11 @@ def resizeWindow():
     
     BUTTON_INDIC += 1
     buttonTimeSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: getTypedTextTime())
+    buttonTimeSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
     buttonIncrementSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: getTypedTextIncrement())
+    buttonIncrementSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
     buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"))
@@ -122,13 +123,19 @@ class Button:
             txt_rect = txt_surf.get_rect(center=self.rect.center)
             surface.blit(txt_surf, txt_rect)
 
+    def set_text_entry(self, bool=True):
+        self.text_entry = bool
+
     def handle_event(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
             self.callback() 
 
     def set_text(self, new_text):
         self.text = new_text
-        self.text_surface = self.font.render(self.text, True, (255, 255, 255))
+        if self.text_entry:
+            self.text_surface = self.font.render(self.text, True, (255, 255, 255))
+        else:
+            self.text_surface = self.font.render(self.text, True, (150, 150, 150))
         
 resizeWindow()
 
@@ -140,44 +147,11 @@ def drawButtons(surface):
 
 
 def getTypedTextTime():
-    global screen
-    run = True
-    inputText = ''
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-                run = False
-            if event.type == pygame.KEYDOWN:
-                if event.key in ALPHABET_KEYS:
-                    inputText += pygame.key.name(event.key)
-                if event.key == pygame.K_BACKSPACE:
-                    inputText = inputText[:-1]
-                if event.key == pygame.K_RETURN:
-                    run = False
-        buttonTimeSetting.set_text(inputText if inputText else "10")
-        drawButtons(menuRGBA)
-        screen.blit(menuRGBA, (LEFT, TOP))
-        pygame.display.flip()
+    buttonTimeSetting.set_text_entry()
 
 
 def getTypedTextIncrement():
-    run = True
-    inputText = ''
-    while run:
-        for event in pygame.event.get():
-            if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
-                run = False
-            if event.type == pygame.KEYDOWN:
-                if event.key in ALPHABET_KEYS:
-                    inputText += pygame.key.name(event.key)
-                if event.key == pygame.K_BACKSPACE:
-                    inputText = inputText[:-1]
-                if event.key == pygame.K_RETURN:
-                    run = False
-        buttonIncrementSetting.set_text(inputText if inputText else "5")
-        drawButtons(menuRGBA)
-        screen.blit(menuRGBA, (LEFT, TOP))
-        pygame.display.flip()
+    buttonIncrementSetting.set_text_entry()
 
 
 def getPressedKeys(keys):
@@ -191,10 +165,8 @@ def getPressedKeys(keys):
 def main():
     global SCALE, screen
     clock.tick(60)
-    time_delta = clock.tick(60) / 1000
     running = True
-    incrementIsTyping = False
-    timeIsTyping = False
+    deletingText = False
 
     while running:
         screen.blit(background, (0, 0))
@@ -211,33 +183,36 @@ def main():
             if event.type == pygame.QUIT:
                 running = False
 
-            if timeIsTyping:
-                print("Time is typing")
-                pressedKeys = getPressedKeys(pygame.key.get_pressed())
-                inputText = ''
-                for key in pressedKeys:
-                    if key in ALPHABET_KEYS:
-                        inputText += key
-                    elif key == pygame.K_BACKSPACE:
-                        inputText = inputText[:-1]
-                    elif key == pygame.K_RETURN:
-                        timeIsTyping = False
-                print(inputText)
-                buttonTimeSetting.text = inputText if inputText else "10"
+            if buttonTimeSetting.text_entry:
+                inputText = buttonTimeSetting.text
 
-            if incrementIsTyping:
-                print("Increment is typing")
-                pressedKeys = getPressedKeys(pygame.key.get_pressed())
-                inputText = ''
-                for key in pressedKeys:
-                    if key in ALPHABET_KEYS:
-                        inputText += key
-                    elif key == pygame.K_BACKSPACE:
+                if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                    buttonTimeSetting.set_text_entry(False)
+
+                if event.type == pygame.KEYDOWN:
+                    if event.key in NUMBER_KEYS_WITH_NUMPAD:
+                        inputText += event.unicode
+                    if event.key == pygame.K_BACKSPACE:
+                        deletingText = True
+                    if event.key == pygame.K_RETURN:
+                        buttonTimeSetting.set_text_entry(False)
+
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_BACKSPACE:
+                    deletingText = False
+
+            if buttonIncrementSetting.text_entry:
+                inputText = buttonIncrementSetting.text
+                if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
+                    buttonIncrementSetting.set_text_entry(False)
+                if event.type == pygame.KEYDOWN:
+                    if event.key in NUMBER_KEYS_WITH_NUMPAD:
+                        inputText += pygame.key.name(event.key)
+                    if event.key == pygame.K_BACKSPACE:
                         inputText = inputText[:-1]
-                    elif key == pygame.K_RETURN:
-                        incrementIsTyping = False
-                print(inputText)
-                buttonIncrementSetting.text = inputText if inputText else "5"
+                    if event.key == pygame.K_RETURN:
+                        buttonIncrementSetting.set_text_entry(False)
+                buttonIncrementSetting.set_text(inputText if inputText else "5")
 
             if event.type == pygame.VIDEORESIZE:
                 newHeight = event.h
