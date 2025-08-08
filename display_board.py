@@ -6,7 +6,6 @@ import pygame_widgets
 from screeninfo import get_monitors
 from pygame_widgets.button import Button
 import display_assistant
-# import startup_screen
 
 # Initialize Pygame
 pygame.init()
@@ -299,7 +298,6 @@ def main(time, increment):
     promotingPawn = None
     time, increment = time, increment
 
-    # startup_screen.show_startup_screen(GAME, WIDTH, HEIGHT, SCALE, TILESIZE, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN)
 
     while run:
         clock.tick(60)  # 60 FPS cap
