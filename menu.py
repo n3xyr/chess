@@ -132,10 +132,7 @@ class Button:
 
     def set_text(self, new_text):
         self.text = new_text
-        if self.text_entry:
-            self.text_surface = self.font.render(self.text, True, (255, 255, 255))
-        else:
-            self.text_surface = self.font.render(self.text, True, (150, 150, 150))
+        self.text_surface = self.font.render(self.text, True, (255, 255, 255))
         
 resizeWindow()
 
@@ -196,12 +193,15 @@ def main():
                         inputText = inputText[:-1]
                     if event.key == pygame.K_RETURN:
                         buttonTimeSetting.set_text_entry(False)
-                buttonTimeSetting.set_text(inputText)
+                if len(inputText) <= 6:
+                    buttonTimeSetting.set_text(inputText)
 
             if buttonIncrementSetting.text_entry:
                 inputText = buttonIncrementSetting.text
+
                 if event.type == pygame.MOUSEBUTTONDOWN and pygame.mouse.get_pressed()[0]:
                     buttonIncrementSetting.set_text_entry(False)
+
                 if event.type == pygame.KEYDOWN:
                     if event.key in NUMBER_KEYS_WITH_NUMPAD:
                         inputText += pygame.key.name(event.key)
@@ -209,7 +209,8 @@ def main():
                         inputText = inputText[:-1]
                     if event.key == pygame.K_RETURN:
                         buttonIncrementSetting.set_text_entry(False)
-                buttonIncrementSetting.set_text(inputText if inputText else "5")
+                if len(inputText) <= 6:
+                    buttonIncrementSetting.set_text(inputText if inputText else "5")
 
             if event.type == pygame.VIDEORESIZE:
                 newHeight = event.h
