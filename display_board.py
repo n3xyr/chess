@@ -380,7 +380,7 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
         pygame.time.delay(4)  # Delay for animation effect
 
 
-def main():
+def main(time, increment):
     clock = pygame.time.Clock()
     run = True
     moveList = []
