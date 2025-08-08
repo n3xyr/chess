@@ -193,13 +193,10 @@ def main():
                     if event.key in NUMBER_KEYS_WITH_NUMPAD:
                         inputText += event.unicode
                     if event.key == pygame.K_BACKSPACE:
-                        deletingText = True
+                        inputText = inputText[:-1]
                     if event.key == pygame.K_RETURN:
                         buttonTimeSetting.set_text_entry(False)
-
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_BACKSPACE:
-                    deletingText = False
+                buttonTimeSetting.set_text(inputText)
 
             if buttonIncrementSetting.text_entry:
                 inputText = buttonIncrementSetting.text
