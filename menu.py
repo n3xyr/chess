@@ -1,7 +1,8 @@
 import pygame
 from screeninfo import get_monitors
 import webbrowser
-
+import display_board
+import time
 def getMonitorResolution():
     for m in get_monitors():
         if m.is_primary:
@@ -66,7 +67,7 @@ def resizeWindow():
         return int(0.076 * HEIGHT)
 
     BUTTON_INDIC = 1
-    buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: print("Start Game"))
+    buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: display_board.main(int(buttonTimeSetting.text), int(buttonIncrementSetting.text)))
     
     BUTTON_INDIC += 1
     buttonTimeSetting = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: getTypedTextTime())
@@ -159,13 +160,23 @@ def getPressedKeys(keys):
     return pressed
 
 
+def drawCursor(textBox):
+    center = textBox.rect.center
+    textLength = len(textBox.text)
+    cursorX = int(center[0] + (textLength - 0.5) / 2 * int(22 * SCALE))
+    cursorY1 = int(center[1] - 2 / 5 * int(22 * SCALE))
+    cursorY2 = int(center[1] + 2 / 5 * int(22 * SCALE))
+    pygame.draw.line(menuRGBA, TEXTBOX_TEXT, (cursorX, cursorY1), (cursorX, cursorY2))
+
 def main():
     global SCALE, screen
     clock.tick(60)
     running = True
-    deletingText = False
+    blinkTime = 0
+    blinkFreq = 60
 
     while running:
+        blinkTime = (blinkTime + 1) % (2 * blinkFreq)
         screen.blit(background, (0, 0))
         pygame.draw.rect(menuRGBA, BORDER, (0, int(80 * SCALE), menuX, menuY), border_radius=BORDER_RADIUS)
         pygame.draw.rect(menuRGBA, PANEL_BG, (BORDER_WIDTH, int(81 * SCALE), menuX - BORDER_WIDTH * 2, menuY - BORDER_WIDTH * 2), border_radius=BORDER_RADIUS - 2 * BORDER_WIDTH)
@@ -175,6 +186,13 @@ def main():
         github_text = robotoMediumUnderline.render("View on GitHub", True, LINK_COLOR)
         github_rect = github_text.get_rect(center=(WIDTH // 2, int(0.95 * HEIGHT)))
         githubLink = screen.blit(github_text, github_rect)
+        if blinkTime > blinkFreq:
+            if buttonTimeSetting.text_entry:
+                drawCursor(buttonTimeSetting)
+
+            if buttonIncrementSetting.text_entry:
+                drawCursor(buttonIncrementSetting)
+
         screen.blit(menuRGBA, (LEFT, TOP))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -204,7 +222,7 @@ def main():
 
                 if event.type == pygame.KEYDOWN:
                     if event.key in NUMBER_KEYS_WITH_NUMPAD:
-                        inputText += pygame.key.name(event.key)
+                        inputText += event.unicode
                     if event.key == pygame.K_BACKSPACE:
                         inputText = inputText[:-1]
                     if event.key == pygame.K_RETURN:
