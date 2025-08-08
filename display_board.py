@@ -10,6 +10,7 @@ from copy import deepcopy
 
 # Initialize Pygame
 pygame.init()
+pygame.font.init()
 
 # Get monitor(s) specs
 def getMonitorResolution():
@@ -42,6 +43,7 @@ def adjustWindowSize(newWidth, newHeight):
     BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * BASESCALE), int(23 * BASESCALE)), (int(630 * BASESCALE), int(23 * BASESCALE))
 
     GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+    pygame.font.init()
     
     robotoFont = pygame.font.SysFont('Roboto', int(50 * BASESCALE))
     
@@ -388,6 +390,7 @@ def main():
     rightClickDown = False
     arrows = []
     promotingPawn = None
+    time, increment = time, increment
     movingPiece = False
     canPlay = True
     setPiecesCoordinates()
@@ -395,10 +398,10 @@ def main():
     while run:
         clock.tick(60)  # 60 FPS cap
 
-        # if board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
-        #     canPlay = False
-        # else:
-        #     canPlay = True
+        if board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
+            canPlay = False
+        else:
+            canPlay = True
 
         drawBoard(GAME)
 
@@ -526,4 +529,4 @@ def main():
  
 
 if __name__ == "__main__":
-    main()
+    main(0, 0)
