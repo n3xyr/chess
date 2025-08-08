@@ -80,16 +80,16 @@ def resizeWindow():
         return int(0.076 * HEIGHT)
     
     BUTTON_INDIC = 1
-    buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: display_board.main(int(buttonTimeSetting.text), int(buttonIncrementSetting.text)))
+    buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: display_board.main(timeMagnitude * int(buttonTimeSetting.text), incrementMagnitude * int(buttonIncrementSetting.text)))
     
     BUTTON_INDIC += 1
-    buttonTimeSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", timeMagnitude, lambda: getTypedTextTime())
+    buttonTimeSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: getTypedTextTime())
     buttonTimeMagnitudeUp = imageButton(buttonTimeSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonTimeSetting.rect.centery - int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, arroUpImg, lambda: timeIncreaseMagnitude())
     buttonTimeMagnitudeDown = imageButton(buttonTimeSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonTimeSetting.rect.centery + int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, arroDownImg, lambda: timeReduceMagnitude())
     buttonTimeSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
-    buttonIncrementSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", incrementMagnitude, lambda: getTypedTextIncrement())
+    buttonIncrementSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: getTypedTextIncrement())
     buttonIncrementMagnitudeUp = imageButton(buttonIncrementSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonIncrementSetting.rect.centery - int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, arroUpImg, lambda: incrementIncreaseMagnitude())
     buttonIncrementMagnitudeDown = imageButton(buttonIncrementSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonIncrementSetting.rect.centery + int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, arroDownImg, lambda: incrementReduceMagnitude())
     buttonIncrementSetting.set_text_entry(False)
@@ -145,12 +145,11 @@ class imageButton:
             self.callback()
 
 class entryButton:
-    def __init__(self, x, y, w, h, text, magnitude, callback):
+    def __init__(self, x, y, w, h, text, callback):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.callback = callback
         self.font = pygame.font.Font('fonts/Roboto-Medium.ttf', int(22 * SCALE))
-        self.magnitude = magnitude
 
     def draw(self, surface, BG_COLOR, BORDER_COLOR, TEXT_COLOR_1, TEXT_COLOR_2=None, LINE_COLOR=None, LABEL=None, UNIT=None):
         pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
@@ -184,28 +183,25 @@ class entryButton:
         self.text = new_text
         self.text_surface = self.font.render(self.text, True, (255, 255, 255))
 
-    def set_magnitude(self, magnitude):
-        self.magnitude = magnitude
-
 resizeWindow()
 
 def drawButtons(surface):
     buttonStart.draw(surface, DARKGREEN, GREEN, GREEN)
     
-    buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="time", UNIT = MAGNITUDE_DIC[buttonTimeSetting.magnitude])
+    buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="time", UNIT = MAGNITUDE_DIC[timeMagnitude])
     
-    if buttonTimeSetting.magnitude < 3600:
+    if timeMagnitude < 3600:
         buttonTimeMagnitudeUp.draw(surface, TEXTBOX_BG, BORDER)
 
-    if buttonTimeSetting.magnitude > 1:
+    if timeMagnitude > 1:
         buttonTimeMagnitudeDown.draw(surface, TEXTBOX_BG, BORDER)
     
-    buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="incr.", UNIT= MAGNITUDE_DIC[buttonIncrementSetting.magnitude])
+    buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="incr.", UNIT= MAGNITUDE_DIC[incrementMagnitude])
       
-    if buttonIncrementSetting.magnitude < 3600:
+    if incrementMagnitude < 3600:
         buttonIncrementMagnitudeUp.draw(surface, TEXTBOX_BG, BORDER)
 
-    if buttonIncrementSetting.magnitude > 1:
+    if incrementMagnitude > 1:
         buttonIncrementMagnitudeDown.draw(surface, TEXTBOX_BG, BORDER)
 
     buttonSettings.draw(surface, BUTTON_BG, BORDER, BUTTON_TEXT)
@@ -221,50 +217,42 @@ def getTypedTextIncrement():
 
 def timeReduceMagnitude():
     global timeMagnitude
-    magnitude = buttonTimeSetting.magnitude
-    if magnitude == 3600:
-        buttonTimeSetting.set_magnitude(60)
-    elif magnitude == 60:
-        buttonTimeSetting.set_magnitude(1)
+    if timeMagnitude == 3600:
+        timeMagnitude = 60
+    elif timeMagnitude == 60:
+        timeMagnitude = 1
     else:
         return
-    timeMagnitude = buttonTimeSetting.magnitude
         
 
 def timeIncreaseMagnitude(): 
     global timeMagnitude
-    magnitude = buttonTimeSetting.magnitude
-    if magnitude == 3600:
+    if timeMagnitude == 3600:
         return
-    elif magnitude == 60:
-        buttonTimeSetting.set_magnitude(3600)
+    elif timeMagnitude == 60:
+        timeMagnitude = 3600
     else:
-        buttonTimeSetting.set_magnitude(60)
-    timeMagnitude = buttonTimeSetting.magnitude
+        timeMagnitude = 60
 
 
 def incrementReduceMagnitude():
     global incrementMagnitude
-    magnitude = buttonIncrementSetting.magnitude
-    if magnitude == 3600:
-        buttonIncrementSetting.set_magnitude(60)
-    elif magnitude == 60:
-        buttonIncrementSetting.set_magnitude(1)
+    if incrementMagnitude == 3600:
+        incrementMagnitude = 60
+    elif incrementMagnitude == 60:
+        incrementMagnitude = 1
     else:
         return
-    incrementMagnitude = buttonIncrementSetting.magnitude
 
 
 def incrementIncreaseMagnitude():
     global incrementMagnitude
-    magnitude = buttonIncrementSetting.magnitude
-    if magnitude == 3600:
+    if incrementMagnitude == 3600:
         return
-    elif magnitude == 60:
-        buttonIncrementSetting.set_magnitude(3600)
+    elif incrementMagnitude == 60:
+        incrementMagnitude = 3600
     else:
-        buttonIncrementSetting.set_magnitude(60)
-    incrementMagnitude = buttonIncrementSetting.magnitude
+        incrementMagnitude = 60
 
 
 def drawCursor(textBox):
