@@ -220,6 +220,7 @@ def getTypedTextIncrement():
 
 
 def timeReduceMagnitude():
+    global timeMagnitude
     magnitude = buttonTimeSetting.magnitude
     if magnitude == 3600:
         buttonTimeSetting.set_magnitude(60)
@@ -227,9 +228,11 @@ def timeReduceMagnitude():
         buttonTimeSetting.set_magnitude(1)
     else:
         return
+    timeMagnitude = buttonTimeSetting.magnitude
         
 
-def timeIncreaseMagnitude():
+def timeIncreaseMagnitude(): 
+    global timeMagnitude
     magnitude = buttonTimeSetting.magnitude
     if magnitude == 3600:
         return
@@ -237,9 +240,11 @@ def timeIncreaseMagnitude():
         buttonTimeSetting.set_magnitude(3600)
     else:
         buttonTimeSetting.set_magnitude(60)
+    timeMagnitude = buttonTimeSetting.magnitude
 
 
 def incrementReduceMagnitude():
+    global incrementMagnitude
     magnitude = buttonIncrementSetting.magnitude
     if magnitude == 3600:
         buttonIncrementSetting.set_magnitude(60)
@@ -247,9 +252,11 @@ def incrementReduceMagnitude():
         buttonIncrementSetting.set_magnitude(1)
     else:
         return
+    incrementMagnitude = buttonIncrementSetting.magnitude
 
 
 def incrementIncreaseMagnitude():
+    global incrementMagnitude
     magnitude = buttonIncrementSetting.magnitude
     if magnitude == 3600:
         return
@@ -257,6 +264,7 @@ def incrementIncreaseMagnitude():
         buttonIncrementSetting.set_magnitude(3600)
     else:
         buttonIncrementSetting.set_magnitude(60)
+    incrementMagnitude = buttonIncrementSetting.magnitude
 
 
 def drawCursor(textBox):
