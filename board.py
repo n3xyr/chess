@@ -6,11 +6,15 @@ import copy
 pygame.mixer.init()
 moveSound = pygame.mixer.Sound('soundEffects/moveSound.wav')
 eatSound = pygame.mixer.Sound('soundEffects/eatSound.wav')
+castleSound = pygame.mixer.Sound('soundEffects/castleSound.wav')
 
 class board:
     def __init__(self):
         self.matrix = [[None for _ in range(8)] for _ in range(8)]
         self.turn = 'white'
+        self.boardHistoric = []
+        self.soundHistoric = []
+        self.historicIndic = 0
 
 
     def switchTurn(self):
@@ -55,6 +59,23 @@ class board:
         self.wk = pieces.king(7, 4, 'white')
         self.matrix[0][4] = self.bk                                   # black king
         self.matrix[7][4] = self.wk                                   # white king
+        
+
+        self.boardHistoric = [copy.deepcopy(self.matrix)]  # Initial historic state
+        self.historicIndic = len(self.boardHistoric) - 1
+
+
+    def getPieces(self, color):
+        """
+        Returns a list of pieces of the specified color.
+        """
+        piecesList = []
+        for i in range(8):
+            for j in range(8):
+                piece = self.matrix[i][j]
+                if piece and piece.getColor() == color:
+                    piecesList.append(piece)
+        return piecesList
 
 
     def getAvailableMoves(self, selectedTile):
@@ -72,85 +93,147 @@ class board:
             return self.bk
 
 
-    def getActType(self, piece, y, x):
+    def getActTypes(self, piece, y, x):
+        result = ''
 
+        if piece.getColor() == 'white':
+            king = self.wk
+        else:
+            king =  self.bk
+
+        if self.nextMoveGivesCheck(piece, y, x):
+            if self.checkMate(king):
+                result += '#,'
+            else:
+                result += '+,'
+                
         if self.matrix[y][x]:
+            result += 'x,'
 
-            if piece.getColor() == 'white':
-                king = self.wk
-            else:
-                king =  self.bk
-
-            if self.nextMoveIsCheck(king, piece, y, x):
-                if self.checkMate(king):
-                    return '#'
-                else:
-                    return '+'
-            else:
-                return 'x'
-        elif piece.name == 'K':
+        if piece.name == 'K':
             if (piece.getCoordX() - x) ** 2 > 1:
                 if piece.getCoordX() - x > 0:
-                    return 'O-O-O'
+                    result += 'O-O-O,'
                 else:
-                    return 'O-O'
-        elif piece.name == 'P':
-            if piece.getCoordY() == 0:
-                return '='
+                    result += 'O-O,'
+
+        if piece.name == '':
+            if y in (0, 7):
+                result += '=,'
             elif (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
-                return 'e.p'
-        return ''
+                result += 'e.p,'
+
+        return result[0:-1]
 
 
-    def manageMove(self, selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn):
-        if selectedTile:
-            if selectedTile.canMove(mouseYTab, mouseXTab, self) and selectedTile.getColor() == self.turn:
-                moveList.append(
-                    selectedTile.getName() + self.getActType(selectedTile, mouseYTab, mouseXTab) + chr(97 + mouseXTab) + str(8 - mouseYTab)
-                )
+    def addMoveToHistoric(self, moveList, actList, piece, y, x):
+        resultMove = piece.name
 
-                self.movePiece(selectedTile, mouseYTab, mouseXTab)
-
-                if self.matrix[mouseYTab][mouseXTab] is not None:
-                    movedPiece = self.matrix[mouseYTab][mouseXTab]
-
-                if movedPiece.name == 'P' and movedPiece.isAbleToPromote():
-                    promotingPawn = movedPiece
-
-                selectedTile = None
-
-                return selectedTile, promotingPawn
-
-            elif clickedTile:
-                return clickedTile, promotingPawn
-
-        return clickedTile, promotingPawn
+        if resultMove == '' and 'x' in actList:
+            resultMove += chr(97 + piece.getCoordX())
+        if piece.name != '':
+            for i in range(len(self.matrix)):
+                for j in range(len(self.matrix)):
+                    matrixPiece = self.matrix[i][j]
+                    if matrixPiece:
+                        if matrixPiece.name == piece.name:
+                            if matrixPiece.canMove(y, x, self):
+                                if matrixPiece.getCoordX() != piece.getCoordX():
+                                    resultMove += chr(97 + piece.getCoordX())
+                                elif matrixPiece.getCoordY() != piece.getCoordY():
+                                    resultMove += str(8 - piece.getCoordY())
 
 
-    def movePiece(self, piece, y, x):
+        if 'x' in actList:
+            resultMove += 'x'
 
-        target = self.matrix[y][x]
+        resultMove += chr(97 + x) + str(8 - y)
+
+        if '=' in actList:
+            resultMove += '=' + self.matrix[piece.getCoordY()][piece.getCoordX()].name
+
+        if 'O-O-O' in actList:
+            resultMove = 'O-O-O' + resultMove
+        elif 'O-O' in actList:
+            resultMove = 'O-O' + resultMove
+        
+        if '+' in actList:
+            resultMove += '+'
+        elif '#' in actList:
+            resultMove += '#'
+
+        moveList.append(resultMove)
+
+
+    def manageSelection(self, selectedTile, y, x):
+        clickedTile = self.matrix[y][x]
+
+        if selectedTile and selectedTile.canMove(y, x, self) and selectedTile.getColor() == self.turn:
+            return selectedTile, True
+        
+        return clickedTile, False
+
+    
+    def playSound(self, act):
+        if 'x' in act:
+            eatSound.play()
+        elif 'O-O' in act or 'O-O-O' in act:
+            castleSound.play()
+        else:
+            moveSound.play()
+
+
+    def addSoundToHistoric(self, act):
+        if 'x' in act:
+            self.soundHistoric.append('x')
+        else:
+            self.soundHistoric.append('')
+
+
+    def isCastleMove(self, piece, x):
+        if piece.name == 'K':
+            if (piece.getCoordX() - x) ** 2 > 1:
+                return True
+        return False
+    
+    def isEnPassantMove(self, piece, y, x):
+        if piece.name == '':
+            if y in (0, 7):
+                return False
+            if (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
+                return True
+        return False
+
+    def movePiece(self, piece, y, x, doSound=True):
+        actList = self.getActTypes(piece, y, x)
+
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
+        if piece.name == 'K':
+            piece.hasMoved = True
+        if piece.name == 'R':
+            piece.hasMoved = True
+
         piece.setCoordY(y)
         piece.setCoordX(x)
+
+
         if piece.getColor() == 'white':
             opponentKing = self.wk
         else:
             opponentKing =  self.bk
 
         isCheckemated = self.checkMate(opponentKing)
+
         if isCheckemated:
             print(opponentKing.getColor(), "lost")
 
+        if doSound:
+            self.playSound(actList.split(','))
         self.switchTurn()
+        self.addSoundToHistoric(actList.split(','))
 
-        if target != None:
-            if target.getColor() != piece.getColor():
-                eatSound.play()
-        moveSound.play()
-        
 
     def promote(self, piece, newPieceName):
         coordX = piece.getCoordX()
@@ -164,36 +247,17 @@ class board:
         elif newPieceName == 'rook':
             self.matrix[coordY][coordX] = pieces.rook(coordY, coordX, color)
         elif newPieceName == 'bishop':
-            self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)  
+            self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
 
 
     def initClock(self):
         initialTime = time.time()
-        lastTime = initialTime
-        return initialTime, lastTime
+        return initialTime
 
 
     def getClock(self, initialTime):
         currentTime = time.time()
         return int(currentTime - initialTime)
-    
-
-    def generateIsCheckingPiecesList(self):
-        '''
-        Returns a list of pieces that can move to the king's position.
-        whiteList -> white pieces that can move to the black king's position
-        blackList -> black pieces that can move to the white king's position
-        '''
-        whiteList = []
-        blackList = []
-        for i in range(8):
-            for j in range(8):
-                if self.matrix[i][j] is not None:
-                    if self.matrix[i][j].canMove(self.wk.getCoordY(), self.wk.getCoordX(), self):
-                        blackList.append(self.matrix[i][j])
-                    elif self.matrix[i][j].canMove(self.bk.getCoordY(), self.bk.getCoordX(), self):
-                        whiteList.append(self.matrix[i][j])
-        return whiteList, blackList
 
 
     def createSimulatedBoard(self):
@@ -214,22 +278,33 @@ class board:
         return simulatedBoard
 
 
-    def simulateMovePiece(self, piece, y, x, boardToSimulate):
-        if piece is None:
-            return
-        else:
+    def simulateMovePiece(self, piece, y, x):
+        if piece:
             initalY = piece.getCoordY()
             initalX = piece.getCoordX()
-            boardToSimulate.matrix[y][x] = piece
-            boardToSimulate.matrix[initalY][initalX] = None
+            self.matrix[y][x] = piece
+            self.matrix[initalY][initalX] = None
             piece.setCoordY(y)
             piece.setCoordX(x)
 
 
-    def nextMoveIsCheck(self, king, piece, y, x):
+    def nextMoveGivesCheck(self, piece, y, x):
+            simulatedBoard = self.createSimulatedBoard()
+            simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
+            simulatedBoard.simulateMovePiece(simPiece, y, x)
+
+            if piece.getColor() == 'white':
+                simKing = simulatedBoard.bk
+            else:
+                simKing =  simulatedBoard.wk
+
+            return simKing.isChecked(simulatedBoard, checkNext=False)
+
+
+    def nextMoveIsCheck(self, piece, y, x):
         simulatedBoard = self.createSimulatedBoard()
         simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
-        simulatedBoard.simulateMovePiece(simPiece, y, x, simulatedBoard)
+        simulatedBoard.simulateMovePiece(simPiece, y, x)
 
         if piece.getColor() == 'white':
             simKing = simulatedBoard.wk
@@ -262,7 +337,7 @@ class board:
                 possibleMoves = piece.possibleMoves(self)
                 for move in possibleMoves:
                     simulatedBoard = self.createSimulatedBoard()
-                    simulatedBoard.simulateMovePiece(piece, move[0], move[1], simulatedBoard)
+                    simulatedBoard.simulateMovePiece(piece, move[0], move[1])
                     if not simKing.isChecked(simulatedBoard, checkNext=False):
                         return False
                     piece.setCoordY(initialY)
@@ -280,6 +355,23 @@ class board:
                 else:
                     print('   ', end='')
             print('')
+
+
+    def consoleDisplayHistoric(self):
+        print('Historic:')
+        for i, state in enumerate(self.boardHistoric):
+            print(f'State {i}:')
+            for row in state:
+                for piece in row:
+                    if piece is not None:
+                        if piece.name == '':
+                            print('p', ' ', end='')
+                        else:
+                            print(piece.name.lower(), ' ', end='')
+                    else:
+                        print('   ', end='')
+                print('')
+            print('---')
 
 
 displayedBoard = board()

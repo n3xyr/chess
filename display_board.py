@@ -6,6 +6,7 @@ import pygame_widgets
 from screeninfo import get_monitors
 from pygame_widgets.button import Button
 import display_assistant
+from copy import deepcopy
 
 # Initialize Pygame
 pygame.init()
@@ -200,10 +201,7 @@ display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, L
 adjustPromoSize()
 
 
-def drawBoard(game):
-    """
-    Draw board
-    """
+def drawBoard(game, skipPiece=None):
     game.fill(BACKGROUND)
     for row in range(ROWS):
         for col in range(COLS):
@@ -212,34 +210,25 @@ def drawBoard(game):
             else:
                 pygame.draw.rect(game, LIGHT, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
 
+            # Draw tiles
             currentLoadingPiece = board.displayedBoard.matrix[row][col]
-            if currentLoadingPiece != None:
-                if currentLoadingPiece.getColor() == 'black':
-                    if currentLoadingPiece.name == 'N':
-                        game.blit(bn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black knight
-                    if currentLoadingPiece.name == 'R':
-                        game.blit(br, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black rook
-                    if currentLoadingPiece.name == 'P':
-                        game.blit(bp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black pawn
-                    if currentLoadingPiece.name == 'B':
-                        game.blit(bb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black bishop
-                    if currentLoadingPiece.name == 'Q':
-                        game.blit(bq, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black queen
-                    if currentLoadingPiece.name == 'K':
-                        game.blit(bk, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # black king
+            if currentLoadingPiece:
+                if skipPiece:
+                    if not(skipPiece.getCoordX() == currentLoadingPiece.getCoordX() and skipPiece.getCoordY() == currentLoadingPiece.getCoordY()):
+                        game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
                 else:
-                    if currentLoadingPiece.name == 'N':
-                        game.blit(wn, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white knight
-                    if currentLoadingPiece.name == 'R':
-                        game.blit(wr, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white rook
-                    if currentLoadingPiece.name == 'P':
-                        game.blit(wp, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white pawn
-                    if currentLoadingPiece.name == 'B':
-                        game.blit(wb, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white bishop
-                    if currentLoadingPiece.name == 'Q':
-                        game.blit(wq, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white queen
-                    if currentLoadingPiece.name == 'K':
-                        game.blit(wk, (col * TILESIZE, TOPMARGIN + row * TILESIZE))    # white king
+                    game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
+
+def setPiecesCoordinates():
+    """
+    Initialize pieces coordinates
+    """
+    for row in range(ROWS):
+        for col in range(COLS):
+            currentLoadingPiece = board.displayedBoard.matrix[row][col]
+            if currentLoadingPiece is not None:
+                currentLoadingPiece.rectX = col * TILESIZE + LEFTMARGIN
+                currentLoadingPiece.rectY = row * TILESIZE + TOPMARGIN
 
 
 def getTileColor(coordinates):
@@ -274,9 +263,9 @@ def displayAvailableMoves(availableMoves, selectedTile):
             display_assistant.drawPossibleTile(GAME, move)
             
 
-def tryPromotion(promotingPawn):
+def tryDrawPromotionMenu(promotingPawn):
     promoIconRects.clear()
-    if promotingPawn is not None and promotingPawn.name == 'P' and promotingPawn.isAbleToPromote():
+    if promotingPawn is not None and promotingPawn.name == '' and promotingPawn.isAbleToPromote():
         pygame.draw.rect(GAME, WHITE, promoBackground)
         for idx, img in enumerate(promoOrder[promotingPawn.getColor()]):
             img = pygame.transform.scale(img, (promoImageSize, promoImageSize))
@@ -286,7 +275,112 @@ def tryPromotion(promotingPawn):
             GAME.blit(img, (pos[0] - TILESIZE // 2, pos[1]))
             promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
 
-def main(time, increment):
+
+def tryMoveThroughHistoric(event):            
+    if event.type == pygame.KEYDOWN:
+        if event.key == pygame.K_LEFT:  # Go back one move
+            if len(board.displayedBoard.boardHistoric) > 1 and board.displayedBoard.historicIndic > 0:
+                board.displayedBoard.historicIndic -= 1
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic])
+
+        if event.key == pygame.K_RIGHT:  # Go forward one move
+            if len(board.displayedBoard.boardHistoric) - 1 > board.displayedBoard.historicIndic:
+                board.displayedBoard.historicIndic += 1
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic - 1])
+
+        if event.key == pygame.K_UP:  # Go to the last move
+            if len(board.displayedBoard.boardHistoric) > 0 and board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
+                board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound('')
+
+        if event.key == pygame.K_DOWN:  # Go to the first move
+            if len(board.displayedBoard.boardHistoric) > 0 and board.displayedBoard.historicIndic != 0:
+                board.displayedBoard.historicIndic = 0
+                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
+                board.displayedBoard.playSound('')
+
+
+def getPieceImage(piece):
+    """
+    Get the image of a piece based on its color and name.
+    """
+    if piece.getColor() == 'black':
+        if piece.name == 'N':
+            return bn
+        elif piece.name == 'R':
+            return br
+        elif piece.name == '':
+            return bp
+        elif piece.name == 'B':
+            return bb
+        elif piece.name == 'Q':
+            return bq
+        elif piece.name == 'K':
+            return bk
+    else:
+        if piece.name == 'N':
+            return wn
+        elif piece.name == 'R':
+            return wr
+        elif piece.name == '':
+            return wp
+        elif piece.name == 'B':
+            return wb
+        elif piece.name == 'Q':
+            return wq
+        elif piece.name == 'K':
+            return wk
+    return None
+
+
+def slidePieceToTile(piece, targetTile):
+    """
+    Slide a piece to a target tile.
+    """
+    startX, startY = piece.getCoordX() * TILESIZE + LEFTMARGIN, piece.getCoordY() * TILESIZE + TOPMARGIN
+    targetX, targetY = targetTile[0] * TILESIZE + LEFTMARGIN, targetTile[1] * TILESIZE + TOPMARGIN
+    deltaX, deltaY = targetX - startX, targetY - startY
+
+    steps = 12  # Number of steps for the sliding animation
+    for step in range(steps):
+        piece.rectX += deltaX / steps
+        piece.rectY += deltaY / steps
+        drawBoard(GAME, skipPiece=piece)
+        GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
+        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+        pygame.display.flip()
+        pygame.time.delay(4)  # Delay for animation effect
+
+
+def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
+    """
+    Slide two pieces to their respective target tiles.
+    """
+    startX1, startY1 = piece1.getCoordX() * TILESIZE + LEFTMARGIN, piece1.getCoordY() * TILESIZE + TOPMARGIN
+    startX2, startY2 = piece2.getCoordX() * TILESIZE + LEFTMARGIN, piece2.getCoordY() * TILESIZE + TOPMARGIN
+    targetX1, targetY1 = targetTile1[0] * TILESIZE + LEFTMARGIN, targetTile1[1] * TILESIZE + TOPMARGIN
+    targetX2, targetY2 = targetTile2[0] * TILESIZE + LEFTMARGIN, targetTile2[1] * TILESIZE + TOPMARGIN
+    deltaX1, deltaY1 = targetX1 - startX1, targetY1 - startY1
+    deltaX2, deltaY2 = targetX2 - startX2, targetY2 - startY2
+
+    steps = 12  # Number of steps for the sliding animation
+    for step in range(steps):
+        piece1.rectX += deltaX1 / steps
+        piece1.rectY += deltaY1 / steps
+        piece2.rectX += deltaX2 / steps
+        piece2.rectY += deltaY2 / steps
+        drawBoard(GAME)
+        GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
+        GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
+        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+        pygame.display.flip()
+        pygame.time.delay(4)  # Delay for animation effect
+
+
+def main():
     clock = pygame.time.Clock()
     run = True
     moveList = []
@@ -297,36 +391,45 @@ def main(time, increment):
     arrows = []
     promotingPawn = None
     time, increment = time, increment
-
+    movingPiece = False
+    canPlay = True
+    setPiecesCoordinates()
 
     while run:
         clock.tick(60)  # 60 FPS cap
-        
+
+        if board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
+            canPlay = False
+        else:
+            canPlay = True
+
         drawBoard(GAME)
+
         displayAvailableMoves(availableMoves, selectedTile)
         
         arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
         
         for arrow in arrows:
-            display_assistant.drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1])
+            display_assistant.drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1], TILESIZE / 5, 43 * TILESIZE / 100, 35.5)
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
-
         if not firstMovePlayed and len(moveList) != 0:
             firstMovePlayed = True
-            initialTime, lastTime = board.displayedBoard.initClock()
+            initialTime = board.displayedBoard.initClock()
         elif firstMovePlayed:
             timer = board.displayedBoard.getClock(initialTime)
             displayTime(timer)
 
-        tryPromotion(promotingPawn)
+        tryDrawPromotionMenu(promotingPawn)
 
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 run = False
-                
+
+            tryMoveThroughHistoric(event)
+
             if event.type == pygame.VIDEORESIZE:
                 adjustWindowSize(event.w, event.h)
                 adjustPromoSize()
@@ -358,27 +461,65 @@ def main(time, increment):
                         arrows.append((arrowStart, arrowEnd))
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                mouseX, mouseY = pygame.mouse.get_pos()
                 arrows = []
+                    
+            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and canPlay:
+                mouseX, mouseY = pygame.mouse.get_pos()
+
+                if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
+                    mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                    mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
+                    lastSelectedTile = deepcopy(selectedTile)
+                    
+                    selectedTile, movingPiece = board.displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
+
+                    if movingPiece:
+                        if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
+                            actList = (board.displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
+
+                            if board.displayedBoard.isCastleMove(lastSelectedTile, mouseXTab):
+
+                                if selectedTile.getCoordX() > mouseXTab:
+                                    rook = board.displayedBoard.matrix[mouseYTab][0]
+                                    slideBothPiecesToTile(rook, selectedTile, (mouseXTab + 1, mouseYTab), (mouseXTab, mouseYTab))
+                                    board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                    board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
+
+                                else:
+                                    rook = board.displayedBoard.matrix[mouseYTab][7]
+                                    slideBothPiecesToTile(rook, selectedTile, (mouseXTab - 1, mouseYTab), (mouseXTab, mouseYTab))
+                                    board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                    board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
+                            else:
+                                slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
+                                board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+
+                            if selectedTile.name == '' and selectedTile.isAbleToPromote():
+                                promotingPawn = selectedTile
+                            selectedTile = None
+                            
+                    availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
 
                 if promoIconRects:  # if a pawn is promoting
                     for rect, pieceName in promoIconRects:
                         if rect.collidepoint((mouseX, mouseY)):
                             board.displayedBoard.promote(promotingPawn, pieceName)
+                            board.displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
+                            board.displayedBoard.boardHistoric.append(deepcopy(board.displayedBoard.matrix))
+                            board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
+                            setPiecesCoordinates()
                             promoIconRects.clear()
+                            movingPiece = False
                             promotingPawn = None
                             availableMoves = []
                             break
                     continue  # don't do anything if something else than a promotion is clicked
 
-                if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
-                    mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
-                    mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
-                    clickedTile = board.displayedBoard.matrix[mouseYTab][mouseXTab]
-
-                    selectedTile, promotingPawn = board.displayedBoard.manageMove(selectedTile, mouseYTab, mouseXTab, clickedTile, moveList, promotingPawn)
-                    
-                    availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
+                if movingPiece and not promotingPawn:
+                    board.displayedBoard.boardHistoric.append(deepcopy(board.displayedBoard.matrix))
+                    board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
+                    board.displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
+                    movingPiece = False
 
         pygame_widgets.update(events)
         pygame.display.update()

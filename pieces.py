@@ -1,9 +1,21 @@
+def isTileTarget(y, x, color, board):
+    """
+    Returns True if the piece can move to the tile (x, y) False otherwise
+    """
+    for piece in board.getPieces(color):
+        if piece.canMove(y, x, board, checkNext=False):
+            return True
+    return False
+
+
 class pawn:
     def __init__(self, coordY, coordX, color):
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
-        self.name  = 'P'
+        self.rectX = 0
+        self.rectX = 0
+        self.name  = ''
         self.value = 1
 
     def getCoordX(self):
@@ -69,7 +81,7 @@ class pawn:
             return False
         
         if checkNext:
-            if board.nextMoveIsCheck(king, self, y, x):
+            if board.nextMoveIsCheck(self, y, x):
                 return False
         
         if board.matrix[y][x]:
@@ -125,6 +137,8 @@ class knight:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'N'
         self.value = 3
 
@@ -174,7 +188,7 @@ class knight:
 
         if (y, x) in moves and 0 <= x <= 7 and 0 <= y <= 7:
             if checkNext:
-                if board.nextMoveIsCheck(king, self, y, x):
+                if board.nextMoveIsCheck(self, y, x):
                     return False
                 
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
@@ -198,8 +212,11 @@ class rook:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'R'
         self.value = 5
+        self.hasMoved = False
 
     def getCoordX(self):
         """
@@ -245,7 +262,7 @@ class rook:
         color = self.getColor()
         
         if checkNext:
-            if board.nextMoveIsCheck(king, self, y, x):
+            if board.nextMoveIsCheck(self, y, x):
                 return False
         
         if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
@@ -331,6 +348,8 @@ class bishop:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'B'
         self.value = 3
 
@@ -377,7 +396,7 @@ class bishop:
         coordY = self.getCoordY()
         
         if checkNext:
-            if board.nextMoveIsCheck(king, self, y, x):
+            if board.nextMoveIsCheck(self, y, x):
                 return False
         
         if x < 0 or x > 7 or y < 0 or y > 7 or (coordX-x)**2 != (coordY-y)**2 or (x == coordX and y == coordY):  #if it isn't in the board or if it doesn't move in a diagonal
@@ -449,6 +468,8 @@ class queen:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'Q'
         self.value = 9
 
@@ -495,7 +516,7 @@ class queen:
         coordY = self.getCoordY()
                 
         if checkNext:
-            if board.nextMoveIsCheck(king, self, y, x):
+            if board.nextMoveIsCheck(self, y, x):
                 return False
         
         if x < 0 or x > 7 or y < 0 or y > 7:  #if it isn't in the board or if it doesn't move in a diagonal nor in a straight line
@@ -626,8 +647,11 @@ class king:
         self.__coordinateX = coordX
         self.__coordinateY = coordY 
         self.__color = color
+        self.rectX = 0
+        self.rectY = 0
         self.name  = 'K'
         self.value = 0
+        self.hasMoved = False
 
     def getCoordX(self):
         """
@@ -671,11 +695,31 @@ class king:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
         color = self.getColor()
-        moves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
+        if color == 'white':
+            oppositeColor = 'black'
+        else:
+            oppositeColor = 'white'
+        moves = [(coordY, coordX - 2), (coordY, coordX + 2), (coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
             
-        if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7): 
+        if (y, x) in moves and not (x < 0) and not (x > 7) and not (y < 0) and not (y > 7):
+            if (self.getCoordX() - x) ** 2 > 1 and self.hasMoved == False:  # Castling
+                if self.getCoordX() - x > 0:
+                    rook = board.matrix[self.getCoordY()][0]
+                    if rook.name == 'R' and rook.hasMoved == False:
+                        for i in range(1, self.getCoordX() - x + 1):
+                            if board.matrix[self.getCoordY()][i] is not None or isTileTarget(self.getCoordY(), i, oppositeColor, board):
+                                return False
+                        return True
+                else:
+                    rook = board.matrix[self.getCoordY()][7]
+                    if rook.name == 'R' and rook.hasMoved == False:
+                        for i in range(self.getCoordX() + 1, 7):
+                            if board.matrix[self.getCoordY()][i] is not None or isTileTarget(self.getCoordY(), i, oppositeColor, board):
+                                return False
+                        return True
+                return False
             if checkNext:
-                if board.nextMoveIsCheck(king, self, y, x):
+                if board.nextMoveIsCheck(self, y, x):
                     return False
             if board.matrix[y][x] == None or board.matrix[y][x].getColor() != color:
                 return True
@@ -689,7 +733,7 @@ class king:
         coordX = self.getCoordX()
         coordY = self.getCoordY()
 
-        pieceMoves = [(coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
+        pieceMoves = [(coordY, coordX - 2), (coordY, coordX + 2), (coordY + 1, coordX + 1), (coordY, coordX + 1), (coordY - 1, coordX + 1), (coordY + 1, coordX), (coordY - 1, coordX), (coordY + 1, coordX - 1), (coordY, coordX - 1), (coordY - 1, coordX - 1)]
         
         return [move for move in pieceMoves if self.canMove(move[0], move[1], board)]
 
