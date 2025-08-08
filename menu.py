@@ -23,6 +23,8 @@ HEIGHT = int(1000 * SCALE)
 WIDTH = int(800 * SCALE)
 clock = pygame.time.Clock()
 screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+timeMagnitude = 60
+incrementMagnitude = 1
 
 pygame.init()
 
@@ -31,7 +33,8 @@ def resizeWindow():
     global menuX, menuY, LEFT, TOP, menuRGBA
     global robotoMedium, robotoMediumUnderline
     global buttonStart, buttonTimeSetting, buttonIncrementSetting, buttonSettings
-    global timeSettingTextEntry
+    global buttonTimeMagnitudeUp, buttonTimeMagnitudeDown, buttonIncrementMagnitudeUp, buttonIncrementMagnitudeDown
+    global timeMagnitude, incrementMagnitude
 
     HEIGHT = int(1000 * SCALE)
     WIDTH = int(800 * SCALE)
@@ -65,22 +68,22 @@ def resizeWindow():
         return int(WIDTH * 0.375)
     def button_h():
         return int(0.076 * HEIGHT)
-
+    
     BUTTON_INDIC = 1
     buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: display_board.main(int(buttonTimeSetting.text), int(buttonIncrementSetting.text)))
     
     BUTTON_INDIC += 1
-    buttonTimeSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: getTypedTextTime())
-    buttonTimeSettingMagnitudeUp = Button(buttonTimeSetting.rect.right, buttonTimeSetting.rect.centery, button_w() // 7, button_h(), "10", lambda: getTypedTextTime())
+    buttonTimeSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", timeMagnitude, lambda: getTypedTextTime())
+    buttonTimeMagnitudeUp = Button(buttonTimeSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonTimeSetting.rect.centery - int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, "up", lambda: print('Time magnitude up'))
+    buttonTimeMagnitudeDown = Button(buttonTimeSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonTimeSetting.rect.centery + int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, "down", lambda: print('Time magnitude down'))
     buttonTimeSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
-    buttonIncrementSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: getTypedTextIncrement())
+    buttonIncrementSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", incrementMagnitude, lambda: getTypedTextIncrement())
     buttonIncrementSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
     buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"))
-
 
 
 PANEL_BG = (31, 31, 28, 192)
@@ -114,11 +117,12 @@ class Button:
             self.callback()
         
 class entryButton:
-    def __init__(self, x, y, w, h, text, callback):
+    def __init__(self, x, y, w, h, text, magnitude, callback):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.callback = callback
         self.font = pygame.font.Font('fonts/Roboto-Medium.ttf', int(22 * SCALE))
+        self.magnitude = magnitude
 
     def draw(self, surface, BG_COLOR, BORDER_COLOR, TEXT_COLOR_1, TEXT_COLOR_2=None, LINE_COLOR=None, LABEL=None, UNIT=None):
         pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
@@ -157,10 +161,15 @@ resizeWindow()
 
 def drawButtons(surface):
     buttonStart.draw(surface, DARKGREEN, GREEN, GREEN)
+    
     buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="time", UNIT="min")
+    buttonTimeMagnitudeUp.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT)
+    buttonTimeMagnitudeDown.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT)
     buttonTimeSetting.set_magnitude(60)
+    
     buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="incr.", UNIT="sec")
     buttonTimeSetting.set_magnitude(1)
+    
     buttonSettings.draw(surface, BUTTON_BG, BORDER, BUTTON_TEXT)
 
 
