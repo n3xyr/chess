@@ -68,10 +68,8 @@ class pawn:
 
         if self.getColor() == 'black':
             direction = 1
-            king =  board.bk
         else:
             direction = -1
-            king = board.wk
         
         coordX = self.getCoordX()
         coordY = self.getCoordY()
@@ -88,7 +86,7 @@ class pawn:
             if board.matrix[y][x].getColor() == self.getColor():
                 return False
         
-            elif (y, x) in moves[:2]:
+            elif (y, x) in moves[:2]:   # Captures
                 return True
         
         else:
@@ -97,6 +95,15 @@ class pawn:
             
             elif (y, x) == moves[3] and self.isFirstMove() and board.matrix[coordY + direction][coordX] is None:   # Goes forward by two
                 return True
+            
+            elif (y, x) in moves[:2]:   # En passant
+                if self.getColor() == 'white':
+                    if coordY == 3 and board.matrix[coordY][x] and board.boardHistoric[coordY][x]:
+                        return True
+                else:
+                    if coordY == 4 and board.matrix[coordY][x] and board.boardHistoric[coordY][x]:
+                        return True
+                    
             return False
         
         return False
