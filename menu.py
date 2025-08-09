@@ -240,7 +240,7 @@ def main():
     while running:
         screen.blit(background, (0, 0))
         pygame.draw.rect(menuRGBA, BORDER, (0, int(80 * SCALE), menuX, menuY), border_radius=BORDER_RADIUS)
-        pygame.draw.rect(menuRGBA, PANEL_BG, (BORDER_WIDTH, int(81 * SCALE), menuX - BORDER_WIDTH * 2, menuY - BORDER_WIDTH * 2), border_radius=BORDER_RADIUS - 2 * BORDER_WIDTH)
+        pygame.draw.rect(menuRGBA, PANEL_BG, (BORDER_WIDTH, int(82 * SCALE), menuX - BORDER_WIDTH * 2, menuY - BORDER_WIDTH * 2), border_radius=BORDER_RADIUS - 2 * BORDER_WIDTH)
         setMagnitudes()
         drawButtons(menuRGBA)
         
