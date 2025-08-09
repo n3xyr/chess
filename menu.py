@@ -19,7 +19,6 @@ MAGNITUDE_DIC = {
     1: 'sec',
     60: 'min',
     3600: 'h'
-    # oh hell nah it stops there
 }
 
 pygame.display.set_caption("Chess")
@@ -143,8 +142,9 @@ class entryButton:
         
         label_surf = font.render(LABEL, True, TEXT_COLOR_2)
         label_rect = label_surf.get_rect(midleft=(self.rect.left + int(25 * SCALE), self.rect.centery))
-        
-        pygame.draw.line(surface, LINE_COLOR, (self.rect.left + int(100 * SCALE), self.rect.centery + int(19 * SCALE)), (self.rect.left + int(85 * SCALE), self.rect.centery - int(19 * SCALE)))
+
+        for i in range(2):
+            pygame.draw.line(surface, LINE_COLOR, (self.rect.left + int(90 * SCALE + i), self.rect.centery + int(19 * SCALE)), (self.rect.left + int(90 * SCALE + i), self.rect.centery - int(19 * SCALE)))
         
         surface.blit(txt_surf, txt_rect)
         surface.blit(label_surf, label_rect)
@@ -229,17 +229,15 @@ def setMagnitudes():
     UNIT = MAGNITUDE_DIC[incrementMagnitude]
     buttonIncrementMagnitude.text = UNIT
     
-
+def blinkCursor():
+    return (time.time() % 1.4) < 0.7
 
 def main():
     global SCALE, screen
     clock.tick(60)
     running = True
-    blinkTime = 0
-    blinkFreq = 60
 
     while running:
-        blinkTime = (blinkTime + 1) % (2 * blinkFreq)
         screen.blit(background, (0, 0))
         pygame.draw.rect(menuRGBA, BORDER, (0, int(80 * SCALE), menuX, menuY), border_radius=BORDER_RADIUS)
         pygame.draw.rect(menuRGBA, PANEL_BG, (BORDER_WIDTH, int(81 * SCALE), menuX - BORDER_WIDTH * 2, menuY - BORDER_WIDTH * 2), border_radius=BORDER_RADIUS - 2 * BORDER_WIDTH)
@@ -249,10 +247,9 @@ def main():
         github_text = robotoMediumUnderline.render("View on GitHub", True, LINK_COLOR)
         github_rect = github_text.get_rect(center=(WIDTH // 2, int(0.95 * HEIGHT)))
         githubLink = screen.blit(github_text, github_rect)
-        if blinkTime > blinkFreq:
+        if blinkCursor():
             if buttonTimeSetting.text_entry:
                 drawCursor(buttonTimeSetting)
-
             if buttonIncrementSetting.text_entry:
                 drawCursor(buttonIncrementSetting)
 
