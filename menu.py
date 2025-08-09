@@ -39,7 +39,7 @@ def resizeWindow():
     global menuX, menuY, LEFT, TOP, menuRGBA
     global robotoMedium, robotoMediumUnderline
     global buttonStart, buttonTimeSetting, buttonIncrementSetting, buttonSettings
-    global buttonTimeMagnitudeUp, buttonTimeMagnitudeDown, buttonIncrementMagnitudeUp, buttonIncrementMagnitudeDown
+    global buttonTimeMagnitude, buttonIncrementMagnitude
     global timeMagnitude, incrementMagnitude
     global MAGNITUDE_DIC
 
@@ -61,12 +61,9 @@ def resizeWindow():
     menuRGBA = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
     pygame.font.init()
-    robotoMedium = pygame.font.Font('fonts/Roboto-Medium.ttf', int(18 * SCALE))
+    robotoMedium = pygame.font.Font('fonts/Roboto-Medium.ttf', int(22 * SCALE))
     robotoMediumUnderline = pygame.font.Font('fonts/Roboto-Medium.ttf', int(18 * SCALE))
     robotoMediumUnderline.set_underline(True)
-
-    arroUpImg = pygame.transform.scale(pygame.image.load("arrowImages\\arrowup.png"), (SCALE * 15, SCALE * 15))
-    arroDownImg = pygame.transform.scale(pygame.image.load("arrowImages\\arrowdown.png"), (SCALE * 15, SCALE * 15))
 
     # Buttons
     def button_y(indic):
@@ -83,14 +80,16 @@ def resizeWindow():
     
     BUTTON_INDIC += 1
     buttonTimeSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: getTypedTextTime())
-    buttonTimeMagnitudeUp = imageButton(buttonTimeSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonTimeSetting.rect.centery - int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, arroUpImg, lambda: timeIncreaseMagnitude())
-    buttonTimeMagnitudeDown = imageButton(buttonTimeSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonTimeSetting.rect.centery + int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, arroDownImg, lambda: timeReduceMagnitude())
+    UNIT = MAGNITUDE_DIC[timeMagnitude]
+    sizeX, sizeY = robotoMedium.size(UNIT)
+    buttonTimeMagnitude = Button(buttonTimeSetting.rect.right - int(50 * SCALE) - sizeX // 2, buttonTimeSetting.rect.centery - sizeY // 2, sizeX + int(22 * SCALE) // 2, sizeY, UNIT, lambda: timeIncreaseMagnitude())
     buttonTimeSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
     buttonIncrementSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: getTypedTextIncrement())
-    buttonIncrementMagnitudeUp = imageButton(buttonIncrementSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonIncrementSetting.rect.centery - int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, arroUpImg, lambda: incrementIncreaseMagnitude())
-    buttonIncrementMagnitudeDown = imageButton(buttonIncrementSetting.rect.right - int(30 * SCALE) - button_w() // 10, buttonIncrementSetting.rect.centery + int(22 * SCALE) - button_h() // 10, button_w() // 10, button_h() // 5, arroDownImg, lambda: incrementReduceMagnitude())
+    UNIT = MAGNITUDE_DIC[incrementMagnitude]
+    sizeX, sizeY = robotoMedium.size(UNIT)
+    buttonIncrementMagnitude = Button(buttonIncrementSetting.rect.right - int(50 * SCALE) - sizeX // 2, buttonIncrementSetting.rect.centery - sizeY // 2, sizeX + int(22 * SCALE) // 2, sizeY, UNIT, lambda: incrementIncreaseMagnitude())
     buttonIncrementSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
@@ -124,24 +123,11 @@ class Button:
         surface.blit(txt_surf, txt_rect)
 
     def handle_event(self, event):
+        if self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
             self.callback()
-        
-class imageButton:
-    def __init__(self, x, y, w, h, img, callback):
-        self.rect = pygame.Rect(x, y, w, h)
-        self.image = img
-        self.imageRect = self.image.get_rect()
-        self.callback = callback
 
-    def draw(self, surface, BG_COLOR, BORDER_COLOR):
-        pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
-        pygame.draw.rect(surface, BG_COLOR, (self.rect.x + BORDER_WIDTH, self.rect.y + BORDER_WIDTH, self.rect.width - BORDER_WIDTH * 2, self.rect.height - BORDER_WIDTH * 2), border_radius=int(0.036 * HEIGHT - 2 * BORDER_WIDTH))
-        surface.blit(self.image, (self.rect.centerx - int(7.5 * SCALE), self.rect.y))
-
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
-            self.callback()
 
 class entryButton:
     def __init__(self, x, y, w, h, text, callback):
@@ -159,23 +145,21 @@ class entryButton:
         label_surf = robotoMedium.render(LABEL, True, TEXT_COLOR_2)
         label_rect = label_surf.get_rect(midleft=(self.rect.left + int(30 * SCALE), self.rect.centery))
         
-        unit_surf = robotoMedium.render(UNIT, True, TEXT_COLOR_2)
-        unit_rect = unit_surf.get_rect(midright=(self.rect.right - int(30 * SCALE), self.rect.centery))
-        
         pygame.draw.line(surface, LINE_COLOR, (self.rect.left + int(85 * SCALE), self.rect.centery + int(19 * SCALE)), (self.rect.left + int(85 * SCALE), self.rect.centery - int(19 * SCALE)))
         pygame.draw.line(surface, LINE_COLOR, (self.rect.right - int(85 * SCALE), self.rect.centery + int(19 * SCALE)), (self.rect.right - int(85 * SCALE), self.rect.centery - int(19 * SCALE)))
         
         surface.blit(txt_surf, txt_rect)
         surface.blit(label_surf, label_rect)
-        surface.blit(unit_surf, unit_rect)
 
     def set_text_entry(self, bool=True):
         self.text_entry = bool
 
-    def handle_event(self, event):
-        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)) and self.rect.left + int(85 * SCALE) < event.pos[0] - LEFT < self.rect.right - int(85 * SCALE):
-            self.callback()
-        else:
+    def handle_event(self, event):            
+        if self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)) and self.rect.left + int(85 * SCALE) < event.pos[0] - LEFT < self.rect.right - int(85 * SCALE):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.callback()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
             self.text_entry = False
 
     def set_text(self, new_text):
@@ -188,20 +172,10 @@ def drawButtons(surface):
     buttonStart.draw(surface, DARKGREEN, GREEN, GREEN)
     
     buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="time", UNIT = MAGNITUDE_DIC[timeMagnitude])
-    
-    if timeMagnitude < 3600:
-        buttonTimeMagnitudeUp.draw(surface, TEXTBOX_BG, BORDER)
+    buttonTimeMagnitude.draw(surface, BORDER, BORDER, (255, 255, 255))
 
-    if timeMagnitude > 1:
-        buttonTimeMagnitudeDown.draw(surface, TEXTBOX_BG, BORDER)
-    
     buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="incr.", UNIT= MAGNITUDE_DIC[incrementMagnitude])
-      
-    if incrementMagnitude < 3600:
-        buttonIncrementMagnitudeUp.draw(surface, TEXTBOX_BG, BORDER)
-
-    if incrementMagnitude > 1:
-        buttonIncrementMagnitudeDown.draw(surface, TEXTBOX_BG, BORDER)
+    buttonIncrementMagnitude.draw(surface, BORDER, BORDER, (255, 255, 255))
 
     buttonSettings.draw(surface, BUTTON_BG, BORDER, BUTTON_TEXT)
 
@@ -214,40 +188,20 @@ def getTypedTextIncrement():
     buttonIncrementSetting.set_text_entry()
 
 
-def timeReduceMagnitude():
-    global timeMagnitude
-    if timeMagnitude == 3600:
-        timeMagnitude = 60
-    elif timeMagnitude == 60:
-        timeMagnitude = 1
-    else:
-        return
-        
-
 def timeIncreaseMagnitude(): 
     global timeMagnitude
     if timeMagnitude == 3600:
-        return
+        timeMagnitude = 1
     elif timeMagnitude == 60:
         timeMagnitude = 3600
     else:
         timeMagnitude = 60
 
 
-def incrementReduceMagnitude():
-    global incrementMagnitude
-    if incrementMagnitude == 3600:
-        incrementMagnitude = 60
-    elif incrementMagnitude == 60:
-        incrementMagnitude = 1
-    else:
-        return
-
-
 def incrementIncreaseMagnitude():
     global incrementMagnitude
     if incrementMagnitude == 3600:
-        return
+        incrementMagnitude = 1
     elif incrementMagnitude == 60:
         incrementMagnitude = 3600
     else:
@@ -266,6 +220,16 @@ def drawCursor(textBox):
     cursorY2 = int(center[1] + 2 / 5 * int(22 * SCALE))
     pygame.draw.line(menuRGBA, TEXTBOX_TEXT, (cursorX, cursorY1), (cursorX, cursorY2))
 
+
+def setMagnitudes():
+    UNIT = MAGNITUDE_DIC[timeMagnitude]
+    buttonTimeMagnitude.text = UNIT
+    
+    UNIT = MAGNITUDE_DIC[incrementMagnitude]
+    buttonIncrementMagnitude.text = UNIT
+    
+
+
 def main():
     global SCALE, screen
     clock.tick(60)
@@ -278,7 +242,7 @@ def main():
         screen.blit(background, (0, 0))
         pygame.draw.rect(menuRGBA, BORDER, (0, int(80 * SCALE), menuX, menuY), border_radius=BORDER_RADIUS)
         pygame.draw.rect(menuRGBA, PANEL_BG, (BORDER_WIDTH, int(81 * SCALE), menuX - BORDER_WIDTH * 2, menuY - BORDER_WIDTH * 2), border_radius=BORDER_RADIUS - 2 * BORDER_WIDTH)
-        
+        setMagnitudes()
         drawButtons(menuRGBA)
         
         github_text = robotoMediumUnderline.render("View on GitHub", True, LINK_COLOR)
@@ -349,15 +313,16 @@ def main():
                 pos = event.pos
                 if githubLink.collidepoint(pos):
                     webbrowser.open(r"https://www.github.com/n3xyr/chess")
+
+            if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                 buttonStart.handle_event(event)
-                
+                    
                 buttonTimeSetting.handle_event(event)
-                buttonTimeMagnitudeUp.handle_event(event)
-                buttonTimeMagnitudeDown.handle_event(event)
+                buttonTimeMagnitude.handle_event(event)
                 
                 buttonIncrementSetting.handle_event(event)
-                buttonIncrementMagnitudeUp.handle_event(event)
-                buttonIncrementMagnitudeDown.handle_event(event)
+                buttonIncrementMagnitude.handle_event(event)
 
                 buttonSettings.handle_event(event)
         
