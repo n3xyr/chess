@@ -172,10 +172,10 @@ def drawButtons(surface):
     buttonStart.draw(surface, DARKGREEN, GREEN, GREEN)
     
     buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, BORDER, TEXTBOX_LINE, "time")
-    buttonTimeMagnitude.draw(surface, (192, 64, 64), (255, 200, 60), (200, 64, 255))
+    buttonTimeMagnitude.draw(surface, (192, 64, 64), (255, 200, 60), (200, 64, 255))    # You might wonder "what the hell are those magic numbers" and i'd answer you "Yes"
 
     buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, BORDER, TEXTBOX_LINE, "incr.")
-    buttonIncrementMagnitude.draw(surface, (64, 64, 192), (60, 200, 255), (255, 64, 200))
+    buttonIncrementMagnitude.draw(surface, (64, 64, 192), (60, 200, 255), (255, 64, 200))   # Oh you thought i'd only do it once
 
     buttonSettings.draw(surface, BUTTON_BG, BORDER, BUTTON_TEXT)
 
