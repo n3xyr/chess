@@ -9,7 +9,7 @@ eatSound = pygame.mixer.Sound('soundEffects/eatSound.wav')
 castleSound = pygame.mixer.Sound('soundEffects/castleSound.wav')
 
 class board:
-    def __init__(self, clockTime = None, clockIncrement = None):
+    def __init__(self, clockTime=None, clockIncrement=None):
         self.matrix = [[None for _ in range(8)] for _ in range(8)]
         self.turn = 'white'
         self.boardHistoric = []
@@ -21,11 +21,19 @@ class board:
 
 
     def updateTime(self):
-        delta = time.time() - self.initialTime
+        delta = time.time() - self.lastTime
         if self.turn == 'white':
-            self.timeWhite -= (delta - self.increment)
+            self.timeWhite -= delta
         else:
-            self.timeBlack -= (delta - self.increment)
+            self.timeBlack -= delta
+        self.updatelastTime()
+
+
+    def getDisplayTime(self, color):
+        if color == 'white':
+            return int(self.timeWhite)
+        else:
+            return int(self.timeBlack + (time.time() - self.lastTime))
 
 
     def switchTurn(self):
@@ -261,8 +269,8 @@ class board:
             self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
 
 
-    def initClock(self):
-        self.initialTime = time.time()
+    def updatelastTime(self):
+        self.lastTime = time.time()
 
 
     def createSimulatedBoard(self):
@@ -377,6 +385,3 @@ class board:
                         print('   ', end='')
                 print('')
             print('---')
-
-
-simulatedBoard = board()
