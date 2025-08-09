@@ -61,7 +61,7 @@ def resizeWindow():
     menuRGBA = pygame.Surface((WIDTH, HEIGHT), pygame.SRCALPHA)
 
     pygame.font.init()
-    robotoMedium = pygame.font.Font('fonts/Roboto-Medium.ttf', int(22 * SCALE))
+    robotoMedium = pygame.font.Font('fonts/Roboto-Medium.ttf', int(25 * SCALE))
     robotoMediumUnderline = pygame.font.Font('fonts/Roboto-Medium.ttf', int(18 * SCALE))
     robotoMediumUnderline.set_underline(True)
 
@@ -82,14 +82,14 @@ def resizeWindow():
     buttonTimeSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: getTypedTextTime())
     UNIT = MAGNITUDE_DIC[timeMagnitude]
     sizeX, sizeY = robotoMedium.size(UNIT)
-    buttonTimeMagnitude = Button(buttonTimeSetting.rect.right - int(50 * SCALE) - sizeX // 2, buttonTimeSetting.rect.centery - sizeY // 2, sizeX + int(22 * SCALE) // 2, sizeY, UNIT, lambda: timeIncreaseMagnitude())
+    buttonTimeMagnitude = Button(buttonTimeSetting.rect.right - int(50 * SCALE) - sizeX // 2, buttonTimeSetting.rect.centery - sizeY // 2, sizeX + int(25 * SCALE) // 2, sizeY, UNIT, lambda: timeIncreaseMagnitude())
     buttonTimeSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
     buttonIncrementSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: getTypedTextIncrement())
     UNIT = MAGNITUDE_DIC[incrementMagnitude]
     sizeX, sizeY = robotoMedium.size(UNIT)
-    buttonIncrementMagnitude = Button(buttonIncrementSetting.rect.right - int(50 * SCALE) - sizeX // 2, buttonIncrementSetting.rect.centery - sizeY // 2, sizeX + int(22 * SCALE) // 2, sizeY, UNIT, lambda: incrementIncreaseMagnitude())
+    buttonIncrementMagnitude = Button(buttonIncrementSetting.rect.right - int(50 * SCALE) - sizeX // 2, buttonIncrementSetting.rect.centery - sizeY // 2, sizeX + int(25 * SCALE) // 2, sizeY, UNIT, lambda: incrementIncreaseMagnitude())
     buttonIncrementSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
@@ -136,7 +136,7 @@ class entryButton:
         self.callback = callback
         self.font = pygame.font.Font('fonts/Roboto-Medium.ttf', int(22 * SCALE))
 
-    def draw(self, surface, BG_COLOR, BORDER_COLOR, TEXT_COLOR_1, TEXT_COLOR_2=None, LINE_COLOR=None, LABEL=None, UNIT=None):
+    def draw(self, surface, BG_COLOR, BORDER_COLOR, TEXT_COLOR_1, TEXT_COLOR_2, LINE_COLOR, LABEL):
         pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
         pygame.draw.rect(surface, BG_COLOR, (self.rect.x + BORDER_WIDTH, self.rect.y + BORDER_WIDTH, self.rect.width - BORDER_WIDTH * 2, self.rect.height - BORDER_WIDTH * 2), border_radius=int(0.036 * HEIGHT - 2 * BORDER_WIDTH))
         txt_surf = self.font.render(self.text, True, TEXT_COLOR_1)
@@ -171,11 +171,11 @@ resizeWindow()
 def drawButtons(surface):
     buttonStart.draw(surface, DARKGREEN, GREEN, GREEN)
     
-    buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="time", UNIT = MAGNITUDE_DIC[timeMagnitude])
-    buttonTimeMagnitude.draw(surface, BORDER, BORDER, (255, 255, 255))
+    buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, BORDER, TEXTBOX_LINE, "time")
+    buttonTimeMagnitude.draw(surface, (192, 64, 64), (255, 200, 60), (200, 64, 255))
 
-    buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, TEXT_COLOR_2=BORDER, LINE_COLOR=TEXTBOX_LINE, LABEL="incr.", UNIT= MAGNITUDE_DIC[incrementMagnitude])
-    buttonIncrementMagnitude.draw(surface, BORDER, BORDER, (255, 255, 255))
+    buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, BORDER, TEXTBOX_LINE, "incr.")
+    buttonIncrementMagnitude.draw(surface, (64, 64, 192), (60, 200, 255), (255, 64, 200))
 
     buttonSettings.draw(surface, BUTTON_BG, BORDER, BUTTON_TEXT)
 
