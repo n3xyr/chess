@@ -107,7 +107,7 @@ class board:
             else:
                 result += '+,'
                 
-        if self.matrix[y][x]:
+        if self.matrix[y][x] or self.isEnPassantMove(piece, y, x):
             result += 'x,'
 
         if piece.name == 'K':
@@ -198,8 +198,6 @@ class board:
     
     def isEnPassantMove(self, piece, y, x):
         if piece.name == '':
-            if y in (0, 7):
-                return False
             if (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
                 return True
         return False
@@ -207,8 +205,12 @@ class board:
     def movePiece(self, piece, y, x, doSound=True):
         actList = self.getActTypes(piece, y, x)
 
+        if self.isEnPassantMove(piece, y, x):
+            self.matrix[piece.getCoordY()][x] = None
+
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
+
 
         if piece.name == 'K':
             piece.hasMoved = True
