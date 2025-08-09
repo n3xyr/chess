@@ -211,7 +211,7 @@ def drawBoard(game, skipPiece=None):
                 pygame.draw.rect(game, LIGHT, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
 
             # Draw tiles
-            currentLoadingPiece = board.displayedBoard.matrix[row][col]
+            currentLoadingPiece = displayedBoard.matrix[row][col]
             if currentLoadingPiece:
                 if skipPiece:
                     if not(skipPiece.getCoordX() == currentLoadingPiece.getCoordX() and skipPiece.getCoordY() == currentLoadingPiece.getCoordY()):
@@ -225,7 +225,7 @@ def setPiecesCoordinates():
     """
     for row in range(ROWS):
         for col in range(COLS):
-            currentLoadingPiece = board.displayedBoard.matrix[row][col]
+            currentLoadingPiece = displayedBoard.matrix[row][col]
             if currentLoadingPiece is not None:
                 currentLoadingPiece.rectX = col * TILESIZE + LEFTMARGIN
                 currentLoadingPiece.rectY = row * TILESIZE + TOPMARGIN
@@ -237,7 +237,7 @@ def getTileColor(coordinates):
     return 'LIGHT' if (y + x) % 2 == 0 else 'DARK'
 
 
-def displayTime(timer):
+def displayTimeBlack(timer):
     BASESCALE = WIDTH / 800
     if timer >= 3600:
         pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
@@ -246,11 +246,20 @@ def displayTime(timer):
         pygame.draw.rect(GAME, ULTRADARK, (SMALLCLOCKPOS[0], SMALLCLOCKPOS[1], SMALLCLOCKWIDTH, CLOCKHEIGHT))
         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
 
+def displayTimeWhite(timer):
+    BASESCALE = WIDTH / 800
+    if timer >= 3600:
+        pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
+        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE + 8 * TILESIZE)))
+    else:
+        pygame.draw.rect(GAME, ULTRADARK, (SMALLCLOCKPOS[0], SMALLCLOCKPOS[1], SMALLCLOCKWIDTH, CLOCKHEIGHT))
+        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
+
 
 def displayAvailableMoves(availableMoves, selectedTile):
     for move in availableMoves:
         y, x = move
-        target = board.displayedBoard.matrix[y][x]
+        target = displayedBoard.matrix[y][x]
         if target and selectedTile:
             if target.getColor() != selectedTile.getColor():
                 if getTileColor(move) == 'DARK':
@@ -279,28 +288,28 @@ def tryDrawPromotionMenu(promotingPawn):
 def tryMoveThroughHistoric(event):            
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_LEFT:  # Go back one move
-            if len(board.displayedBoard.boardHistoric) > 1 and board.displayedBoard.historicIndic > 0:
-                board.displayedBoard.historicIndic -= 1
-                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
-                board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic])
+            if len(displayedBoard.boardHistoric) > 1 and displayedBoard.historicIndic > 0:
+                displayedBoard.historicIndic -= 1
+                displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+                displayedBoard.playSound(displayedBoard.soundHistoric[displayedBoard.historicIndic])
 
         if event.key == pygame.K_RIGHT:  # Go forward one move
-            if len(board.displayedBoard.boardHistoric) - 1 > board.displayedBoard.historicIndic:
-                board.displayedBoard.historicIndic += 1
-                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
-                board.displayedBoard.playSound(board.displayedBoard.soundHistoric[board.displayedBoard.historicIndic - 1])
+            if len(displayedBoard.boardHistoric) - 1 > displayedBoard.historicIndic:
+                displayedBoard.historicIndic += 1
+                displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+                displayedBoard.playSound(displayedBoard.soundHistoric[displayedBoard.historicIndic - 1])
 
         if event.key == pygame.K_UP:  # Go to the last move
-            if len(board.displayedBoard.boardHistoric) > 0 and board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
-                board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
-                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
-                board.displayedBoard.playSound('')
+            if len(displayedBoard.boardHistoric) > 0 and displayedBoard.historicIndic != len(displayedBoard.boardHistoric) - 1:
+                displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
+                displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+                displayedBoard.playSound('')
 
         if event.key == pygame.K_DOWN:  # Go to the first move
-            if len(board.displayedBoard.boardHistoric) > 0 and board.displayedBoard.historicIndic != 0:
-                board.displayedBoard.historicIndic = 0
-                board.displayedBoard.matrix = board.displayedBoard.boardHistoric[board.displayedBoard.historicIndic]
-                board.displayedBoard.playSound('')
+            if len(displayedBoard.boardHistoric) > 0 and displayedBoard.historicIndic != 0:
+                displayedBoard.historicIndic = 0
+                displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+                displayedBoard.playSound('')
 
 
 def getPieceImage(piece):
@@ -380,7 +389,8 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
         pygame.time.delay(4)  # Delay for animation effect
 
 
-def main(time, increment):
+def main(clockTime, clockIncrement):
+    global displayedBoard
     clock = pygame.time.Clock()
     run = True
     moveList = []
@@ -390,7 +400,8 @@ def main(time, increment):
     rightClickDown = False
     arrows = []
     promotingPawn = None
-    time, increment = time, increment
+    displayedBoard = board.board(clockTime=clockTime, clockIncrement=clockIncrement)
+    displayedBoard.fillBoard()
     movingPiece = False
     canPlay = True
     setPiecesCoordinates()
@@ -398,7 +409,7 @@ def main(time, increment):
     while run:
         clock.tick(60)  # 60 FPS cap
 
-        if board.displayedBoard.historicIndic != len(board.displayedBoard.boardHistoric) - 1:
+        if displayedBoard.historicIndic != len(displayedBoard.boardHistoric) - 1:
             canPlay = False
         else:
             canPlay = True
@@ -414,12 +425,9 @@ def main(time, increment):
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
-        if not firstMovePlayed and len(moveList) != 0:
-            firstMovePlayed = True
-            initialTime = board.displayedBoard.initClock()
-        elif firstMovePlayed:
-            timer = board.displayedBoard.getClock(initialTime)
-            displayTime(timer)
+        if firstMovePlayed:
+            displayTimeWhite(displayedBoard.timeWhite)
+            displayTimeBlack(displayedBoard.timeBlack)
 
         tryDrawPromotionMenu(promotingPawn)
 
@@ -471,42 +479,48 @@ def main(time, increment):
                     mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
                     lastSelectedTile = deepcopy(selectedTile)
                     
-                    selectedTile, movingPiece = board.displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
+                    selectedTile, movingPiece = displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
 
                     if movingPiece:
-                        if selectedTile.canMove(mouseYTab, mouseXTab, board.displayedBoard) and selectedTile.getColor() == board.displayedBoard.turn:
-                            actList = (board.displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
+                        if selectedTile.canMove(mouseYTab, mouseXTab, displayedBoard) and selectedTile.getColor() == displayedBoard.turn:
+                            actList = (displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
 
-                            if board.displayedBoard.isCastleMove(lastSelectedTile, mouseXTab):
+                            if displayedBoard.isCastleMove(lastSelectedTile, mouseXTab):
 
                                 if selectedTile.getCoordX() > mouseXTab:
-                                    rook = board.displayedBoard.matrix[mouseYTab][0]
+                                    rook = displayedBoard.matrix[mouseYTab][0]
                                     slideBothPiecesToTile(rook, selectedTile, (mouseXTab + 1, mouseYTab), (mouseXTab, mouseYTab))
-                                    board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                                    board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
+                                    displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                    displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
 
                                 else:
-                                    rook = board.displayedBoard.matrix[mouseYTab][7]
+                                    rook = displayedBoard.matrix[mouseYTab][7]
                                     slideBothPiecesToTile(rook, selectedTile, (mouseXTab - 1, mouseYTab), (mouseXTab, mouseYTab))
-                                    board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                                    board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
+                                    displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                    displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
                             else:
                                 slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
-                                board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+
+                            if len(moveList) == 0:
+                                firstMovePlayed = True
+                                displayedBoard.initClock()
+                            displayedBoard.updateTime()
+                            displayedBoard.switchTurn()
 
                             if selectedTile.name == '' and selectedTile.isAbleToPromote():
                                 promotingPawn = selectedTile
                             selectedTile = None
                             
-                    availableMoves = board.displayedBoard.getAvailableMoves(selectedTile)
+                    availableMoves = displayedBoard.getAvailableMoves(selectedTile)
 
                 if promoIconRects:  # if a pawn is promoting
                     for rect, pieceName in promoIconRects:
                         if rect.collidepoint((mouseX, mouseY)):
-                            board.displayedBoard.promote(promotingPawn, pieceName)
-                            board.displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
-                            board.displayedBoard.boardHistoric.append(deepcopy(board.displayedBoard.matrix))
-                            board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
+                            displayedBoard.promote(promotingPawn, pieceName)
+                            displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
+                            displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
+                            displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
                             setPiecesCoordinates()
                             promoIconRects.clear()
                             movingPiece = False
@@ -516,9 +530,9 @@ def main(time, increment):
                     continue  # don't do anything if something else than a promotion is clicked
 
                 if movingPiece and not promotingPawn:
-                    board.displayedBoard.boardHistoric.append(deepcopy(board.displayedBoard.matrix))
-                    board.displayedBoard.historicIndic = len(board.displayedBoard.boardHistoric) - 1
-                    board.displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
+                    displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
+                    displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
+                    displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
                     movingPiece = False
 
         pygame_widgets.update(events)
