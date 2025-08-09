@@ -76,24 +76,22 @@ def resizeWindow():
         return int(0.076 * HEIGHT)
     
     BUTTON_INDIC = 1
-    buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: display_board.main(timeMagnitude * int(buttonTimeSetting.text), incrementMagnitude * int(buttonIncrementSetting.text)))
+    buttonStart = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Start Game", lambda: display_board.main(timeMagnitude * int(buttonTimeSetting.text), incrementMagnitude * int(buttonIncrementSetting.text)), 22)
     
     BUTTON_INDIC += 1
-    buttonTimeSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "10", lambda: getTypedTextTime())
+    buttonTimeSetting = entryButton(button_x(), button_y(BUTTON_INDIC), WIDTH * 0.26, button_h(), "10", lambda: getTypedTextTime())
     UNIT = MAGNITUDE_DIC[timeMagnitude]
-    sizeX, sizeY = robotoMedium.size(UNIT)
-    buttonTimeMagnitude = Button(buttonTimeSetting.rect.right - int(50 * SCALE) - sizeX // 2, buttonTimeSetting.rect.centery - sizeY // 2, sizeX + int(25 * SCALE) // 2, sizeY, UNIT, lambda: timeIncreaseMagnitude())
+    buttonTimeMagnitude = Button(button_x() + (226 * SCALE), button_y(BUTTON_INDIC), button_h(), button_h(), UNIT, lambda: timeIncreaseMagnitude(), 23)
     buttonTimeSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
-    buttonIncrementSetting = entryButton(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "5", lambda: getTypedTextIncrement())
+    buttonIncrementSetting = entryButton(button_x(), button_y(BUTTON_INDIC), WIDTH * 0.26, button_h(), "5", lambda: getTypedTextIncrement())
     UNIT = MAGNITUDE_DIC[incrementMagnitude]
-    sizeX, sizeY = robotoMedium.size(UNIT)
-    buttonIncrementMagnitude = Button(buttonIncrementSetting.rect.right - int(50 * SCALE) - sizeX // 2, buttonIncrementSetting.rect.centery - sizeY // 2, sizeX + int(25 * SCALE) // 2, sizeY, UNIT, lambda: incrementIncreaseMagnitude())
+    buttonIncrementMagnitude = Button(button_x() + (226 * SCALE), button_y(BUTTON_INDIC), button_h(), button_h(), UNIT, lambda: incrementIncreaseMagnitude(), 23)
     buttonIncrementSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
-    buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"))
+    buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"), 22)
 
 
 PANEL_BG = (31, 31, 28, 192)
@@ -109,11 +107,11 @@ LINK_COLOR = pygame.Color("#C6C6C6")
 
 
 class Button:
-    def __init__(self, x, y, w, h, text, callback):
+    def __init__(self, x, y, w, h, text, callback, FONT_SIZE):
         self.rect = pygame.Rect(x, y, w, h)
         self.text = text
         self.callback = callback
-        self.font = pygame.font.Font('fonts/Roboto-Medium.ttf', int(22 * SCALE))
+        self.font = pygame.font.Font('fonts/Roboto-Medium.ttf', int(FONT_SIZE * SCALE))
 
     def draw(self, surface, BG_COLOR, BORDER_COLOR, TEXT_COLOR_1):
         pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
@@ -136,17 +134,17 @@ class entryButton:
         self.callback = callback
         self.font = pygame.font.Font('fonts/Roboto-Medium.ttf', int(22 * SCALE))
 
-    def draw(self, surface, BG_COLOR, BORDER_COLOR, TEXT_COLOR_1, TEXT_COLOR_2, LINE_COLOR, LABEL):
+    def draw(self, surface, BG_COLOR, BORDER_COLOR, TEXT_COLOR_1, TEXT_COLOR_2, LINE_COLOR, LABEL, FONT_SIZE):
+        font = pygame.font.Font('fonts/Roboto-Medium.ttf', int(FONT_SIZE * SCALE))
         pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
         pygame.draw.rect(surface, BG_COLOR, (self.rect.x + BORDER_WIDTH, self.rect.y + BORDER_WIDTH, self.rect.width - BORDER_WIDTH * 2, self.rect.height - BORDER_WIDTH * 2), border_radius=int(0.036 * HEIGHT - 2 * BORDER_WIDTH))
         txt_surf = self.font.render(self.text, True, TEXT_COLOR_1)
-        txt_rect = txt_surf.get_rect(center=self.rect.center)
+        txt_rect = txt_surf.get_rect(centerx = self.rect.center[0] + (40 * SCALE), centery=self.rect.center[1])
         
-        label_surf = robotoMedium.render(LABEL, True, TEXT_COLOR_2)
-        label_rect = label_surf.get_rect(midleft=(self.rect.left + int(30 * SCALE), self.rect.centery))
+        label_surf = font.render(LABEL, True, TEXT_COLOR_2)
+        label_rect = label_surf.get_rect(midleft=(self.rect.left + int(25 * SCALE), self.rect.centery))
         
-        pygame.draw.line(surface, LINE_COLOR, (self.rect.left + int(85 * SCALE), self.rect.centery + int(19 * SCALE)), (self.rect.left + int(85 * SCALE), self.rect.centery - int(19 * SCALE)))
-        pygame.draw.line(surface, LINE_COLOR, (self.rect.right - int(85 * SCALE), self.rect.centery + int(19 * SCALE)), (self.rect.right - int(85 * SCALE), self.rect.centery - int(19 * SCALE)))
+        pygame.draw.line(surface, LINE_COLOR, (self.rect.left + int(100 * SCALE), self.rect.centery + int(19 * SCALE)), (self.rect.left + int(85 * SCALE), self.rect.centery - int(19 * SCALE)))
         
         surface.blit(txt_surf, txt_rect)
         surface.blit(label_surf, label_rect)
@@ -155,7 +153,7 @@ class entryButton:
         self.text_entry = bool
 
     def handle_event(self, event):            
-        if self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)) and self.rect.left + int(85 * SCALE) < event.pos[0] - LEFT < self.rect.right - int(85 * SCALE):
+        if self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.callback()
@@ -171,11 +169,11 @@ resizeWindow()
 def drawButtons(surface):
     buttonStart.draw(surface, DARKGREEN, GREEN, GREEN)
     
-    buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, BORDER, TEXTBOX_LINE, "time")
-    buttonTimeMagnitude.draw(surface, (192, 64, 64), (255, 200, 60), (200, 64, 255))    # You might wonder "what the hell are those magic numbers" and i'd answer you "Yes"
+    buttonTimeSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, BORDER, TEXTBOX_LINE, "time", 22)
+    buttonTimeMagnitude.draw(surface, BUTTON_BG, BUTTON_BG, BUTTON_TEXT)
 
-    buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, BORDER, TEXTBOX_LINE, "incr.")
-    buttonIncrementMagnitude.draw(surface, (64, 64, 192), (60, 200, 255), (255, 64, 200))   # Oh you thought i'd only do it once
+    buttonIncrementSetting.draw(surface, TEXTBOX_BG, BORDER, BUTTON_TEXT, BORDER, TEXTBOX_LINE, "incr.", 22)
+    buttonIncrementMagnitude.draw(surface, BUTTON_BG, BUTTON_BG, BUTTON_TEXT)
 
     buttonSettings.draw(surface, BUTTON_BG, BORDER, BUTTON_TEXT)
 
@@ -213,12 +211,15 @@ def drawCursor(textBox):
     textWidth = textBox.font.size(textBox.text)[0]
     textLength = len(textBox.text)
     if textLength:
-        cursorX = int(center[0] + textWidth / 2 + 0.5 * textWidth / textLength)
+        cursorLeft = int(textBox.rect.left + 145 * SCALE + textWidth / 2 + 0.2 * textWidth / textLength)
     else:
-        cursorX = int(center[0])
-    cursorY1 = int(center[1] - 2 / 5 * int(22 * SCALE))
-    cursorY2 = int(center[1] + 2 / 5 * int(22 * SCALE))
-    pygame.draw.line(menuRGBA, TEXTBOX_TEXT, (cursorX, cursorY1), (cursorX, cursorY2))
+        cursorLeft = int(textBox.rect.left + 145 * SCALE)
+        
+    cursorTop = int(center[1] - 2 / 4 * int(22 * SCALE))
+    cursorWidth = int(0.003 * WIDTH)
+    cursorHeight = int(0.024 * HEIGHT)
+    
+    pygame.draw.rect(menuRGBA, BUTTON_TEXT, ((cursorLeft, cursorTop), (cursorWidth, cursorHeight)))
 
 
 def setMagnitudes():
