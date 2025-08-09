@@ -244,7 +244,7 @@ def displayTimeBlack(timer):
         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE)))
     else:
         pygame.draw.rect(GAME, ULTRADARK, (SMALLCLOCKPOS[0], SMALLCLOCKPOS[1], SMALLCLOCKWIDTH, CLOCKHEIGHT))
-        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
+        GAME.blit(robotoFont.render(str(timer)[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
 
 def displayTimeWhite(timer):
     BASESCALE = WIDTH / 800
@@ -253,7 +253,7 @@ def displayTimeWhite(timer):
         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE + 8 * TILESIZE)))
     else:
         pygame.draw.rect(GAME, ULTRADARK, (SMALLCLOCKPOS[0], SMALLCLOCKPOS[1], SMALLCLOCKWIDTH, CLOCKHEIGHT))
-        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer))[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
+        GAME.blit(robotoFont.render(str(timer)[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
 
 
 def displayAvailableMoves(availableMoves, selectedTile):
@@ -400,7 +400,7 @@ def main(clockTime, clockIncrement):
     rightClickDown = False
     arrows = []
     promotingPawn = None
-    displayedBoard = board.board(clockTime=clockTime, clockIncrement=clockIncrement)
+    displayedBoard = board.board(clockTime=600, clockIncrement=5)
     displayedBoard.fillBoard()
     movingPiece = False
     canPlay = True
@@ -426,8 +426,8 @@ def main(clockTime, clockIncrement):
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
         if firstMovePlayed:
-            displayTimeWhite(displayedBoard.timeWhite)
-            displayTimeBlack(displayedBoard.timeBlack)
+            displayTimeWhite(int(displayedBoard.timeWhite))
+            displayTimeBlack(int(displayedBoard.timeBlack))
 
         tryDrawPromotionMenu(promotingPawn)
 

@@ -23,9 +23,9 @@ class board:
     def updateTime(self):
         delta = time.time() - self.initialTime
         if self.turn == 'white':
-            self.timeWhite -= delta - self.increment
+            self.timeWhite -= (delta - self.increment)
         else:
-            self.timeBlack -= delta - self.increment
+            self.timeBlack -= (delta - self.increment)
 
 
     def switchTurn(self):
