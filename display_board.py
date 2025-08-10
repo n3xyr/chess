@@ -341,6 +341,8 @@ def slidePieceToTile(piece, targetTile):
         piece.rectX += deltaX / steps
         piece.rectY += deltaY / steps
         drawBoard(GAME, skipPiece=piece)
+        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
         GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
         pygame.display.flip()
@@ -365,6 +367,8 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
         piece2.rectX += deltaX2 / steps
         piece2.rectY += deltaY2 / steps
         drawBoard(GAME)
+        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
         GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
         GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
@@ -373,7 +377,7 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
 
 
 def main(clockTime, clockIncrement):
-    global displayedBoard
+    global displayedBoard, chessClock
     clock = pygame.time.Clock()
     run = True
     moveList = []
@@ -383,7 +387,7 @@ def main(clockTime, clockIncrement):
     rightClickDown = False
     arrows = []
     promotingPawn = None
-    clockTime, clockIncrement = (600, 0)
+    clockTime, clockIncrement = (180, 5)
     chessClock = chess_clock.chessClock(clockTime, clockIncrement)
     displayedBoard = board.board()
     displayedBoard.fillBoard()
