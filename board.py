@@ -1,6 +1,5 @@
 import pieces
 import pygame
-import time
 import copy
 
 pygame.mixer.init()
@@ -202,11 +201,6 @@ class board:
                 return True
         return False
 
-    def unswitchTurnMovePiece(self, piece, y, x):
-        self.matrix[y][x] = piece
-        self.matrix[piece.getCoordY()][piece.getCoordX()] = None
-        piece.setCoordY(y)
-        piece.setCoordX(x)
 
     def movePiece(self, piece, y, x, doSound=True):
         actList = self.getActTypes(piece, y, x)
@@ -236,7 +230,7 @@ class board:
 
         if doSound:
             self.playSound(actList.split(','))
-        self.switchTurn()
+
         self.addSoundToHistoric(actList.split(','))
 
 
@@ -254,13 +248,6 @@ class board:
         elif newPieceName == 'bishop':
             self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
 
-    def initClock(self):
-        initialTime = time.time()
-        return initialTime
-
-    def getClock(self, initialTime):
-        currentTime = time.time()
-        return int(currentTime - initialTime)
 
     def createSimulatedBoard(self):
         simulatedBoard = board()
@@ -370,8 +357,3 @@ class board:
                         print('   ', end='')
                 print('')
             print('---')
-
-
-displayedBoard = board()
-displayedBoard.fillBoard()
-simulatedBoard = board()
