@@ -141,6 +141,7 @@ LIGHTGREY = (200, 200, 200)
 ORANGERGBA = (237, 127, 16, 128)
 HISTORICLIGHTBG = (42, 41, 38)
 HISTORICDARKBG = (38, 37, 34)
+HISTORICSECONDARY = (144, 146, 140)
 
 # Create a surface with per-pixel alpha
 darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
@@ -320,18 +321,26 @@ def tryMoveThroughHistoric(event):
 
 def drawHistoric(moveList):
     pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE), int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)), 0, int(15 * SCALE))
-    pygame.draw.aaline(GAME, LIGHTGREY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(40 * SCALE)))
-    pygame.draw.aaline(GAME, LIGHTGREY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(100 * SCALE)))
+    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(40 * SCALE)))
+    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(100 * SCALE)))
+
     for i, move in enumerate(moveList):
-        if i % 2 == 0:
-            pygame.draw.rect(GAME, HISTORICLIGHTBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + i * TILESIZE // 2 + int(120 * SCALE), int(3 * TILESIZE), TILESIZE // 2))
-        else:
-            pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + i * TILESIZE // 2 + int(120 * SCALE), int(3 * TILESIZE), TILESIZE // 2))
-
-        moveText = robotoMedium.render(move, True, LIGHTGREY)
-        GAME.blit(moveText, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(100 * SCALE), TOPMARGIN + i * TILESIZE // 2 + int(121 * SCALE)))
+        col = i % 2
+        row = i // 2
+        textPosX = WIDTH - RIGHTMARGIN + col * (TILESIZE) + int(120 * SCALE)
+        textPosY = TOPMARGIN + row * (TILESIZE // 2) + int(120 * SCALE)        
+        counterText = robotoMedium.render(str(row + 1) + ".", True, HISTORICSECONDARY)
+        if col == 0:
+            if row % 2 == 0:
+                pygame.draw.rect(GAME, HISTORICLIGHTBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
+                GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
+            else:
+                pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
+                GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
             
-
+        moveText = robotoMedium.render(move, True, LIGHTGREY)
+        GAME.blit(moveText, (textPosX, textPosY + int(11 * SCALE)))
+   
 def main():
     clock = pygame.time.Clock()
     run = True
