@@ -139,6 +139,8 @@ ULTRADARK = (38, 36, 33)
 BACKGROUND = (48, 46, 43)
 LIGHTGREY = (200, 200, 200)
 DARKGREY = (150, 150, 150)
+HISTORICSELECTGREY = (72, 71, 69)
+HISTORICSELECTLIGHTGREY = (91, 90, 88)
 ORANGERGBA = (237, 127, 16, 128)
 HISTORICLIGHTBG = (42, 41, 38)
 HISTORICDARKBG = (38, 37, 34)
@@ -339,6 +341,11 @@ def drawHistoric(moveList):
                 pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
                 GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
             
+        sizeX, sizeY = robotoMedium.size(move)
+        if i == board.displayedBoard.historicIndic - 1:
+            pygame.draw.rect(GAME, HISTORICSELECTLIGHTGREY, (textPosX - 10 * SCALE, textPosY + 15 * SCALE, sizeX + 20 * SCALE, sizeY), border_radius= 4 * SCALE)
+            pygame.draw.rect(GAME, HISTORICSELECTGREY, (textPosX - 10 * SCALE, textPosY + 10 * SCALE, sizeX + 20 * SCALE, sizeY), border_radius= 4 * SCALE)
+
         moveText = robotoMedium.render(move, True, LIGHTGREY)
         GAME.blit(moveText, (textPosX, textPosY + int(11 * SCALE)))
    
