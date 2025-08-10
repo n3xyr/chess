@@ -211,7 +211,6 @@ class board:
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
 
-
         if piece.name == 'K':
             piece.hasMoved = True
         if piece.name == 'R':
@@ -220,14 +219,12 @@ class board:
         piece.setCoordY(y)
         piece.setCoordX(x)
 
-
         if piece.getColor() == 'white':
-            opponentKing = self.wk
+            opponentKing = self.bk
         else:
-            opponentKing =  self.bk
+            opponentKing =  self.wk
 
         isCheckemated = self.checkMate(opponentKing)
-
         if isCheckemated:
             print(opponentKing.getColor(), "lost")
 
@@ -251,16 +248,13 @@ class board:
         elif newPieceName == 'bishop':
             self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
 
-
     def initClock(self):
         initialTime = time.time()
         return initialTime
 
-
     def getClock(self, initialTime):
         currentTime = time.time()
         return int(currentTime - initialTime)
-
 
     def createSimulatedBoard(self):
         simulatedBoard = board()
@@ -279,7 +273,6 @@ class board:
                             simulatedBoard.bk = simulatedPiece
         return simulatedBoard
 
-
     def simulateMovePiece(self, piece, y, x):
         if piece:
             initalY = piece.getCoordY()
@@ -288,7 +281,6 @@ class board:
             self.matrix[initalY][initalX] = None
             piece.setCoordY(y)
             piece.setCoordX(x)
-
 
     def nextMoveGivesCheck(self, piece, y, x):
             simulatedBoard = self.createSimulatedBoard()
@@ -302,7 +294,6 @@ class board:
 
             return simKing.isChecked(simulatedBoard, checkNext=False)
 
-
     def nextMoveIsCheck(self, piece, y, x):
         simulatedBoard = self.createSimulatedBoard()
         simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
@@ -315,7 +306,6 @@ class board:
 
         return simKing.isChecked(simulatedBoard, checkNext=False)
     
-
     def checkMate(self, king):
         if king.isChecked(self):
             pieces = []
