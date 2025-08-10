@@ -328,9 +328,10 @@ def drawHistoric(moveList):
         else:
             pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + i * TILESIZE // 2 + int(120 * SCALE), int(3 * TILESIZE), TILESIZE // 2))
 
+        nbMove = robotoMedium.render(str(i + 1) + '.', True, LIGHTGREY)
         moveText = robotoMedium.render(move, True, LIGHTGREY)
-        GAME.blit(moveText, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(100 * SCALE), TOPMARGIN + i * TILESIZE // 2 + int(121 * SCALE)))
-            
+        GAME.blit(moveText, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(100 * SCALE), TOPMARGIN + int(10 * SCALE) + i * TILESIZE // 2 + int(120 * SCALE)))
+        GAME.blit(nbMove, (WIDTH - RIGHTMARGIN + TILESIZE // 2, TOPMARGIN + int(10 * SCALE) + i * TILESIZE // 2 + int(120 * SCALE)))
 
 def main():
     clock = pygame.time.Clock()
