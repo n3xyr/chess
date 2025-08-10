@@ -392,18 +392,17 @@ def drawHistoric(moveList):
                 GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
                 
             else:
-                drawFigurine(move, col)
                 pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
                 GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
             
         sizeX, sizeY = robotoMedium.size(move)
         if i == board.displayedBoard.historicIndic - 1:
-            pygame.draw.rect(GAME, HISTORICSELECTLIGHTGREY, (textPosX - 10 * SCALE, textPosY + 15 * SCALE, sizeX + 20 * SCALE, sizeY), border_radius= 4 * SCALE)
-            pygame.draw.rect(GAME, HISTORICSELECTGREY, (textPosX - 10 * SCALE, textPosY + 10 * SCALE, sizeX + 20 * SCALE, sizeY), border_radius= 4 * SCALE)
+            pygame.draw.rect(GAME, HISTORICSELECTLIGHTGREY, (textPosX - int(32 * SCALE), textPosY + int(15 * SCALE), sizeX + int(44 * SCALE), sizeY), border_radius= int(4 * SCALE))
+            pygame.draw.rect(GAME, HISTORICSELECTGREY, (textPosX - int(32 * SCALE), textPosY + int(8 * SCALE), sizeX + int(44 * SCALE), sizeY + int(4 * SCALE)), border_radius = int(4 * SCALE))
 
         moveText = robotoMedium.render(move, True, LIGHTGREY)
         GAME.blit(moveText, (textPosX, textPosY + int(11 * SCALE)))
-        GAME.blit(pygame.transform.scale(drawFigurine(move, col), (TILESIZE * 0.4, TILESIZE * 0.4)), (textPosX - int(35 * SCALE), textPosY))
+        GAME.blit(pygame.transform.scale(drawFigurine(move, col), (TILESIZE * 0.35, TILESIZE * 0.35)), (textPosX - int(35 * SCALE), textPosY + int(6 * SCALE)))
 
 display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 adjustPromoSize()
