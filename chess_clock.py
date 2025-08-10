@@ -13,6 +13,14 @@ class chessClock:
         self.turn = turn
 
 
+    def checkClock0(self):
+        if self.whiteTime == 0:
+            return 'white'
+        elif self.blackTime == 0:
+            return 'black'
+        else: return False
+
+
     def updateTime(self):
         delta = time.time() - self.lastTime
         if self.turn == 'white':
