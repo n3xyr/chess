@@ -202,6 +202,12 @@ class board:
                 return True
         return False
 
+    def unswitchTurnMovePiece(self, piece, y, x):
+        self.matrix[y][x] = piece
+        self.matrix[piece.getCoordY()][piece.getCoordX()] = None
+        piece.setCoordY(y)
+        piece.setCoordX(x)
+
     def movePiece(self, piece, y, x, doSound=True):
         actList = self.getActTypes(piece, y, x)
 

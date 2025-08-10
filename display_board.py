@@ -482,13 +482,13 @@ def main(time, increment):
                                 if selectedTile.getCoordX() > mouseXTab:
                                     rook = board.displayedBoard.matrix[mouseYTab][0]
                                     slideBothPiecesToTile(rook, selectedTile, (mouseXTab + 1, mouseYTab), (mouseXTab, mouseYTab))
-                                    board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                    board.displayedBoard.unswitchTurnMovePiece(selectedTile, mouseYTab, mouseXTab)
                                     board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
 
                                 else:
                                     rook = board.displayedBoard.matrix[mouseYTab][7]
                                     slideBothPiecesToTile(rook, selectedTile, (mouseXTab - 1, mouseYTab), (mouseXTab, mouseYTab))
-                                    board.displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                    board.displayedBoard.unswitchTurnMovePiece(selectedTile, mouseYTab, mouseXTab)
                                     board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
                             else:
                                 slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
