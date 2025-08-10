@@ -1,5 +1,4 @@
 import board
-import datetime
 import pygame
 import sys
 import pygame_widgets
