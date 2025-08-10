@@ -485,7 +485,6 @@ def main(clockTime, clockIncrement):
 
                                     displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
                                     displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
-                                    board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
 
                                 else:
                                     rook = displayedBoard.matrix[mouseYTab][7]
@@ -493,7 +492,6 @@ def main(clockTime, clockIncrement):
 
                                     displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
                                     displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
-                                    board.displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
 
                             else:
                                 slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
