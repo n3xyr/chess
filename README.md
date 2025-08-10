@@ -10,6 +10,7 @@ This project is built to mimic a full-featured chess game, providing a playable 
 
 ## Current Features
 
+- Game menu with clock settings.
 - Detects legal moves for all standard chess pieces.
 - Turn-based logic to ensure only the correct color can move.
 - Interactive GUI using `pygame` and `pygame_widgets`.
@@ -17,15 +18,17 @@ This project is built to mimic a full-featured chess game, providing a playable 
   - Dots: legal move tiles.
   - Circles: capture opportunities.
 - Basic pawn promotion.
+- Check/ Checkmate detection.
+- Castling and en passant moves.
+- Game historic with notations.
 
 ---
 
 ## Limitations (Work in Progress)
 
-- No check/checkmate logic yet.
-- No castling implemented.
-- No en passant rule.
-- No check detection or prevention.
+- No premoves available.
+- Unable to drag pieces to move them.
+- No end-game screen.
 
 ---
 
