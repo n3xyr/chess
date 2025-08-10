@@ -222,7 +222,7 @@ def drawBoard(game, skipPiece=None):
 
 def setPiecesCoordinates():
     """
-    Initialize pieces coordinates
+    Initialize pieces coordinates for display
     """
     for row in range(ROWS):
         for col in range(COLS):
