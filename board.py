@@ -106,7 +106,7 @@ class board:
             else:
                 result += '+,'
                 
-        if self.matrix[y][x]:
+        if self.matrix[y][x] or self.isEnPassantMove(piece, y, x):
             result += 'x,'
 
         if piece.name == 'K':
@@ -197,14 +197,16 @@ class board:
     
     def isEnPassantMove(self, piece, y, x):
         if piece.name == '':
-            if y in (0, 7):
-                return False
             if (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
                 return True
         return False
 
+
     def movePiece(self, piece, y, x, doSound=True):
         actList = self.getActTypes(piece, y, x)
+
+        if self.isEnPassantMove(piece, y, x):
+            self.matrix[piece.getCoordY()][x] = None
 
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
@@ -217,14 +219,12 @@ class board:
         piece.setCoordY(y)
         piece.setCoordX(x)
 
-
         if piece.getColor() == 'white':
-            opponentKing = self.wk
+            opponentKing = self.bk
         else:
-            opponentKing =  self.bk
+            opponentKing =  self.wk
 
         isCheckemated = self.checkMate(opponentKing)
-
         if isCheckemated:
             print(opponentKing.getColor(), "lost")
 
@@ -266,7 +266,6 @@ class board:
                             simulatedBoard.bk = simulatedPiece
         return simulatedBoard
 
-
     def simulateMovePiece(self, piece, y, x):
         if piece:
             initalY = piece.getCoordY()
@@ -275,7 +274,6 @@ class board:
             self.matrix[initalY][initalX] = None
             piece.setCoordY(y)
             piece.setCoordX(x)
-
 
     def nextMoveGivesCheck(self, piece, y, x):
             simulatedBoard = self.createSimulatedBoard()
@@ -289,7 +287,6 @@ class board:
 
             return simKing.isChecked(simulatedBoard, checkNext=False)
 
-
     def nextMoveIsCheck(self, piece, y, x):
         simulatedBoard = self.createSimulatedBoard()
         simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
@@ -302,7 +299,6 @@ class board:
 
         return simKing.isChecked(simulatedBoard, checkNext=False)
     
-
     def checkMate(self, king):
         if king.isChecked(self):
             pieces = []
