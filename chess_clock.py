@@ -33,38 +33,34 @@ class chessClock:
         self.lastTime = time.time()
 
 
-    def getColorY(self, color):
-        if color == 'white':
-            return 8
-        else:
-            return 0
-
-
     def convertTime(self, time):
-        ms = str(time % 1)[:2]
-        s = str(time % 60)
-        m = str((time // 60) % 60)
-        h = str(time // 3600)
+        ms = time % 1
+        s = int((time //1) % 60)
+        m = int((time // 60) % 60)
+        h = int(time // 3600)
 
-        if h:
-            return h + ':' + m + ':' + s
-        elif m:
-            return m + ':' + s
+        if h != 0:
+            return str(h) + ':' + str(m // 10) + str(m % 10) + ':' + str(s // 10) + str(s % 10)
+        elif m != 0:
+            return str(m) + ':' + str(s // 10) + str(s % 10)
         elif s > 20:
-            return s
+            return str(s)
         else:
-            return s + '.' + ms
+            return str(s) + '.' + str(ms)[:2]
 
 
     def drawClock(self, surface, TOPMARGIN, LEFTMARGIN, TILESIZE, color, TEXTCOLOR, BGCOLOR):
         txtSize = 0.3
-        robotoFont = pygame.font.SysFont('Roboto', int(txtSize * TILESIZE))
-        sizeX, sizeY = robotoFont.size('      ')
+        robotoMedium = pygame.font.Font('fonts/Roboto-Medium.ttf', int(txtSize * TILESIZE))
+        sizeX, sizeY = robotoMedium.size(' ')
+        if color == 'white':
+            clockRect = pygame.Rect((int(LEFTMARGIN + 6.5 * TILESIZE - TILESIZE // 20), int(TOPMARGIN + 8 * TILESIZE + sizeY // 5), int(1.5 * TILESIZE), int(sizeY + 0.1 * TILESIZE)))
+        else:
+            clockRect = pygame.Rect((int(LEFTMARGIN + 6.5 * TILESIZE - TILESIZE // 20), int(TOPMARGIN - int(1.2 * sizeY + 0.1 * TILESIZE)), int(1.5 * TILESIZE), int(sizeY + 0.1 * TILESIZE)))
         
-        clockRect = pygame.Rect((int(LEFTMARGIN + 8 * TILESIZE - sizeX - txtSize * TILESIZE), int(TOPMARGIN + self.getColorY(color) * TILESIZE - sizeY - txtSize * TILESIZE), int(sizeX + 2 * txtSize * TILESIZE), int(sizeY)))
         time = self.getDisplayTime(color)
-        timeTxt = robotoFont.render(self.convertTime(time), True, TEXTCOLOR)
-        timeRect = timeTxt.get_rect(midright = (clockRect.right - txtSize * TILESIZE, clockRect.centery))
+        timeTxt = robotoMedium.render(self.convertTime(time), True, TEXTCOLOR)
+        timeRect = timeTxt.get_rect(midright = (clockRect.right - 0.05 * TILESIZE, clockRect.centery))
 
         pygame.draw.rect(surface, BGCOLOR, clockRect, border_radius= TILESIZE // 25)
         surface.blit(timeTxt, timeRect)

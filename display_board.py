@@ -239,27 +239,6 @@ def getTileColor(coordinates):
     return 'LIGHT' if (y + x) % 2 == 0 else 'DARK'
 
 
-# def displayTimeBlack(timer):
-#     BASESCALE = WIDTH / 800
-#     if timer >= 3600:
-#         pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
-#         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE)))
-#     else:
-#         pygame.draw.rect(GAME, ULTRADARK, (SMALLCLOCKPOS[0], SMALLCLOCKPOS[1], SMALLCLOCKWIDTH, CLOCKHEIGHT))
-#         GAME.blit(robotoFont.render(str(timer)[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
-
-
-# def displayTimeWhite(timer):
-#     BASESCALE = WIDTH / 800
-#     pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
-#     if timer >= 3600:
-#         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE + 8 * TILESIZE)))
-#     elif timer >= 60:
-#         GAME.blit(robotoFont.render(str(timer // 60) + str(timer % 60), False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
-#     else:
-#         GAME.blit(robotoFont.render(str(timer // 60) + str(timer % 60), False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
-
-
 def displayAvailableMoves(availableMoves, selectedTile):
     for move in availableMoves:
         y, x = move
@@ -436,8 +415,7 @@ def main(clockTime, clockIncrement):
             chessClock.updateLastTime()
 
             chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
-            # displayTimeWhite(int(chessClock.getDisplayTime('white')))
-            # displayTimeBlack(int(chessClock.getDisplayTime('black')))
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
 
         tryDrawPromotionMenu(promotingPawn)
 
