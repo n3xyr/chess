@@ -7,6 +7,7 @@ from screeninfo import get_monitors
 from pygame_widgets.button import Button
 import display_assistant
 from copy import deepcopy
+import chess_clock
 
 # Initialize Pygame
 pygame.init()
@@ -135,6 +136,7 @@ DARK = (115, 149, 82)
 LIGHTSELECT = (202, 203, 179)
 DARKSELECT = (99, 128, 70)
 ULTRADARK = (38, 36, 33)
+ULTRALIGHT = (217, 219, 222)
 BACKGROUND = (48, 46, 43)
 LIGHTGREY = (200, 200, 200)
 ORANGERGBA = (237, 127, 16, 128)
@@ -237,25 +239,25 @@ def getTileColor(coordinates):
     return 'LIGHT' if (y + x) % 2 == 0 else 'DARK'
 
 
-def displayTimeBlack(timer):
-    BASESCALE = WIDTH / 800
-    if timer >= 3600:
-        pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
-        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE)))
-    else:
-        pygame.draw.rect(GAME, ULTRADARK, (SMALLCLOCKPOS[0], SMALLCLOCKPOS[1], SMALLCLOCKWIDTH, CLOCKHEIGHT))
-        GAME.blit(robotoFont.render(str(timer)[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
+# def displayTimeBlack(timer):
+#     BASESCALE = WIDTH / 800
+#     if timer >= 3600:
+#         pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
+#         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE)))
+#     else:
+#         pygame.draw.rect(GAME, ULTRADARK, (SMALLCLOCKPOS[0], SMALLCLOCKPOS[1], SMALLCLOCKWIDTH, CLOCKHEIGHT))
+#         GAME.blit(robotoFont.render(str(timer)[2:], False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
 
 
-def displayTimeWhite(timer):
-    BASESCALE = WIDTH / 800
-    pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
-    if timer >= 3600:
-        GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE + 8 * TILESIZE)))
-    elif timer >= 60:
-        GAME.blit(robotoFont.render(str(timer // 60) + str(timer % 60), False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
-    else:
-        GAME.blit(robotoFont.render(str(timer // 60) + str(timer % 60), False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
+# def displayTimeWhite(timer):
+#     BASESCALE = WIDTH / 800
+#     pygame.draw.rect(GAME, ULTRADARK, (BIGCLOCKPOS[0], BIGCLOCKPOS[1], BIGCLOCKWIDTH, CLOCKHEIGHT))
+#     if timer >= 3600:
+#         GAME.blit(robotoFont.render(str(datetime.timedelta(seconds=timer)), False, WHITE), (int(630 * BASESCALE), int(35 * BASESCALE + 8 * TILESIZE)))
+#     elif timer >= 60:
+#         GAME.blit(robotoFont.render(str(timer // 60) + str(timer % 60), False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
+#     else:
+#         GAME.blit(robotoFont.render(str(timer // 60) + str(timer % 60), False, WHITE), (int(648 * BASESCALE), int(35 * BASESCALE)))
 
 
 def displayAvailableMoves(availableMoves, selectedTile):
@@ -403,7 +405,8 @@ def main(clockTime, clockIncrement):
     arrows = []
     promotingPawn = None
     clockTime, clockIncrement = (600, 0)
-    displayedBoard = board.board(clockTime, clockIncrement)
+    chessClock = chess_clock.chessClock(clockTime, clockIncrement)
+    displayedBoard = board.board()
     displayedBoard.fillBoard()
     movingPiece = False
     canPlay = True
@@ -429,11 +432,12 @@ def main(clockTime, clockIncrement):
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
         if firstMovePlayed:
-            displayedBoard.updateTime()
-            displayedBoard.updatelastTime()
+            chessClock.updateTime()
+            chessClock.updateLastTime()
 
-            displayTimeWhite(int(displayedBoard.getDisplayTime('white')))
-            # displayTimeBlack(int(displayedBoard.getDisplayTime('black')))
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+            # displayTimeWhite(int(chessClock.getDisplayTime('white')))
+            # displayTimeBlack(int(chessClock.getDisplayTime('black')))
 
         tryDrawPromotionMenu(promotingPawn)
 
@@ -510,14 +514,15 @@ def main(clockTime, clockIncrement):
 
                             if len(moveList) == 0:
                                 firstMovePlayed = True
-                                displayedBoard.updatelastTime()
+                                chessClock.updateLastTime()
 
                             if displayedBoard.turn == 'white':
-                                displayedBoard.timeWhite += displayedBoard.increment
+                                chessClock.whiteTime += chessClock.increment
                             else:
-                                displayedBoard.timeBlack += displayedBoard.increment
+                                chessClock.blackTime += chessClock.increment
 
                             displayedBoard.switchTurn()
+                            chessClock.setTurn(displayedBoard.turn)
 
                             if selectedTile.name == '' and selectedTile.isAbleToPromote():
                                 promotingPawn = selectedTile
