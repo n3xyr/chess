@@ -119,8 +119,6 @@ class board:
         if piece.name == '':
             if y in (0, 7):
                 result += '=,'
-            elif (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
-                result += 'e.p,'
 
         return result[0:-1]
 
