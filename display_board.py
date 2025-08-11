@@ -22,7 +22,7 @@ def getMonitorResolution():
 INIT_LEFTMARGIN = 0
 INIT_RIGHTMARGIN = 350
 INIT_TOPMARGIN = 100
-INIT_BOTTOMMARGIN = 0
+INIT_BOTTOMMARGIN = 100
 INIT_TILESIZE = 100
 INIT_WIDTH = INIT_LEFTMARGIN + 8 * INIT_TILESIZE + INIT_RIGHTMARGIN
 INIT_HEIGHT = 8 * INIT_TILESIZE + INIT_BOTTOMMARGIN + INIT_TOPMARGIN
@@ -477,7 +477,7 @@ def drawFigurine(move, col):
             return wqFigurine
         elif move[0] == 'K':
             return wkFigurine
-        elif move[0] == '0' or move[0] == 'O':
+        elif move[0] == 'O':
             return wCastleFigurine
         else:
             return wpFigurine
@@ -520,7 +520,7 @@ def drawHistoric(moveList):
                 GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
 
         sizeX, sizeY = robotoMedium.size(move)
-        if i == board.displayedBoard.historicIndic - 1:
+        if i == displayedBoard.historicIndic - 1:
             pygame.draw.rect(GAME, HISTORICSELECTLIGHTGREY, (textPosX - int(32 * SCALE), textPosY + int(15 * SCALE), sizeX + int(34 * SCALE), sizeY), border_radius=int(4 * SCALE))
             pygame.draw.rect(GAME, HISTORICSELECTGREY, (textPosX - int(32 * SCALE), textPosY + int(8 * SCALE), sizeX + int(34 * SCALE), sizeY + int(4 * SCALE)), border_radius=int(4 * SCALE))
 
