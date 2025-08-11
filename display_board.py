@@ -391,24 +391,28 @@ def tryMoveThroughHistoric(event):
             if len(displayedBoard.boardHistoric) > 1 and displayedBoard.historicIndic > 0:
                 displayedBoard.historicIndic -= 1
                 displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+                setPiecesCoordinates()
                 displayedBoard.playSound(displayedBoard.soundHistoric[displayedBoard.historicIndic])
 
         if event.key == pygame.K_RIGHT:  # Go forward one move
             if len(displayedBoard.boardHistoric) - 1 > displayedBoard.historicIndic:
                 displayedBoard.historicIndic += 1
                 displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+                setPiecesCoordinates()
                 displayedBoard.playSound(displayedBoard.soundHistoric[displayedBoard.historicIndic - 1])
 
         if event.key == pygame.K_UP:  # Go to the last move
             if len(displayedBoard.boardHistoric) > 0 and displayedBoard.historicIndic != len(displayedBoard.boardHistoric) - 1:
                 displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
                 displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+                setPiecesCoordinates()
                 displayedBoard.playSound('')
 
         if event.key == pygame.K_DOWN:  # Go to the first move
             if len(displayedBoard.boardHistoric) > 0 and displayedBoard.historicIndic != 0:
                 displayedBoard.historicIndic = 0
                 displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+                setPiecesCoordinates()
                 displayedBoard.playSound('')
 
 
@@ -579,6 +583,9 @@ def main(clockTime, clockIncrement):
     movingPiece = False
     canPlay = True
     setPiecesCoordinates()
+    # displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
+    # displayedBoard.soundHistoric.append('')
+    # displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
 
     while run:
         clock.tick(60)  # 60 FPS cap
@@ -694,14 +701,6 @@ def main(clockTime, clockIncrement):
                                 firstMovePlayed = True
                                 chessClock.updateLastTime()
 
-                            if displayedBoard.turn == 'white':
-                                chessClock.whiteTime += chessClock.increment
-                            else:
-                                chessClock.blackTime += chessClock.increment
-
-                            displayedBoard.switchTurn()
-                            chessClock.setTurn(displayedBoard.turn)
-
                             if selectedTile.name == '' and selectedTile.isAbleToPromote():
                                 promotingPawn = selectedTile
                             selectedTile = None
@@ -712,23 +711,39 @@ def main(clockTime, clockIncrement):
                     for rect, pieceName in promoIconRects:
                         if rect.collidepoint((mouseX, mouseY)):
                             displayedBoard.promote(promotingPawn, pieceName)
+                            if displayedBoard.turn == 'white':
+                                chessClock.whiteTime += chessClock.increment
+                            else:
+                                chessClock.blackTime += chessClock.increment
+
+                            displayedBoard.switchTurn()
+                            chessClock.setTurn(displayedBoard.turn)
                             displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
+                            setPiecesCoordinates()
                             displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
                             displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
-                            setPiecesCoordinates()
-                            promoIconRects.clear()
                             movingPiece = False
+                            promoIconRects.clear()
                             promotingPawn = None
                             availableMoves = []
                             break
                     continue  # don't do anything if something else than a promotion is clicked
 
                 if movingPiece and not promotingPawn:
+                    if displayedBoard.turn == 'white':
+                        chessClock.whiteTime += chessClock.increment
+                    else:
+                        chessClock.blackTime += chessClock.increment
+
+                    displayedBoard.switchTurn()
+                    chessClock.setTurn(displayedBoard.turn)
+                    setPiecesCoordinates()
                     displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
                     displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
                     displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
-                    print(moveList)
                     movingPiece = False
+
+
 
         pygame_widgets.update(events)
         pygame.display.update()
