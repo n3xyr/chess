@@ -163,7 +163,6 @@ class board:
 
         moveList.append(resultMove)
 
-
     def manageSelection(self, selectedTile, y, x):
         clickedTile = self.matrix[y][x]
 
