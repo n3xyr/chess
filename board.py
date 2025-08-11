@@ -1,11 +1,11 @@
 import pieces
 import pygame
-import time
 import copy
 
 pygame.mixer.init()
 moveSound = pygame.mixer.Sound('soundEffects/moveSound.wav')
 eatSound = pygame.mixer.Sound('soundEffects/eatSound.wav')
+castleSound = pygame.mixer.Sound('soundEffects/castleSound.wav')
 
 class board:
     def __init__(self):
@@ -58,9 +58,23 @@ class board:
         self.wk = pieces.king(7, 4, 'white')
         self.matrix[0][4] = self.bk                                   # black king
         self.matrix[7][4] = self.wk                                   # white king
+        
 
         self.boardHistoric = [copy.deepcopy(self.matrix)]  # Initial historic state
         self.historicIndic = len(self.boardHistoric) - 1
+
+
+    def getPieces(self, color):
+        """
+        Returns a list of pieces of the specified color.
+        """
+        piecesList = []
+        for i in range(8):
+            for j in range(8):
+                piece = self.matrix[i][j]
+                if piece and piece.getColor() == color:
+                    piecesList.append(piece)
+        return piecesList
 
 
     def getAvailableMoves(self, selectedTile):
@@ -92,7 +106,7 @@ class board:
             else:
                 result += '+,'
                 
-        if self.matrix[y][x]:
+        if self.matrix[y][x] or self.isEnPassantMove(piece, y, x):
             result += 'x,'
 
         if piece.name == 'K':
@@ -161,6 +175,8 @@ class board:
     def playSound(self, act):
         if 'x' in act:
             eatSound.play()
+        elif 'O-O' in act or 'O-O-O' in act:
+            castleSound.play()
         else:
             moveSound.play()
 
@@ -172,28 +188,48 @@ class board:
             self.soundHistoric.append('')
 
 
-    def movePiece(self, piece, y, x):
+    def isCastleMove(self, piece, x):
+        if piece.name == 'K':
+            if (piece.getCoordX() - x) ** 2 > 1:
+                return True
+        return False
+    
+    def isEnPassantMove(self, piece, y, x):
+        if piece.name == '':
+            if (piece.getCoordY() - y) ** 2 == 1 and (piece.getCoordX() - x) ** 2 == 1 and self.matrix[y][x] is None:
+                return True
+        return False
+
+
+    def movePiece(self, piece, y, x, doSound=True):
         actList = self.getActTypes(piece, y, x)
+
+        if self.isEnPassantMove(piece, y, x):
+            self.matrix[piece.getCoordY()][x] = None
 
         self.matrix[y][x] = piece
         self.matrix[piece.getCoordY()][piece.getCoordX()] = None
+
+        if piece.name == 'K':
+            piece.hasMoved = True
+        if piece.name == 'R':
+            piece.hasMoved = True
 
         piece.setCoordY(y)
         piece.setCoordX(x)
 
         if piece.getColor() == 'white':
-            opponentKing = self.wk
+            opponentKing = self.bk
         else:
-            opponentKing =  self.bk
+            opponentKing =  self.wk
 
         isCheckemated = self.checkMate(opponentKing)
-
         if isCheckemated:
             print(opponentKing.getColor(), "lost")
 
-        self.switchTurn()
-        
-        self.playSound(actList.split(','))
+        if doSound:
+            self.playSound(actList.split(','))
+
         self.addSoundToHistoric(actList.split(','))
 
 
@@ -210,16 +246,6 @@ class board:
             self.matrix[coordY][coordX] = pieces.rook(coordY, coordX, color)
         elif newPieceName == 'bishop':
             self.matrix[coordY][coordX] = pieces.bishop(coordY, coordX, color)
-
-
-    def initClock(self):
-        initialTime = time.time()
-        return initialTime
-
-
-    def getClock(self, initialTime):
-        currentTime = time.time()
-        return int(currentTime - initialTime)
 
 
     def createSimulatedBoard(self):
@@ -239,7 +265,6 @@ class board:
                             simulatedBoard.bk = simulatedPiece
         return simulatedBoard
 
-
     def simulateMovePiece(self, piece, y, x):
         if piece:
             initalY = piece.getCoordY()
@@ -248,7 +273,6 @@ class board:
             self.matrix[initalY][initalX] = None
             piece.setCoordY(y)
             piece.setCoordX(x)
-
 
     def nextMoveGivesCheck(self, piece, y, x):
             simulatedBoard = self.createSimulatedBoard()
@@ -262,7 +286,6 @@ class board:
 
             return simKing.isChecked(simulatedBoard, checkNext=False)
 
-
     def nextMoveIsCheck(self, piece, y, x):
         simulatedBoard = self.createSimulatedBoard()
         simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
@@ -275,7 +298,6 @@ class board:
 
         return simKing.isChecked(simulatedBoard, checkNext=False)
     
-
     def checkMate(self, king):
         if king.isChecked(self):
             pieces = []
@@ -334,8 +356,3 @@ class board:
                         print('   ', end='')
                 print('')
             print('---')
-
-
-displayedBoard = board()
-displayedBoard.fillBoard()
-simulatedBoard = board()
