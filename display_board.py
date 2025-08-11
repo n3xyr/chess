@@ -460,6 +460,7 @@ def slidePieceToTile(piece, targetTile):
         drawBoard(GAME, skipPiece=piece)
         chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
         chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+        drawHistoric(moveList)
         GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
         pygame.display.flip()
@@ -552,6 +553,7 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
         drawBoard(GAME)
         chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
         chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+        drawHistoric(moveList)
         GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
         GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
@@ -560,7 +562,7 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
 
 
 def main(clockTime, clockIncrement):
-    global displayedBoard, chessClock, historicScroll
+    global displayedBoard, chessClock, historicScroll, moveList
     clock = pygame.time.Clock()
     run = True
     moveList = []
