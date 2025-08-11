@@ -529,7 +529,7 @@ def drawHistoric(moveList):
             pygame.draw.rect(GAME, HISTORICSELECTLIGHTGREY, (textPosX - int(37 * SCALE), textPosY + int(15 * SCALE), sizeX + int(38 * SCALE), sizeY), border_radius=int(4 * SCALE))
             pygame.draw.rect(GAME, HISTORICSELECTGREY, (textPosX - int(37 * SCALE), textPosY + int(8 * SCALE), sizeX + int(38 * SCALE), sizeY + int(4 * SCALE)), border_radius=int(4 * SCALE))
 
-        moveTextFont = pygame.font.Font('fonts/Roboto-Medium.ttf', int(19 * SCALE))
+        moveTextFont = pygame.font.Font('fonts/Roboto-Medium.ttf', int(21 * SCALE))
         moveText = moveTextFont.render(move, True, LIGHTGREY)
         GAME.blit(moveText, (textPosX, textPosY + int(13 * SCALE)))
         GAME.blit(pygame.transform.scale(drawFigurine(move, col), (int(TILESIZE * 0.35), int(TILESIZE * 0.35))), (textPosX - int(35 * SCALE), textPosY + int(6 * SCALE)))
