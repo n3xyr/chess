@@ -66,6 +66,7 @@ wqFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wqFigurin
 wrFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wrFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
 wCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wCastleFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
 bCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bCastleFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
+nothingNess = pygame.image.load("piecesFigurines/nothingNess.png")
 
 # Define colors
 WHITE = (255, 255, 255)
@@ -195,7 +196,7 @@ def adjustWindowSize(newWidth, newHeight):
     wrFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wrFigurine.png"), (int(TILESIZE), int(TILESIZE)))
     wCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
     bCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-
+    
 def adjustPromoSize():
     global pieces, promoImageSize, promoImageSpacing, promoInnerMargin, promoBlockWidth, promoBlockHeight, promoBlockX, promoBlockY, promoBackground, promoIconPos, promoOrder, promoIconRects, pos, img, img_rect
     global WIDTH, HEIGHT, SCALE, TILESIZE
@@ -374,8 +375,7 @@ def drawFigurine(move, col):
         elif move[0] == '0' or move[0] == 'O':
             return bCastleFigurine
         else:
-            return bpFigurine        
-
+            return bpFigurine
 
 def drawHistoric(moveList):
     pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE), int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)), 0, int(15 * SCALE))
@@ -408,7 +408,6 @@ def drawHistoric(moveList):
         moveText = moveTextFont.render(move, True, LIGHTGREY)
         GAME.blit(moveText, (textPosX, textPosY + int(13 * SCALE)))
         GAME.blit(pygame.transform.scale(drawFigurine(move, col), (int(TILESIZE * 0.35), int(TILESIZE * 0.35))), (textPosX - int(35 * SCALE), textPosY + int(6 * SCALE)))
-
 
 display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 adjustPromoSize()
