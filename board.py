@@ -126,7 +126,10 @@ class board:
 
 
     def addMoveToHistoric(self, moveList, actList, piece, y, x):
-        resultMove = piece.name
+        if not('O-O' in actList or 'O-O-O' in actList):
+            resultMove = piece.name
+        else:
+            resultMove = ''
 
         if resultMove == '' and 'x' in actList:
             resultMove += chr(97 + piece.getCoordX())
@@ -146,7 +149,8 @@ class board:
         if 'x' in actList:
             resultMove += 'x'
 
-        resultMove += chr(97 + x) + str(8 - y)
+        if not('O-O' in actList or 'O-O-O' in actList):
+            resultMove += chr(97 + x) + str(8 - y)
 
         if '=' in actList:
             resultMove += '=' + self.matrix[piece.getCoordY()][piece.getCoordX()].name

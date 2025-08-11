@@ -725,6 +725,7 @@ def main(clockTime, clockIncrement):
                     displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
                     displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
                     displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
+                    print(moveList)
                     movingPiece = False
 
         pygame_widgets.update(events)
