@@ -144,6 +144,8 @@ for i in range(len(pieces)):
     img_rect = img.get_rect(center=pos)
     pieces[i]['rect'] = img_rect
 
+historicScroll = 0
+
 def adjustWindowSize(newWidth, newHeight):
     global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME
     global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr, bpFigurine, bbFigurine, bkFigurine, bnFigurine, bqFigurine, brFigurine, bCastleFigurine, wpFigurine, wbFigurine, wkFigurine, wnFigurine, wqFigurine, wrFigurine, wCastleFigurine
@@ -376,38 +378,66 @@ def drawFigurine(move, col):
 
 
 def drawHistoric(moveList):
-    pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE), int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)), 0, int(15 * SCALE))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(40 * SCALE)))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(100 * SCALE)))
+    pygame.draw.rect(GAME, HISTORICDARKBG,
+        (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE),
+         int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)),
+        0, int(15 * SCALE))
 
+    pygame.draw.aaline(GAME, HISTORICSECONDARY,
+        (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(40 * SCALE)),
+        (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(40 * SCALE)))
+    pygame.draw.aaline(GAME, HISTORICSECONDARY,
+        (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(100 * SCALE)),
+        (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(100 * SCALE)))
+
+    historicTitle = robotoMedium.render("Moves History", True, LIGHTGREY)
+    GAME.blit(historicTitle,
+        (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(70 * SCALE),
+         TOPMARGIN + int(55 * SCALE)))
+
+    # Application de l'offset ici ↓
     for i, move in enumerate(moveList):
         col = i % 2
         row = i // 2
         textPosX = WIDTH - RIGHTMARGIN + col * (TILESIZE * 1.3) + int(120 * SCALE)
-        textPosY = TOPMARGIN + row * (TILESIZE // 2) + int(120 * SCALE)        
+        textPosY = TOPMARGIN + row * (TILESIZE // 2) + int(120 * SCALE) + historicScroll
+
+        # Empêche l'affichage des coups hors de la zone
+        if textPosY < TOPMARGIN + 100 or textPosY > HEIGHT - 50:
+            continue
+
         counterText = robotoMedium.render(str(row + 1) + ".", True, HISTORICSECONDARY)
         if col == 0:
             if row % 2 == 0:
-                pygame.draw.rect(GAME, HISTORICLIGHTBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
+                pygame.draw.rect(GAME, HISTORICLIGHTBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4,
+                                                         textPosY, int(3 * TILESIZE), TILESIZE // 2))
                 GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
-                
             else:
-                pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
+                pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4,
+                                                        textPosY, int(3 * TILESIZE), TILESIZE // 2))
                 GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
-            
+
         sizeX, sizeY = robotoMedium.size(move)
         if i == board.displayedBoard.historicIndic - 1:
-            pygame.draw.rect(GAME, HISTORICSELECTLIGHTGREY, (textPosX - int(32 * SCALE), textPosY + int(15 * SCALE), sizeX + int(44 * SCALE), sizeY), border_radius= int(4 * SCALE))
-            pygame.draw.rect(GAME, HISTORICSELECTGREY, (textPosX - int(32 * SCALE), textPosY + int(8 * SCALE), sizeX + int(44 * SCALE), sizeY + int(4 * SCALE)), border_radius = int(4 * SCALE))
+            pygame.draw.rect(GAME, HISTORICSELECTLIGHTGREY,
+                             (textPosX - int(32 * SCALE), textPosY + int(15 * SCALE),
+                              sizeX + int(44 * SCALE), sizeY), border_radius=int(4 * SCALE))
+            pygame.draw.rect(GAME, HISTORICSELECTGREY,
+                             (textPosX - int(32 * SCALE), textPosY + int(8 * SCALE),
+                              sizeX + int(44 * SCALE), sizeY + int(4 * SCALE)), border_radius=int(4 * SCALE))
 
         moveText = robotoMedium.render(move, True, LIGHTGREY)
         GAME.blit(moveText, (textPosX, textPosY + int(11 * SCALE)))
-        GAME.blit(pygame.transform.scale(drawFigurine(move, col), (TILESIZE * 0.35, TILESIZE * 0.35)), (textPosX - int(35 * SCALE), textPosY + int(6 * SCALE)))
+        GAME.blit(pygame.transform.scale(drawFigurine(move, col),
+                                         (int(TILESIZE * 0.35), int(TILESIZE * 0.35))),
+                  (textPosX - int(35 * SCALE), textPosY + int(6 * SCALE)))
+
 
 display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 adjustPromoSize()
 
 def main():
+    global historicScroll
     clock = pygame.time.Clock()
     run = True
     moveList = []
@@ -471,6 +501,14 @@ def main():
 
                 if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7:
                     arrowStart = (mouseYTab, mouseXTab)
+
+            if event.type == pygame.MOUSEWHEEL:
+                max_scroll = 0
+                extra_space = 3 * (TILESIZE // 2)  # autorise 3 lignes supplémentaires
+                min_scroll = min(0, HEIGHT - (len(moveList) // 2) * (TILESIZE // 2) - 150 - extra_space)
+
+                historicScroll = max(min_scroll,
+                                    min(max_scroll, historicScroll + event.y * 20 * SCALE))
 
             if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and firstMovePlayed and rightClickDown:
                 rightClickDown = False
