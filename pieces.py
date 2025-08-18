@@ -720,7 +720,7 @@ class king:
                             return True
                     else:
                         rook = board.matrix[self.getCoordY()][7]
-                        if rook.name == 'R' and rook.hasMoved == False:
+                        if rook is not None and rook.name == 'R' and rook.hasMoved == False:
                             for i in range(self.getCoordX() + 1, 7):
                                 if board.matrix[self.getCoordY()][i] is not None or isTileTarget(self.getCoordY(), i, oppositeColor, board):
                                     return False

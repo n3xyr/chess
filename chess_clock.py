@@ -14,11 +14,12 @@ class chessClock:
 
 
     def checkClock0(self):
-        if self.whiteTime == 0:
+        if self.whiteTime <= 0:
             return 'white'
-        elif self.blackTime == 0:
+        elif self.blackTime <= 0:
             return 'black'
-        else: return False
+        else: 
+            return False
 
 
     def updateTime(self):

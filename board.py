@@ -220,15 +220,6 @@ class board:
         piece.setCoordY(y)
         piece.setCoordX(x)
 
-        if piece.getColor() == 'white':
-            opponentKing = self.bk
-        else:
-            opponentKing =  self.wk
-
-        isCheckemated = self.checkMate(opponentKing)
-        if isCheckemated:
-            print(opponentKing.getColor(), "lost")
-
         if doSound:
             self.playSound(actList.split(','))
 

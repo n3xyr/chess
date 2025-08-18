@@ -492,6 +492,24 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
         pygame.display.flip()
         pygame.time.delay(4)  # Delay for animation effect
 
+def hasSomeoneWon(clock):
+    isSomeoneTimeUp = clock.checkClock0()
+    if isSomeoneTimeUp != False and isSomeoneTimeUp == 'black':
+        return 'white'
+    elif isSomeoneTimeUp != False and isSomeoneTimeUp == 'white':
+        return 'black'
+    
+    blackKing = displayedBoard.bk
+    whiteKing = displayedBoard.wk
+    isWhiteCheckemated = displayedBoard.checkMate(whiteKing)
+    isBlackCheckemated = displayedBoard.checkMate(blackKing)
+    if isWhiteCheckemated and not isBlackCheckemated:
+        return 'black'
+    elif not isWhiteCheckemated and isBlackCheckemated:
+        return 'white'
+        
+def drawEndGameScreen(winner):
+    print(winner)
 
 def main(clockTime, clockIncrement):
     global displayedBoard, chessClock, historicScroll, moveList
@@ -569,10 +587,10 @@ def main(clockTime, clockIncrement):
                     arrowStart = (mouseYTab, mouseXTab)
 
             if event.type == pygame.MOUSEWHEEL:
-                max_scroll = 0
-                extra_space = 3 * (TILESIZE // 2)
-                min_scroll = min(0, HEIGHT - (len(moveList) // 2) * (TILESIZE // 2) - 150 - extra_space)
-                historicScroll = max(min_scroll, min(max_scroll, historicScroll + event.y * 20 * SCALE))
+                maxScroll = 0
+                extraSpace = 3 * (TILESIZE // 2)
+                minScroll = min(0, HEIGHT - (len(moveList) // 2) * (TILESIZE // 2) - 150 - extraSpace)
+                historicScroll = max(minScroll, min(maxScroll, historicScroll + event.y * 20 * SCALE))
 
             if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and firstMovePlayed and rightClickDown:
                 rightClickDown = False
@@ -671,8 +689,10 @@ def main(clockTime, clockIncrement):
                     displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
                     displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
                     movingPiece = False
-
-
+                    
+        potentialWinner = hasSomeoneWon(chessClock)
+        if potentialWinner is not None:
+            drawEndGameScreen(potentialWinner)
 
         pygame_widgets.update(events)
         pygame.display.update()
