@@ -509,7 +509,10 @@ def hasSomeoneWon(clock):
         return 'white'
         
 def drawEndGameScreen(winner):
-    print(winner)
+    import end_screen
+    winCondition = "temp win condition"
+    endButtons = end_screen.drawEndScreen(GAME, winner, winCondition, SCALE, TILESIZE)
+    return endButtons
 
 def main(clockTime, clockIncrement):
     global displayedBoard, chessClock, historicScroll, moveList
