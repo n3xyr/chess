@@ -36,33 +36,36 @@ SCALE = 1
 
 
 def adjustWindowSize(newWidth, newHeight):
-    global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME, BIGCLOCKWIDTH, SMALLCLOCKWIDTH, BIGCLOCKPOS, SMALLCLOCKPOS, CLOCKHEIGHT, robotoFont
-    global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr
+    global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME
+    global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr, bpFigurine, bbFigurine, bkFigurine, bnFigurine, bqFigurine, brFigurine, bCastleFigurine, wpFigurine, wbFigurine, wkFigurine, wnFigurine, wqFigurine, wrFigurine, wCastleFigurine, nothingness
+    global robotoFont, robotoMedium, darkSurfaceRGBA, lightSurfaceRGBA, arrowSurfaceRGBA
     
-    oldHeight = HEIGHT
-    oldWidth = WIDTH
-    if WIDTH == newWidth and HEIGHT != newHeight:
-        SCALE = newHeight / oldHeight
+    if newWidth == int(INIT_WIDTH * SCALE) and newHeight != INIT_HEIGHT * SCALE:
+        SCALE = newHeight / INIT_HEIGHT
+    elif newHeight == int(INIT_HEIGHT * SCALE) and newWidth != INIT_WIDTH * SCALE:
+        SCALE = newWidth / INIT_WIDTH
     else:
-        SCALE = newWidth / oldWidth
-        
-    HEIGHT = int(oldHeight * SCALE) // 8 * 8
-    WIDTH = int(oldWidth * SCALE) // 8 * 8
+        SCALE = min(newWidth / INIT_WIDTH, newHeight / INIT_HEIGHT)
     
-    BASESCALE =  WIDTH / 800
-    TILESIZE = int((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8)
-    TOPMARGIN = TILESIZE
-    BOTTOMMARGIN = TILESIZE
-    LEFTMARGIN = 0
-    RIGHTMARGIN = 0
-    BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * BASESCALE), int(125 * BASESCALE), int(54 * BASESCALE)
-    BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * BASESCALE), int(23 * BASESCALE)), (int(630 * BASESCALE), int(23 * BASESCALE))
+    TILESIZE = int(INIT_TILESIZE * SCALE)
+    LEFTMARGIN = int(INIT_LEFTMARGIN * SCALE)
+    RIGHTMARGIN = int(INIT_RIGHTMARGIN * SCALE)
+    TOPMARGIN = int(INIT_TOPMARGIN * SCALE)
+    BOTTOMMARGIN = int(INIT_BOTTOMMARGIN * SCALE)
 
+    WIDTH, HEIGHT = INIT_WIDTH * SCALE, INIT_HEIGHT * SCALE
     GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-    pygame.font.init()
+
+    robotoFont = pygame.font.SysFont('Roboto', int(50 * SCALE))
+    robotoMedium = pygame.font.Font('fonts/Roboto-Medium.ttf', int(25 * SCALE))
     
-    robotoFont = pygame.font.SysFont('Roboto', int(50 * BASESCALE))
+    darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+    lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+    arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
     
+    pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+    pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+        
     bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
     bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
     bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (TILESIZE, TILESIZE))
@@ -76,6 +79,22 @@ def adjustWindowSize(newWidth, newHeight):
     wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
     wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
 
+    bpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bkFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bkFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bnFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bnFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bqFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bqFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    brFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/brFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wkFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wkFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wnFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wnFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wqFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wqFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wrFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wrFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    nothingness = pygame.image.load("piecesFigurines/nothingness.png")
+
 
 def adjustPromoSize():
     global pieces, promoImageSize, promoImageSpacing, promoInnerMargin, promoBlockWidth, promoBlockHeight, promoBlockX, promoBlockY, promoBackground, promoIconPos, promoOrder, promoIconRects, pos, img, img_rect
@@ -88,8 +107,7 @@ def adjustPromoSize():
 
     promoBlockWidth = promoImageSize + 2 * promoInnerMargin
     promoBlockHeight = 4 * promoImageSize + (4 - 1) * promoImageSpacing + 2 * promoInnerMargin
-
-    promoBlockX = WIDTH // 2 - promoBlockWidth // 2
+    promoBlockX = LEFTMARGIN + 4 * TILESIZE - promoBlockWidth // 2
     promoBlockY = HEIGHT // 2 - promoBlockHeight // 2
 
     promoBackground = pygame.Rect(promoBlockX, promoBlockY, promoBlockWidth, promoBlockHeight)
@@ -197,7 +215,7 @@ promoInnerMargin = int(10 * SCALE)
 promoBlockWidth = promoImageSize + 2 * promoInnerMargin
 promoBlockHeight = 4 * promoImageSize + (4 - 1) * promoImageSpacing + 2 * promoInnerMargin
 
-promoBlockX = WIDTH // 2 - promoBlockWidth // 2
+promoBlockX = LEFTMARGIN + 4 * TILESIZE - promoBlockWidth // 2
 promoBlockY = HEIGHT // 2 - promoBlockHeight // 2
 
 promoBackground = pygame.Rect(promoBlockX, promoBlockY, promoBlockWidth, promoBlockHeight)
@@ -233,97 +251,7 @@ for i in range(len(pieces)):
     pieces[i]['rect'] = img_rect
 
 historicScroll = 0
-
-def adjustWindowSize(newWidth, newHeight):
-    global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME
-    global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr, bpFigurine, bbFigurine, bkFigurine, bnFigurine, bqFigurine, brFigurine, bCastleFigurine, wpFigurine, wbFigurine, wkFigurine, wnFigurine, wqFigurine, wrFigurine, wCastleFigurine
     
-    if newWidth == int(INIT_WIDTH * SCALE) and newHeight != INIT_HEIGHT * SCALE:
-        SCALE = newHeight / INIT_HEIGHT
-    elif newHeight == int(INIT_HEIGHT * SCALE) and newWidth != INIT_WIDTH * SCALE:
-        SCALE = newWidth / INIT_WIDTH
-    else:
-        SCALE = min(newWidth / INIT_WIDTH, newHeight / INIT_HEIGHT)
-    
-    TILESIZE = int(INIT_TILESIZE * SCALE)
-    LEFTMARGIN = int(INIT_LEFTMARGIN * SCALE)
-    RIGHTMARGIN = int(INIT_RIGHTMARGIN * SCALE)
-    TOPMARGIN = int(INIT_TOPMARGIN * SCALE)
-    BOTTOMMARGIN = int(INIT_BOTTOMMARGIN * SCALE)
-
-    WIDTH, HEIGHT = INIT_WIDTH * SCALE, INIT_HEIGHT * SCALE
-    GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-
-    robotoFont = pygame.font.SysFont('Roboto', int(50 * SCALE))
-
-    bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
-    bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
-    bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (TILESIZE, TILESIZE))
-    bn = pygame.transform.scale(pygame.image.load("piecesImages/bn.png"), (TILESIZE, TILESIZE))
-    bq = pygame.transform.scale(pygame.image.load("piecesImages/bq.png"), (TILESIZE, TILESIZE))
-    br = pygame.transform.scale(pygame.image.load("piecesImages/br.png"), (TILESIZE, TILESIZE))
-    wp = pygame.transform.scale(pygame.image.load("piecesImages/wp.png"), (TILESIZE, TILESIZE))
-    wb = pygame.transform.scale(pygame.image.load("piecesImages/wb.png"), (TILESIZE, TILESIZE))
-    wk = pygame.transform.scale(pygame.image.load("piecesImages/wk.png"), (TILESIZE, TILESIZE))
-    wn = pygame.transform.scale(pygame.image.load("piecesImages/wn.png"), (TILESIZE, TILESIZE))
-    wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
-    wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
-
-    bpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bkFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bkFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bnFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bnFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bqFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bqFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    brFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/brFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wkFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wkFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wnFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wnFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wqFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wqFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wrFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wrFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    
-def adjustPromoSize():
-    global pieces, promoImageSize, promoImageSpacing, promoInnerMargin, promoBlockWidth, promoBlockHeight, promoBlockX, promoBlockY, promoBackground, promoIconPos, promoOrder, promoIconRects, pos, img, img_rect
-    global WIDTH, HEIGHT, SCALE, TILESIZE
-    global wq, wn, wr, wb, bq, bn, br, bb
-
-    promoImageSize = TILESIZE
-    promoImageSpacing = int(5 * SCALE)
-    promoInnerMargin = int(10 * SCALE)
-
-    promoBlockWidth = promoImageSize + 2 * promoInnerMargin
-    promoBlockHeight = 4 * promoImageSize + (4 - 1) * promoImageSpacing + 2 * promoInnerMargin
-
-    promoBlockX = WIDTH // 2 - promoBlockWidth // 2
-    promoBlockY = HEIGHT // 2 - promoBlockHeight // 2
-
-    promoBackground = pygame.Rect(promoBlockX, promoBlockY, promoBlockWidth, promoBlockHeight)
-
-    promoIconPos = []
-    for i in range(4):
-        x = promoBlockX + promoBlockWidth // 2
-        y = promoBlockY + promoInnerMargin + i * (promoImageSize + promoImageSpacing)
-        promoIconPos.append((x, y))
-
-    pieces = [
-    {'name': 'whiteQueen', 'img': wq, 'pos': (int(WIDTH / 2), int(HEIGHT / 2 - promoImageSize * 1.5 - promoImageSpacing * 1.5))},
-    {'name': 'whiteKnight', 'img': wn, 'pos': (int(WIDTH / 2), int(HEIGHT / 2 - promoImageSize * 0.5 - promoImageSpacing * 0.5))},
-    {'name': 'whiteRook', 'img': wr, 'pos': (int(WIDTH / 2), int(HEIGHT / 2 + promoImageSize * 0.5 + promoImageSpacing * 0.5))},
-    {'name': 'whiteBishop', 'img': wb, 'pos': (int(WIDTH / 2), int(HEIGHT / 2 + promoImageSize * 1.5 + promoImageSpacing * 1.5))},
-    {'name': 'blackQueen', 'img': bq, 'pos': (int(WIDTH / 2), 50)},
-    {'name': 'blackKnight', 'img': bn, 'pos': (int(WIDTH / 2), 150)},
-    {'name': 'blackRook', 'img': br, 'pos': (int(WIDTH / 2), 250)},
-    {'name': 'blackBishop', 'img': bb, 'pos': (int(WIDTH / 2), 350)},
-    ]
-
-    for i in range(len(pieces)):
-        pos = promoIconPos[i % 4]
-        img = pieces[i]['img']
-        img_rect = img.get_rect(center=pos)
-        pieces[i]['rect'] = img_rect
-
 def drawBoard(game, skipPiece=None):
     game.fill(BACKGROUND)
     for row in range(ROWS):
@@ -627,6 +555,7 @@ def main(clockTime, clockIncrement):
             if event.type == pygame.VIDEORESIZE:
                 adjustWindowSize(event.w, event.h)
                 adjustPromoSize()
+                setPiecesCoordinates()
                 display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and firstMovePlayed and not rightClickDown:
