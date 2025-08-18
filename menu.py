@@ -3,6 +3,7 @@ from screeninfo import get_monitors
 import webbrowser
 import display_board
 import time
+
 def getMonitorResolution():
     for m in get_monitors():
         if m.is_primary:

@@ -432,8 +432,8 @@ def drawFigurine(move, col):
 
 def drawHistoric(moveList):
     pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE), int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)), 0, int(15 * SCALE))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(40 * SCALE)))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(100 * SCALE)))
+    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(40 * SCALE)))
+    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(100 * SCALE)))
 
     historicTitle = robotoMedium.render("Moves History", True, LIGHTGREY)
     GAME.blit(historicTitle, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(70 * SCALE), TOPMARGIN + int(55 * SCALE)))
