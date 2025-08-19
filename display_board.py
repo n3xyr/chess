@@ -554,23 +554,24 @@ def main(clockTime, clockIncrement):
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
-        if firstMovePlayed:
-            chessClock.updateTime()
-            chessClock.updateLastTime()
-
-            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
-            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+        potentialWinner = hasSomeoneWon(chessClock)
 
         tryDrawPromotionMenu(promotingPawn)
 
         drawHistoric(moveList)
         
-        potentialWinner = hasSomeoneWon(chessClock)
-        
         if potentialWinner is not None:
             endScreenDef = end_screen.EndScreen(potentialWinner, "test", WIDTH, HEIGHT, TILESIZE)
             endScreenDef.defineButtons(SCALE, TILESIZE, WIDTH, HEIGHT)
             endScreenDef.draw(GAME, SCALE, TILESIZE)
+
+        if firstMovePlayed:
+            if chessClock.checkClock0() == False:
+                chessClock.updateTime()
+                chessClock.updateLastTime()
+
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
 
         events = pygame.event.get()
         for event in events:
