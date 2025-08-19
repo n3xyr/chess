@@ -583,9 +583,6 @@ def main(clockTime, clockIncrement):
     movingPiece = False
     canPlay = True
     setPiecesCoordinates()
-    # displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
-    # displayedBoard.soundHistoric.append('')
-    # displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
 
     while run:
         clock.tick(60)  # 60 FPS cap
