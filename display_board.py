@@ -514,10 +514,12 @@ def drawEndGameScreen(winner):
     winCondition = "temp win condition"
     end_screen.drawEndScreen(GAME, winner, winCondition, SCALE, TILESIZE)
 
+
 def main(clockTime, clockIncrement):
     global displayedBoard, chessClock, historicScroll, moveList
     adjustPromoSize()
     adjustWindowSize(WIDTH, HEIGHT)
+    end_screen.REPLAY = False
     clock = pygame.time.Clock()
     run = True
     moveList = []
@@ -527,7 +529,6 @@ def main(clockTime, clockIncrement):
     rightClickDown = False
     arrows = []
     promotingPawn = None
-    clockTime, clockIncrement = (3, 5)
     chessClock = chess_clock.chessClock(clockTime, clockIncrement)
     displayedBoard = board.board()
     displayedBoard.fillBoard()
@@ -706,12 +707,18 @@ def main(clockTime, clockIncrement):
                 if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
                     pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                     endScreenDef.handleEvents(event)
-
+                    if end_screen.REPLAY:
+                        run = False
+        
         pygame_widgets.update(events)
         pygame.display.update()
 
+    if end_screen.REPLAY:
+        main(clockTime, clockIncrement)
+        
     pygame.quit()
     sys.exit()
 
+
 if __name__ == "__main__":
-    main(0, 0)
+    main(5, 5)

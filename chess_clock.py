@@ -3,6 +3,7 @@ import pygame
 
 class chessClock:
     def __init__(self, clockTime, clockIncrement):
+        self.clockTime = clockTime
         self.whiteTime = float(clockTime)
         self.blackTime = float(clockTime)
         self.increment = clockIncrement

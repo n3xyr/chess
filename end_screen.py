@@ -1,4 +1,5 @@
 import pygame
+import subprocess
 
 WINDOWDARKTRANSPARENCY = (0, 0, 0, 128)
 ENDBOXOUTLINE = (60, 58, 56, 255)
@@ -13,6 +14,7 @@ GREENBUTTONTEXT = GREENBUTTONOUTLINE
 NORMALBUTTONOUTLINE = (94, 93, 91, 255)
 NORMALBUTTONBACKGROUND = (48, 46, 43, 255)
 NORMALBUTTONTEXT = NORMALBUTTONOUTLINE
+REPLAY = False
 
 class Button:
     def __init__(self, x, y, w, h, text, callback, FONT_SIZE, SCALE, WIDTH, borderRadius):
@@ -52,7 +54,7 @@ class EndScreen:
         buttonHeightIdx += 1
         self.viewGameButton = Button(self.menuX + int(0.2 * tileSize), self.menuY + int(scale * 105) + int(86 * scale * buttonHeightIdx), int(260 * scale), int(75 * scale), "View Game", lambda: print('view game'), 22, scale, height, 20)
         buttonHeightIdx += 1
-        self.revengeButton = Button(self.menuX + int(0.2 * tileSize), self.menuY + int(scale * 105) + int(86 * scale * buttonHeightIdx), int(260 * scale), int(75 * scale), "Revenge", lambda: print('revenge'), 22, scale, height, 20)
+        self.revengeButton = Button(self.menuX + int(0.2 * tileSize), self.menuY + int(scale * 105) + int(86 * scale * buttonHeightIdx), int(260 * scale), int(75 * scale), "Revenge", lambda: revengeAction(), 22, scale, height, 20)
 
     def handleEvents(self, event):
         self.closingCrossButton.handle_event(event)
@@ -101,4 +103,13 @@ class EndScreen:
         self.viewGameButton.draw(surface, NORMALBUTTONBACKGROUND, NORMALBUTTONOUTLINE, NORMALBUTTONTEXT)
         self.revengeButton.draw(surface, NORMALBUTTONBACKGROUND, NORMALBUTTONOUTLINE, NORMALBUTTONTEXT)
 
-        
+def mainMenuAction():
+    pygame.quit()
+    subprocess.run(["python", "menu.py"])
+
+def viewGameAction():
+    pass
+
+def revengeAction():
+    global REPLAY
+    REPLAY = True
