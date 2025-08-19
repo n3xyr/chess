@@ -19,7 +19,6 @@ def getMonitorResolution():
         if m.is_primary:
             return m.width, m.height
 
-
 INIT_LEFTMARGIN = 0
 INIT_RIGHTMARGIN = 350
 INIT_TOPMARGIN = 100
@@ -28,12 +27,13 @@ INIT_TILESIZE = 100
 INIT_WIDTH = INIT_LEFTMARGIN + 8 * INIT_TILESIZE + INIT_RIGHTMARGIN
 INIT_HEIGHT = 8 * INIT_TILESIZE + INIT_BOTTOMMARGIN + INIT_TOPMARGIN
 
-LEFTMARGIN = INIT_LEFTMARGIN
-RIGHTMARGIN = INIT_RIGHTMARGIN
-TOPMARGIN = INIT_TOPMARGIN
-BOTTOMMARGIN = INIT_BOTTOMMARGIN
-TILESIZE = INIT_TILESIZE
-SCALE = 1
+SCALE = 0.8
+
+LEFTMARGIN = int(INIT_LEFTMARGIN * SCALE)
+RIGHTMARGIN = int(INIT_RIGHTMARGIN * SCALE)
+TOPMARGIN = int(INIT_TOPMARGIN * SCALE)
+BOTTOMMARGIN = int(INIT_BOTTOMMARGIN * SCALE)
+TILESIZE = int(INIT_TILESIZE * SCALE)
 
 
 def adjustWindowSize(newWidth, newHeight):
@@ -527,13 +527,13 @@ def main(clockTime, clockIncrement):
     rightClickDown = False
     arrows = []
     promotingPawn = None
-    clockTime, clockIncrement = (3, 5)
     chessClock = chess_clock.chessClock(clockTime, clockIncrement)
     displayedBoard = board.board()
     displayedBoard.fillBoard()
     movingPiece = False
     canPlay = True
     setPiecesCoordinates()
+    potentialWinner = None
 
     while run:
         clock.tick(60)  # 60 FPS cap
@@ -564,21 +564,27 @@ def main(clockTime, clockIncrement):
         tryDrawPromotionMenu(promotingPawn)
 
         drawHistoric(moveList)
-        
-        potentialWinner = hasSomeoneWon(chessClock)
-        
-        if potentialWinner is not None:
+
+        if end_screen.viewingGame:
+            end_screen.inGameMainMenuButton.draw(GAME, (2, 84, 45, 255), (20, 174, 92, 255), (20, 174, 92, 255))
+
+        if potentialWinner is None:
+            potentialWinner = hasSomeoneWon(chessClock)
+
+        if potentialWinner is not None and end_screen.showEndScreen:
             endScreenDef = end_screen.EndScreen(potentialWinner, "test", WIDTH, HEIGHT, TILESIZE)
             endScreenDef.defineButtons(SCALE, TILESIZE, WIDTH, HEIGHT)
             endScreenDef.draw(GAME, SCALE, TILESIZE)
-
+            
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 run = False
-            
-            if potentialWinner is None:
 
+            if end_screen.viewingGame:
+                end_screen.inGameMainMenuButton.handle_event(event)
+                
+            if potentialWinner is None or not end_screen.showEndScreen:
                 tryMoveThroughHistoric(event)
 
                 if event.type == pygame.VIDEORESIZE:
@@ -699,9 +705,10 @@ def main(clockTime, clockIncrement):
                         displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
                         movingPiece = False
             else:
-                if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
-                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-                    endScreenDef.handleEvents(event)
+                if end_screen.showEndScreen:
+                    if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
+                        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                        endScreenDef.handleEvents(event)
 
         pygame_widgets.update(events)
         pygame.display.update()

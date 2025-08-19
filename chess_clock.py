@@ -14,9 +14,9 @@ class chessClock:
 
 
     def checkClock0(self):
-        if self.whiteTime <= 0:
+        if self.whiteTime <= 1:
             return 'white'
-        elif self.blackTime <= 0:
+        elif self.blackTime <= 1:
             return 'black'
         else: 
             return False
@@ -73,4 +73,3 @@ class chessClock:
 
         pygame.draw.rect(surface, BGCOLOR, clockRect, border_radius= TILESIZE // 25)
         surface.blit(timeTxt, timeRect)
-

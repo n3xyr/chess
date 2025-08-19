@@ -1,4 +1,5 @@
 import pygame
+import subprocess
 
 WINDOWDARKTRANSPARENCY = (0, 0, 0, 128)
 ENDBOXOUTLINE = (60, 58, 56, 255)
@@ -13,6 +14,9 @@ GREENBUTTONTEXT = GREENBUTTONOUTLINE
 NORMALBUTTONOUTLINE = (94, 93, 91, 255)
 NORMALBUTTONBACKGROUND = (48, 46, 43, 255)
 NORMALBUTTONTEXT = NORMALBUTTONOUTLINE
+
+showEndScreen = True
+viewingGame = False
 
 class Button:
     def __init__(self, x, y, w, h, text, callback, FONT_SIZE, SCALE, WIDTH, borderRadius):
@@ -45,14 +49,14 @@ class EndScreen:
         self.menuY = int(height // 2 - int(tileSize * 1.85))
     
     def defineButtons(self, scale, tileSize, width, height):
-        self.closingCrossButton = Button(int(688 * scale), int(332 * scale), int(20 * scale), int(20 * scale), '', lambda: print('close'), 0, scale, height, 0)
+        self.closingCrossButton = Button(int(688 * scale), int(332 * scale), int(20 * scale), int(20 * scale), '', lambda: viewGameAction(scale), 0, scale, height, 0)
 
         buttonHeightIdx = 0
-        self.mainMenuButton = Button(self.menuX + int(0.2 * tileSize), self.menuY + int(scale * 105) + int(86 * scale * buttonHeightIdx), int(260 * scale), int(75 * scale), "Main Menu", lambda: print('main menu'), 22, scale, height, 20)
+        self.mainMenuButton = Button(self.menuX + int(0.2 * tileSize), self.menuY + int(scale * 105) + int(86 * scale * buttonHeightIdx), int(260 * scale), int(75 * scale), "Main Menu", lambda: mainMenuAction(), 22, scale, height, 20)
         buttonHeightIdx += 1
-        self.viewGameButton = Button(self.menuX + int(0.2 * tileSize), self.menuY + int(scale * 105) + int(86 * scale * buttonHeightIdx), int(260 * scale), int(75 * scale), "View Game", lambda: print('view game'), 22, scale, height, 20)
+        self.viewGameButton = Button(self.menuX + int(0.2 * tileSize), self.menuY + int(scale * 105) + int(86 * scale * buttonHeightIdx), int(260 * scale), int(75 * scale), "View Game", lambda: viewGameAction(scale), 22, scale, height, 20)
         buttonHeightIdx += 1
-        self.revengeButton = Button(self.menuX + int(0.2 * tileSize), self.menuY + int(scale * 105) + int(86 * scale * buttonHeightIdx), int(260 * scale), int(75 * scale), "Revenge", lambda: print('revenge'), 22, scale, height, 20)
+        self.revengeButton = Button(self.menuX + int(0.2 * tileSize), self.menuY + int(scale * 105) + int(86 * scale * buttonHeightIdx), int(260 * scale), int(75 * scale), "Revenge", lambda: revengeAction(), 22, scale, height, 20)
 
     def handleEvents(self, event):
         self.closingCrossButton.handle_event(event)
@@ -101,4 +105,18 @@ class EndScreen:
         self.viewGameButton.draw(surface, NORMALBUTTONBACKGROUND, NORMALBUTTONOUTLINE, NORMALBUTTONTEXT)
         self.revengeButton.draw(surface, NORMALBUTTONBACKGROUND, NORMALBUTTONOUTLINE, NORMALBUTTONTEXT)
 
-        
+
+def mainMenuAction():
+    pygame.quit()
+    subprocess.run(["python", "menu.py"])
+
+def viewGameAction(scale):
+    global showEndScreen, viewingGame, inGameMainMenuButton
+    showEndScreen = False
+    viewingGame = True
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+    inGameMainMenuButton = Button(int(825 * scale), int(905 * scale), int(300 * scale), int(75 * scale), "Main Menu", lambda: mainMenuAction(), 22, scale, 0, 20)
+
+def revengeAction():
+    pass
