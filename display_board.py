@@ -8,6 +8,7 @@ import display_assistant
 from copy import deepcopy
 import chess_clock
 import end_screen
+import time
 
 # Initialize Pygame
 pygame.init()
@@ -382,28 +383,6 @@ def getPieceImage(piece):
             return wk
     return None
 
-
-def slidePieceToTile(piece, targetTile):
-    """
-    Slide a piece to a target tile.
-    """
-    startX, startY = piece.getCoordX() * TILESIZE + LEFTMARGIN, piece.getCoordY() * TILESIZE + TOPMARGIN
-    targetX, targetY = targetTile[0] * TILESIZE + LEFTMARGIN, targetTile[1] * TILESIZE + TOPMARGIN
-    deltaX, deltaY = targetX - startX, targetY - startY
-
-    steps = 12  # Number of steps for the sliding animation
-    for step in range(steps):
-        piece.rectX += deltaX / steps
-        piece.rectY += deltaY / steps
-        drawBoard(GAME, skipPiece=piece)
-        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
-        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
-        drawHistoric(moveList)
-        GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
-        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
-        pygame.display.flip()
-        pygame.time.delay(4)  # Delay for animation effect
-
 def drawFigurine(move, col):
     if col == 0:
         if move[0] == 'R':
@@ -471,6 +450,30 @@ def drawHistoric(moveList):
 display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 adjustPromoSize()
 
+def slidePieceToTile(piece, targetTile):
+    """
+    Slide a piece to a target tile.
+    """
+    startX, startY = piece.getCoordX() * TILESIZE + LEFTMARGIN, piece.getCoordY() * TILESIZE + TOPMARGIN
+    targetX, targetY = targetTile[0] * TILESIZE + LEFTMARGIN, targetTile[1] * TILESIZE + TOPMARGIN
+    deltaX, deltaY = targetX - startX, targetY - startY
+
+    steps = 12  # Number of steps for the sliding animation
+    i = 0
+    frequency = 0.025
+    while i < steps:
+        if time.time() % frequency <= frequency / 2:
+            piece.rectX += deltaX / steps
+            piece.rectY += deltaY / steps
+            drawBoard(GAME, skipPiece=piece)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+            drawHistoric(moveList)
+            GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
+            GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+            pygame.display.flip()
+            i += 1
+
 def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
     """
     Slide two pieces to their respective target tiles.
@@ -483,20 +486,24 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
     deltaX2, deltaY2 = targetX2 - startX2, targetY2 - startY2
 
     steps = 12  # Number of steps for the sliding animation
-    for step in range(steps):
-        piece1.rectX += deltaX1 / steps
-        piece1.rectY += deltaY1 / steps
-        piece2.rectX += deltaX2 / steps
-        piece2.rectY += deltaY2 / steps
-        drawBoard(GAME)
-        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
-        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
-        drawHistoric(moveList)
-        GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
-        GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
-        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
-        pygame.display.flip()
-        pygame.time.delay(4)  # Delay for animation effect
+    i = 0
+    frequency = 0.025
+    while i < steps:
+        if time.time() % frequency <= frequency/2:
+            piece1.rectX += deltaX1 / steps
+            piece1.rectY += deltaY1 / steps
+            piece2.rectX += deltaX2 / steps
+            piece2.rectY += deltaY2 / steps
+            drawBoard(GAME)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+            drawHistoric(moveList)
+            GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
+            GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
+            GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+            pygame.display.flip()
+            i += 1
+        # pygame.time.delay(4)  # Delay for animation effect
 
 def hasSomeoneWon(clock):
     isSomeoneTimeUp = clock.checkClock0()
