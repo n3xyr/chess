@@ -7,6 +7,7 @@ from pygame_widgets.button import Button
 import display_assistant
 from copy import deepcopy
 import chess_clock
+import end_screen
 
 # Initialize Pygame
 pygame.init()
@@ -511,11 +512,12 @@ def hasSomeoneWon(clock):
 def drawEndGameScreen(winner):
     import end_screen
     winCondition = "temp win condition"
-    endButtons = end_screen.drawEndScreen(GAME, winner, winCondition, SCALE, TILESIZE)
-    return endButtons
+    end_screen.drawEndScreen(GAME, winner, winCondition, SCALE, TILESIZE)
 
 def main(clockTime, clockIncrement):
     global displayedBoard, chessClock, historicScroll, moveList
+    adjustPromoSize()
+    adjustWindowSize(WIDTH, HEIGHT)
     clock = pygame.time.Clock()
     run = True
     moveList = []
@@ -525,16 +527,13 @@ def main(clockTime, clockIncrement):
     rightClickDown = False
     arrows = []
     promotingPawn = None
-    clockTime, clockIncrement = (180, 5)
+    clockTime, clockIncrement = (3, 5)
     chessClock = chess_clock.chessClock(clockTime, clockIncrement)
     displayedBoard = board.board()
     displayedBoard.fillBoard()
     movingPiece = False
     canPlay = True
     setPiecesCoordinates()
-    # displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
-    # displayedBoard.soundHistoric.append('')
-    # displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
 
     while run:
         clock.tick(60)  # 60 FPS cap
@@ -565,137 +564,144 @@ def main(clockTime, clockIncrement):
         tryDrawPromotionMenu(promotingPawn)
 
         drawHistoric(moveList)
+        
+        potentialWinner = hasSomeoneWon(chessClock)
+        
+        if potentialWinner is not None:
+            endScreenDef = end_screen.EndScreen(potentialWinner, "test", WIDTH, HEIGHT, TILESIZE)
+            endScreenDef.defineButtons(SCALE, TILESIZE, WIDTH, HEIGHT)
+            endScreenDef.draw(GAME, SCALE, TILESIZE)
 
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 run = False
+            
+            if potentialWinner is None:
 
-            tryMoveThroughHistoric(event)
+                tryMoveThroughHistoric(event)
 
-            if event.type == pygame.VIDEORESIZE:
-                adjustWindowSize(event.w, event.h)
-                adjustPromoSize()
-                setPiecesCoordinates()
-                display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
+                if event.type == pygame.VIDEORESIZE:
+                    adjustWindowSize(event.w, event.h)
+                    adjustPromoSize()
+                    setPiecesCoordinates()
+                    display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and firstMovePlayed and not rightClickDown:
-                rightClickDown = True
-                mouseX, mouseY = pygame.mouse.get_pos()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and firstMovePlayed and not rightClickDown:
+                    rightClickDown = True
+                    mouseX, mouseY = pygame.mouse.get_pos()
 
-                mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
-                mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
-
-                if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7:
-                    arrowStart = (mouseYTab, mouseXTab)
-
-            if event.type == pygame.MOUSEWHEEL:
-                maxScroll = 0
-                extraSpace = 3 * (TILESIZE // 2)
-                minScroll = min(0, HEIGHT - (len(moveList) // 2) * (TILESIZE // 2) - 150 - extraSpace)
-                historicScroll = max(minScroll, min(maxScroll, historicScroll + event.y * 20 * SCALE))
-
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and firstMovePlayed and rightClickDown:
-                rightClickDown = False
-                mouseX, mouseY = pygame.mouse.get_pos()
-
-                mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
-                mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
-
-                if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7 and (mouseYTab, mouseXTab) != arrowStart:
-                    arrowEnd = (mouseYTab, mouseXTab)
-
-                    if (arrowStart, arrowEnd) in arrows:
-                        arrows.pop(arrows.index((arrowStart, arrowEnd)))
-                    else:
-                        arrows.append((arrowStart, arrowEnd))
-
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                arrows = []
-
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and canPlay:
-                mouseX, mouseY = pygame.mouse.get_pos()
-
-                if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
                     mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
                     mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
-                    lastSelectedTile = deepcopy(selectedTile)
 
-                    selectedTile, movingPiece = displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
+                    if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7:
+                        arrowStart = (mouseYTab, mouseXTab)                
 
-                    if movingPiece:
-                        if selectedTile.canMove(mouseYTab, mouseXTab, displayedBoard) and selectedTile.getColor() == displayedBoard.turn:
-                            actList = (displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
+                if event.type == pygame.MOUSEWHEEL:
+                    maxScroll = 0
+                    extraSpace = 3 * (TILESIZE // 2)
+                    minScroll = min(0, HEIGHT - (len(moveList) // 2) * (TILESIZE // 2) - 150 - extraSpace)
+                    historicScroll = max(minScroll, min(maxScroll, historicScroll + event.y * 20 * SCALE))
 
-                            if displayedBoard.isCastleMove(lastSelectedTile, mouseXTab):
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and firstMovePlayed and rightClickDown:
+                    rightClickDown = False
+                    mouseX, mouseY = pygame.mouse.get_pos()
 
-                                if selectedTile.getCoordX() > mouseXTab:
-                                    rook = displayedBoard.matrix[mouseYTab][0]
-                                    slideBothPiecesToTile(rook, selectedTile, (mouseXTab + 1, mouseYTab), (mouseXTab, mouseYTab))
+                    mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                    mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
 
-                                    displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                                    displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
+                    if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7 and (mouseYTab, mouseXTab) != arrowStart:
+                        arrowEnd = (mouseYTab, mouseXTab)
+
+                        if (arrowStart, arrowEnd) in arrows:
+                            arrows.pop(arrows.index((arrowStart, arrowEnd)))
+                        else:
+                            arrows.append((arrowStart, arrowEnd))
+
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    arrows = []
+
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and canPlay:
+                    mouseX, mouseY = pygame.mouse.get_pos()
+
+                    if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
+                        mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                        mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
+                        lastSelectedTile = deepcopy(selectedTile)
+
+                        selectedTile, movingPiece = displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
+
+                        if movingPiece:
+                            if selectedTile.canMove(mouseYTab, mouseXTab, displayedBoard) and selectedTile.getColor() == displayedBoard.turn:
+                                actList = (displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
+
+                                if displayedBoard.isCastleMove(lastSelectedTile, mouseXTab):
+
+                                    if selectedTile.getCoordX() > mouseXTab:
+                                        rook = displayedBoard.matrix[mouseYTab][0]
+                                        slideBothPiecesToTile(rook, selectedTile, (mouseXTab + 1, mouseYTab), (mouseXTab, mouseYTab))
+
+                                        displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                        displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
+
+                                    else:
+                                        rook = displayedBoard.matrix[mouseYTab][7]
+                                        slideBothPiecesToTile(rook, selectedTile, (mouseXTab - 1, mouseYTab), (mouseXTab, mouseYTab))
+
+                                        displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                        displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
 
                                 else:
-                                    rook = displayedBoard.matrix[mouseYTab][7]
-                                    slideBothPiecesToTile(rook, selectedTile, (mouseXTab - 1, mouseYTab), (mouseXTab, mouseYTab))
-
+                                    slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
                                     displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                                    displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
 
-                            else:
-                                slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
-                                displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                if len(moveList) == 0:
+                                    firstMovePlayed = True
+                                    chessClock.updateLastTime()
 
-                            if len(moveList) == 0:
-                                firstMovePlayed = True
-                                chessClock.updateLastTime()
+                                if selectedTile.name == '' and selectedTile.isAbleToPromote():
+                                    promotingPawn = selectedTile
+                                selectedTile = None
+                                
+                        availableMoves = displayedBoard.getAvailableMoves(selectedTile)
 
-                            if selectedTile.name == '' and selectedTile.isAbleToPromote():
-                                promotingPawn = selectedTile
-                            selectedTile = None
-                            
-                    availableMoves = displayedBoard.getAvailableMoves(selectedTile)
+                    if promoIconRects:  # if a pawn is promoting
+                        for rect, pieceName in promoIconRects:
+                            if rect.collidepoint((mouseX, mouseY)):
+                                displayedBoard.promote(promotingPawn, pieceName)
+                                if displayedBoard.turn == 'white':
+                                    chessClock.whiteTime += chessClock.increment
+                                else:
+                                    chessClock.blackTime += chessClock.increment
 
-                if promoIconRects:  # if a pawn is promoting
-                    for rect, pieceName in promoIconRects:
-                        if rect.collidepoint((mouseX, mouseY)):
-                            displayedBoard.promote(promotingPawn, pieceName)
-                            if displayedBoard.turn == 'white':
-                                chessClock.whiteTime += chessClock.increment
-                            else:
-                                chessClock.blackTime += chessClock.increment
+                                displayedBoard.switchTurn()
+                                chessClock.setTurn(displayedBoard.turn)
+                                displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
+                                setPiecesCoordinates()
+                                displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
+                                displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
+                                movingPiece = False
+                                promoIconRects.clear()
+                                promotingPawn = None
+                                availableMoves = []
 
-                            displayedBoard.switchTurn()
-                            chessClock.setTurn(displayedBoard.turn)
-                            displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
-                            setPiecesCoordinates()
-                            displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
-                            displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
-                            movingPiece = False
-                            promoIconRects.clear()
-                            promotingPawn = None
-                            availableMoves = []
-                            break
-                    continue  # don't do anything if something else than a promotion is clicked
+                    if movingPiece and not promotingPawn:
+                        if displayedBoard.turn == 'white':
+                            chessClock.whiteTime += chessClock.increment
+                        else:
+                            chessClock.blackTime += chessClock.increment
 
-                if movingPiece and not promotingPawn:
-                    if displayedBoard.turn == 'white':
-                        chessClock.whiteTime += chessClock.increment
-                    else:
-                        chessClock.blackTime += chessClock.increment
-
-                    displayedBoard.switchTurn()
-                    chessClock.setTurn(displayedBoard.turn)
-                    setPiecesCoordinates()
-                    displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
-                    displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
-                    displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
-                    movingPiece = False
-                    
-        potentialWinner = hasSomeoneWon(chessClock)
-        if potentialWinner is not None:
-            drawEndGameScreen(potentialWinner)
+                        displayedBoard.switchTurn()
+                        chessClock.setTurn(displayedBoard.turn)
+                        setPiecesCoordinates()
+                        displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
+                        displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
+                        displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
+                        movingPiece = False
+            else:
+                if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
+                    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                    endScreenDef.handleEvents(event)
 
         pygame_widgets.update(events)
         pygame.display.update()
