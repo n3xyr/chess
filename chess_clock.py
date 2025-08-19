@@ -54,7 +54,7 @@ class chessClock:
         elif s > 20:
             return str(s)
         else:
-            return str(s) + '.' + str(ms)[:2]
+            return str(s) + '.' + str(ms)[2:4]
 
 
     def drawClock(self, surface, TOPMARGIN, LEFTMARGIN, TILESIZE, color, TEXTCOLOR, BGCOLOR):
