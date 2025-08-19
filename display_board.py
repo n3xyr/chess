@@ -39,7 +39,7 @@ TILESIZE = int(INIT_TILESIZE * SCALE)
 def adjustWindowSize(newWidth, newHeight):
     global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME
     global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr, bpFigurine, bbFigurine, bkFigurine, bnFigurine, bqFigurine, brFigurine, bCastleFigurine, wpFigurine, wbFigurine, wkFigurine, wnFigurine, wqFigurine, wrFigurine, wCastleFigurine, nothingness
-    global robotoFont, robotoMedium, darkSurfaceRGBA, lightSurfaceRGBA, arrowSurfaceRGBA
+    global robotoFont, robotoMedium, darkSurfaceRGBA, lightSurfaceRGBA, arrowSurfaceRGBA, historicSurface
     
     if newWidth == int(INIT_WIDTH * SCALE) and newHeight != INIT_HEIGHT * SCALE:
         SCALE = newHeight / INIT_HEIGHT
@@ -63,6 +63,8 @@ def adjustWindowSize(newWidth, newHeight):
     darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
     lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
     arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
+
+    historicSurface = pygame.Surface(int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE))
     
     pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
     pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
@@ -143,6 +145,9 @@ GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * SCALE), int(125 * SCALE), int(54 * SCALE)
 BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * SCALE), int(23 * SCALE)), (int(630 * SCALE), int(23 * SCALE))
 pygame.display.set_caption("Chess")
+
+historicSurface = pygame.Surface(int(300 * SCALE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE))
+historicSurface.fill((255, 0, 0))
 
 bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
 bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
@@ -514,10 +519,12 @@ def drawEndGameScreen(winner):
     winCondition = "temp win condition"
     end_screen.drawEndScreen(GAME, winner, winCondition, SCALE, TILESIZE)
 
+
 def main(clockTime, clockIncrement):
     global displayedBoard, chessClock, historicScroll, moveList
     adjustPromoSize()
     adjustWindowSize(WIDTH, HEIGHT)
+    end_screen.REPLAY = False
     clock = pygame.time.Clock()
     run = True
     moveList = []
@@ -534,6 +541,7 @@ def main(clockTime, clockIncrement):
     canPlay = True
     setPiecesCoordinates()
     potentialWinner = None
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
     while run:
         clock.tick(60)  # 60 FPS cap
@@ -554,12 +562,7 @@ def main(clockTime, clockIncrement):
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
-        if firstMovePlayed:
-            chessClock.updateTime()
-            chessClock.updateLastTime()
-
-            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
-            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+        potentialWinner = hasSomeoneWon(chessClock)
 
         tryDrawPromotionMenu(promotingPawn)
 
@@ -575,13 +578,24 @@ def main(clockTime, clockIncrement):
             endScreenDef = end_screen.EndScreen(potentialWinner, "test", WIDTH, HEIGHT, TILESIZE)
             endScreenDef.defineButtons(SCALE, TILESIZE, WIDTH, HEIGHT)
             endScreenDef.draw(GAME, SCALE, TILESIZE)
-            
+
+        if firstMovePlayed:
+            if potentialWinner is None and not end_screen.viewingGame:
+                chessClock.updateTime()
+                chessClock.updateLastTime()
+            elif chessClock.checkClock0() == 'white':
+                chessClock.whiteTime = 0.0
+            elif chessClock.checkClock0() == 'black':
+                chessClock.blackTime = 0.0
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 run = False
 
-            if end_screen.viewingGame:
+            if end_screen.viewingGame and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEMOTION):
                 end_screen.inGameMainMenuButton.handle_event(event)
                 
             if potentialWinner is None or not end_screen.showEndScreen:
@@ -709,12 +723,18 @@ def main(clockTime, clockIncrement):
                     if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
                         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
                         endScreenDef.handleEvents(event)
+                        if end_screen.REPLAY:
+                            run = False
 
         pygame_widgets.update(events)
         pygame.display.update()
 
+    if end_screen.REPLAY:
+        main(clockTime, clockIncrement)
+        
     pygame.quit()
     sys.exit()
 
+
 if __name__ == "__main__":
-    main(0, 0)
+    main(5, 5)

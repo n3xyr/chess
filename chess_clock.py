@@ -3,8 +3,9 @@ import pygame
 
 class chessClock:
     def __init__(self, clockTime, clockIncrement):
-        self.whiteTime = clockTime
-        self.blackTime = clockTime
+        self.clockTime = clockTime
+        self.whiteTime = float(clockTime)
+        self.blackTime = float(clockTime)
         self.increment = clockIncrement
         self.turn = 'white'
     
@@ -55,7 +56,7 @@ class chessClock:
         elif s > 20:
             return str(s)
         else:
-            return str(s) + '.' + str(ms)[:2]
+            return str(s) + '.' + str(ms)[2:4]
 
 
     def drawClock(self, surface, TOPMARGIN, LEFTMARGIN, TILESIZE, color, TEXTCOLOR, BGCOLOR):

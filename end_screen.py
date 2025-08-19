@@ -14,6 +14,7 @@ GREENBUTTONTEXT = GREENBUTTONOUTLINE
 NORMALBUTTONOUTLINE = (94, 93, 91, 255)
 NORMALBUTTONBACKGROUND = (48, 46, 43, 255)
 NORMALBUTTONTEXT = NORMALBUTTONOUTLINE
+REPLAY = False
 
 showEndScreen = True
 viewingGame = False
@@ -105,7 +106,6 @@ class EndScreen:
         self.viewGameButton.draw(surface, NORMALBUTTONBACKGROUND, NORMALBUTTONOUTLINE, NORMALBUTTONTEXT)
         self.revengeButton.draw(surface, NORMALBUTTONBACKGROUND, NORMALBUTTONOUTLINE, NORMALBUTTONTEXT)
 
-
 def mainMenuAction():
     pygame.quit()
     subprocess.run(["python", "menu.py"])
@@ -119,4 +119,5 @@ def viewGameAction(scale):
     inGameMainMenuButton = Button(int(825 * scale), int(905 * scale), int(300 * scale), int(75 * scale), "Main Menu", lambda: mainMenuAction(), 22, scale, 0, 20)
 
 def revengeAction():
-    pass
+    global REPLAY
+    REPLAY = True
