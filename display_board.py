@@ -569,7 +569,10 @@ def main(clockTime, clockIncrement):
             if chessClock.checkClock0() == False:
                 chessClock.updateTime()
                 chessClock.updateLastTime()
-
+            elif chessClock.checkClock0() == 'white':
+                chessClock.whiteTime = 0.0
+            else:
+                chessClock.blackTime = 0.0
             chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
             chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
 
