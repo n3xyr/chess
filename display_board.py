@@ -420,12 +420,7 @@ def drawFigurine(move, col):
 def drawHistoric(moveList):
     historicSurface.fill(HISTORICDARKBG)
 
-    pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE), int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)), 0, int(15 * SCALE))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(40 * SCALE)))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(100 * SCALE)))
-
-    historicTitle = robotoMedium.render("Moves History", True, LIGHTGREY)
-    GAME.blit(historicTitle, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(70 * SCALE), TOPMARGIN + int(55 * SCALE)))
+    drawHistoricTitle()
 
     for i, move in enumerate(moveList):
         col = i % 2
@@ -454,6 +449,14 @@ def drawHistoric(moveList):
 display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 adjustPromoSize()
 
+def drawHistoricTitle():
+    pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE), int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)), 0, int(15 * SCALE))
+    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(40 * SCALE)))
+    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(100 * SCALE)))
+
+    historicTitle = robotoMedium.render("Moves History", True, LIGHTGREY)
+    GAME.blit(historicTitle, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(70 * SCALE), TOPMARGIN + int(55 * SCALE)))
+
 def slidePieceToTile(piece, targetTile):
     """
     Slide a piece to a target tile.
@@ -464,19 +467,24 @@ def slidePieceToTile(piece, targetTile):
 
     steps = 24  # Number of steps for the sliding animation
     i = 0
-    frequency = 0.075
+    frequency = 0.0025
+
+
+    lastTime = time.time()
+
     while i < steps:
-        if time.time() % frequency <= 1 / 15:
+        if time.time() - lastTime >= frequency:
+            lastTime = time.time()
             piece.rectX += deltaX / steps
             piece.rectY += deltaY / steps
             drawBoard(GAME, skipPiece=piece)
             chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
             chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
-            drawHistoric(moveList)
             GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
             GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+            drawHistoricTitle()
             GAME.blit(historicSurface, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(120 * SCALE)))
-            pygame.display.flip()
+            pygame.display.update()
             i += 1
 
 def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
@@ -490,11 +498,14 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
     deltaX1, deltaY1 = targetX1 - startX1, targetY1 - startY1
     deltaX2, deltaY2 = targetX2 - startX2, targetY2 - startY2
 
-    steps = 12  # Number of steps for the sliding animation
+    steps = 24  # Number of steps for the sliding animation
     i = 0
-    frequency = 0.075
+    frequency = 0.0025
+    lastTime = time.time()
+    
     while i < steps:
-        if time.time() % frequency <= 1 / 15:
+        if time.time() - lastTime >= frequency:
+            lastTime = time.time()
             piece1.rectX += deltaX1 / steps
             piece1.rectY += deltaY1 / steps
             piece2.rectX += deltaX2 / steps
@@ -502,10 +513,10 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
             drawBoard(GAME)
             chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
             chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
-            drawHistoric(moveList)
             GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
             GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
             GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+            drawHistoricTitle()
             GAME.blit(historicSurface, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(120 * SCALE)))
             pygame.display.flip()
             i += 1
