@@ -65,6 +65,8 @@ def adjustWindowSize(newWidth, newHeight):
     lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
     arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
 
+    historicSurface = pygame.Surface((3 * TILESIZE, int(654 * SCALE)))
+    
     pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
     pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
         
@@ -145,6 +147,7 @@ BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * SCALE), int(125 * SCALE)
 BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * SCALE), int(23 * SCALE)), (int(630 * SCALE), int(23 * SCALE))
 pygame.display.set_caption("Chess")
 
+historicSurface = pygame.Surface((3 * TILESIZE, (654 * SCALE)))
 
 bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
 bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
@@ -412,6 +415,8 @@ def drawFigurine(move, col):
             return bpFigurine
 
 def drawHistoric(moveList):
+    historicSurface.fill(HISTORICDARKBG)
+
     pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE), int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)), 0, int(15 * SCALE))
     pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(40 * SCALE)))
     pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(100 * SCALE)))
@@ -422,26 +427,26 @@ def drawHistoric(moveList):
     for i, move in enumerate(moveList):
         col = i % 2
         row = i // 2
-        textPosX = WIDTH - RIGHTMARGIN + col * (TILESIZE * 1.3) + int(120 * SCALE)
-        textPosY = TOPMARGIN + row * (TILESIZE // 2) + int(120 * SCALE) + historicScroll
+        textPosX = col * TILESIZE * 1.3 + int(100 * SCALE)
+        textPosY = row * (TILESIZE // 2) + historicScroll
         counterText = robotoMedium.render(str(row + 1) + ".", True, HISTORICSECONDARY)
         if col == 0:
             if row % 2 == 0:
-                pygame.draw.rect(GAME, HISTORICLIGHTBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
-                GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
+                pygame.draw.rect(historicSurface, HISTORICLIGHTBG, (0, textPosY, int(3 * TILESIZE), TILESIZE // 2))
+                historicSurface.blit(counterText, (int(20 * SCALE), textPosY + int(11 * SCALE)))
             else:
-                pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
-                GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
+                pygame.draw.rect(historicSurface, HISTORICDARKBG, (0, textPosY, int(3 * TILESIZE), TILESIZE // 2))
+                historicSurface.blit(counterText, (int(20 * SCALE), textPosY + int(11 * SCALE)))
 
         sizeX, sizeY = robotoMedium.size(move)
         if i == displayedBoard.historicIndic - 1:
-            pygame.draw.rect(GAME, HISTORICSELECTLIGHTGREY, (textPosX - int(37 * SCALE), textPosY + int(15 * SCALE), sizeX + int(38 * SCALE), sizeY), border_radius=int(4 * SCALE))
-            pygame.draw.rect(GAME, HISTORICSELECTGREY, (textPosX - int(37 * SCALE), textPosY + int(8 * SCALE), sizeX + int(38 * SCALE), sizeY + int(4 * SCALE)), border_radius=int(4 * SCALE))
+            pygame.draw.rect(historicSurface, HISTORICSELECTLIGHTGREY, (textPosX - int(37 * SCALE), textPosY + int(15 * SCALE), sizeX + int(38 * SCALE), sizeY), border_radius=int(4 * SCALE))
+            pygame.draw.rect(historicSurface, HISTORICSELECTGREY, (textPosX - int(37 * SCALE), textPosY + int(8 * SCALE), sizeX + int(38 * SCALE), sizeY + int(4 * SCALE)), border_radius=int(4 * SCALE))
 
         moveTextFont = pygame.font.Font('fonts/Roboto-Medium.ttf', int(21 * SCALE))
         moveText = moveTextFont.render(move, True, LIGHTGREY)
-        GAME.blit(moveText, (textPosX, textPosY + int(13 * SCALE)))
-        GAME.blit(pygame.transform.scale(drawFigurine(move, col), (int(TILESIZE * 0.35), int(TILESIZE * 0.35))), (textPosX - int(35 * SCALE), textPosY + int(6 * SCALE)))
+        historicSurface.blit(moveText, (textPosX, textPosY + int(13 * SCALE)))
+        historicSurface.blit(pygame.transform.scale(drawFigurine(move, col), (int(TILESIZE * 0.35), int(TILESIZE * 0.35))), (textPosX - int(35 * SCALE), textPosY + int(6 * SCALE)))
 
 display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 adjustPromoSize()
@@ -570,6 +575,8 @@ def main(clockTime, clockIncrement):
         tryDrawPromotionMenu(promotingPawn)
 
         drawHistoric(moveList)
+
+        GAME.blit(historicSurface, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(120 * SCALE)))
 
         if end_screen.viewingGame:
             end_screen.inGameMainMenuButton.draw(GAME, (2, 84, 45, 255), (20, 174, 92, 255), (20, 174, 92, 255))
@@ -734,7 +741,7 @@ def main(clockTime, clockIncrement):
 
     if end_screen.REPLAY:
         main(clockTime, clockIncrement)
-        
+
     pygame.quit()
     sys.exit()
 
