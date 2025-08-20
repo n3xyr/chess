@@ -669,7 +669,7 @@ def main(clockTime, clockIncrement):
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     arrows = []
 
-                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and canPlay:
+                if not end_screen.viewingGame and event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and canPlay:
                     mouseX, mouseY = pygame.mouse.get_pos()
 
                     if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
