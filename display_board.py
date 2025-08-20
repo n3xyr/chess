@@ -7,6 +7,8 @@ from pygame_widgets.button import Button
 import display_assistant
 from copy import deepcopy
 import chess_clock
+import end_screen
+import time
 
 # Initialize Pygame
 pygame.init()
@@ -18,7 +20,6 @@ def getMonitorResolution():
         if m.is_primary:
             return m.width, m.height
 
-
 INIT_LEFTMARGIN = 0
 INIT_RIGHTMARGIN = 350
 INIT_TOPMARGIN = 100
@@ -27,42 +28,48 @@ INIT_TILESIZE = 100
 INIT_WIDTH = INIT_LEFTMARGIN + 8 * INIT_TILESIZE + INIT_RIGHTMARGIN
 INIT_HEIGHT = 8 * INIT_TILESIZE + INIT_BOTTOMMARGIN + INIT_TOPMARGIN
 
-LEFTMARGIN = INIT_LEFTMARGIN
-RIGHTMARGIN = INIT_RIGHTMARGIN
-TOPMARGIN = INIT_TOPMARGIN
-BOTTOMMARGIN = INIT_BOTTOMMARGIN
-TILESIZE = INIT_TILESIZE
-SCALE = 1
+SCALE = 0.8
+
+LEFTMARGIN = int(INIT_LEFTMARGIN * SCALE)
+RIGHTMARGIN = int(INIT_RIGHTMARGIN * SCALE)
+TOPMARGIN = int(INIT_TOPMARGIN * SCALE)
+BOTTOMMARGIN = int(INIT_BOTTOMMARGIN * SCALE)
+TILESIZE = int(INIT_TILESIZE * SCALE)
 
 
 def adjustWindowSize(newWidth, newHeight):
-    global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME, BIGCLOCKWIDTH, SMALLCLOCKWIDTH, BIGCLOCKPOS, SMALLCLOCKPOS, CLOCKHEIGHT, robotoFont
-    global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr
+    global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME
+    global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr, bpFigurine, bbFigurine, bkFigurine, bnFigurine, bqFigurine, brFigurine, bCastleFigurine, wpFigurine, wbFigurine, wkFigurine, wnFigurine, wqFigurine, wrFigurine, wCastleFigurine, nothingness
+    global robotoFont, robotoMedium, darkSurfaceRGBA, lightSurfaceRGBA, arrowSurfaceRGBA, historicSurface
     
-    oldHeight = HEIGHT
-    oldWidth = WIDTH
-    if WIDTH == newWidth and HEIGHT != newHeight:
-        SCALE = newHeight / oldHeight
+    if newWidth == int(INIT_WIDTH * SCALE) and newHeight != INIT_HEIGHT * SCALE:
+        SCALE = newHeight / INIT_HEIGHT
+    elif newHeight == int(INIT_HEIGHT * SCALE) and newWidth != INIT_WIDTH * SCALE:
+        SCALE = newWidth / INIT_WIDTH
     else:
-        SCALE = newWidth / oldWidth
-        
-    HEIGHT = int(oldHeight * SCALE) // 8 * 8
-    WIDTH = int(oldWidth * SCALE) // 8 * 8
+        SCALE = min(newWidth / INIT_WIDTH, newHeight / INIT_HEIGHT)
     
-    BASESCALE =  WIDTH / 800
-    TILESIZE = int((WIDTH - LEFTMARGIN - RIGHTMARGIN) / 8)
-    TOPMARGIN = TILESIZE
-    BOTTOMMARGIN = TILESIZE
-    LEFTMARGIN = 0
-    RIGHTMARGIN = 0
-    BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * BASESCALE), int(125 * BASESCALE), int(54 * BASESCALE)
-    BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * BASESCALE), int(23 * BASESCALE)), (int(630 * BASESCALE), int(23 * BASESCALE))
+    TILESIZE = int(INIT_TILESIZE * SCALE)
+    LEFTMARGIN = int(INIT_LEFTMARGIN * SCALE)
+    RIGHTMARGIN = int(INIT_RIGHTMARGIN * SCALE)
+    TOPMARGIN = int(INIT_TOPMARGIN * SCALE)
+    BOTTOMMARGIN = int(INIT_BOTTOMMARGIN * SCALE)
 
+    WIDTH, HEIGHT = INIT_WIDTH * SCALE, INIT_HEIGHT * SCALE
     GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-    pygame.font.init()
+
+    robotoFont = pygame.font.SysFont('Roboto', int(50 * SCALE))
+    robotoMedium = pygame.font.Font('fonts/Roboto-Medium.ttf', int(25 * SCALE))
     
-    robotoFont = pygame.font.SysFont('Roboto', int(50 * BASESCALE))
+    darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+    lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+    arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
+
+    historicSurface = pygame.Surface((3 * TILESIZE, int(654 * SCALE)))
     
+    pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+    pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+        
     bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
     bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
     bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (TILESIZE, TILESIZE))
@@ -76,6 +83,22 @@ def adjustWindowSize(newWidth, newHeight):
     wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
     wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
 
+    bpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bkFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bkFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bnFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bnFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bqFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bqFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    brFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/brFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wkFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wkFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wnFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wnFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wqFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wqFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wrFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wrFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    wCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    bCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
+    nothingness = pygame.image.load("piecesFigurines/nothingness.png")
+
 
 def adjustPromoSize():
     global pieces, promoImageSize, promoImageSpacing, promoInnerMargin, promoBlockWidth, promoBlockHeight, promoBlockX, promoBlockY, promoBackground, promoIconPos, promoOrder, promoIconRects, pos, img, img_rect
@@ -88,8 +111,7 @@ def adjustPromoSize():
 
     promoBlockWidth = promoImageSize + 2 * promoInnerMargin
     promoBlockHeight = 4 * promoImageSize + (4 - 1) * promoImageSpacing + 2 * promoInnerMargin
-
-    promoBlockX = WIDTH // 2 - promoBlockWidth // 2
+    promoBlockX = LEFTMARGIN + 4 * TILESIZE - promoBlockWidth // 2
     promoBlockY = HEIGHT // 2 - promoBlockHeight // 2
 
     promoBackground = pygame.Rect(promoBlockX, promoBlockY, promoBlockWidth, promoBlockHeight)
@@ -124,6 +146,8 @@ GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
 BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * SCALE), int(125 * SCALE), int(54 * SCALE)
 BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * SCALE), int(23 * SCALE)), (int(630 * SCALE), int(23 * SCALE))
 pygame.display.set_caption("Chess")
+
+historicSurface = pygame.Surface((3 * TILESIZE, (654 * SCALE)))
 
 bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
 bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
@@ -197,7 +221,7 @@ promoInnerMargin = int(10 * SCALE)
 promoBlockWidth = promoImageSize + 2 * promoInnerMargin
 promoBlockHeight = 4 * promoImageSize + (4 - 1) * promoImageSpacing + 2 * promoInnerMargin
 
-promoBlockX = WIDTH // 2 - promoBlockWidth // 2
+promoBlockX = LEFTMARGIN + 4 * TILESIZE - promoBlockWidth // 2
 promoBlockY = HEIGHT // 2 - promoBlockHeight // 2
 
 promoBackground = pygame.Rect(promoBlockX, promoBlockY, promoBlockWidth, promoBlockHeight)
@@ -233,97 +257,7 @@ for i in range(len(pieces)):
     pieces[i]['rect'] = img_rect
 
 historicScroll = 0
-
-def adjustWindowSize(newWidth, newHeight):
-    global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME
-    global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr, bpFigurine, bbFigurine, bkFigurine, bnFigurine, bqFigurine, brFigurine, bCastleFigurine, wpFigurine, wbFigurine, wkFigurine, wnFigurine, wqFigurine, wrFigurine, wCastleFigurine
     
-    if newWidth == int(INIT_WIDTH * SCALE) and newHeight != INIT_HEIGHT * SCALE:
-        SCALE = newHeight / INIT_HEIGHT
-    elif newHeight == int(INIT_HEIGHT * SCALE) and newWidth != INIT_WIDTH * SCALE:
-        SCALE = newWidth / INIT_WIDTH
-    else:
-        SCALE = min(newWidth / INIT_WIDTH, newHeight / INIT_HEIGHT)
-    
-    TILESIZE = int(INIT_TILESIZE * SCALE)
-    LEFTMARGIN = int(INIT_LEFTMARGIN * SCALE)
-    RIGHTMARGIN = int(INIT_RIGHTMARGIN * SCALE)
-    TOPMARGIN = int(INIT_TOPMARGIN * SCALE)
-    BOTTOMMARGIN = int(INIT_BOTTOMMARGIN * SCALE)
-
-    WIDTH, HEIGHT = INIT_WIDTH * SCALE, INIT_HEIGHT * SCALE
-    GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
-
-    robotoFont = pygame.font.SysFont('Roboto', int(50 * SCALE))
-
-    bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
-    bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
-    bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (TILESIZE, TILESIZE))
-    bn = pygame.transform.scale(pygame.image.load("piecesImages/bn.png"), (TILESIZE, TILESIZE))
-    bq = pygame.transform.scale(pygame.image.load("piecesImages/bq.png"), (TILESIZE, TILESIZE))
-    br = pygame.transform.scale(pygame.image.load("piecesImages/br.png"), (TILESIZE, TILESIZE))
-    wp = pygame.transform.scale(pygame.image.load("piecesImages/wp.png"), (TILESIZE, TILESIZE))
-    wb = pygame.transform.scale(pygame.image.load("piecesImages/wb.png"), (TILESIZE, TILESIZE))
-    wk = pygame.transform.scale(pygame.image.load("piecesImages/wk.png"), (TILESIZE, TILESIZE))
-    wn = pygame.transform.scale(pygame.image.load("piecesImages/wn.png"), (TILESIZE, TILESIZE))
-    wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
-    wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
-
-    bpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bkFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bkFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bnFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bnFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bqFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bqFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    brFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/brFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wkFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wkFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wnFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wnFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wqFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wqFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wrFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wrFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    wCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    bCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
-    
-def adjustPromoSize():
-    global pieces, promoImageSize, promoImageSpacing, promoInnerMargin, promoBlockWidth, promoBlockHeight, promoBlockX, promoBlockY, promoBackground, promoIconPos, promoOrder, promoIconRects, pos, img, img_rect
-    global WIDTH, HEIGHT, SCALE, TILESIZE
-    global wq, wn, wr, wb, bq, bn, br, bb
-
-    promoImageSize = TILESIZE
-    promoImageSpacing = int(5 * SCALE)
-    promoInnerMargin = int(10 * SCALE)
-
-    promoBlockWidth = promoImageSize + 2 * promoInnerMargin
-    promoBlockHeight = 4 * promoImageSize + (4 - 1) * promoImageSpacing + 2 * promoInnerMargin
-
-    promoBlockX = WIDTH // 2 - promoBlockWidth // 2
-    promoBlockY = HEIGHT // 2 - promoBlockHeight // 2
-
-    promoBackground = pygame.Rect(promoBlockX, promoBlockY, promoBlockWidth, promoBlockHeight)
-
-    promoIconPos = []
-    for i in range(4):
-        x = promoBlockX + promoBlockWidth // 2
-        y = promoBlockY + promoInnerMargin + i * (promoImageSize + promoImageSpacing)
-        promoIconPos.append((x, y))
-
-    pieces = [
-    {'name': 'whiteQueen', 'img': wq, 'pos': (int(WIDTH / 2), int(HEIGHT / 2 - promoImageSize * 1.5 - promoImageSpacing * 1.5))},
-    {'name': 'whiteKnight', 'img': wn, 'pos': (int(WIDTH / 2), int(HEIGHT / 2 - promoImageSize * 0.5 - promoImageSpacing * 0.5))},
-    {'name': 'whiteRook', 'img': wr, 'pos': (int(WIDTH / 2), int(HEIGHT / 2 + promoImageSize * 0.5 + promoImageSpacing * 0.5))},
-    {'name': 'whiteBishop', 'img': wb, 'pos': (int(WIDTH / 2), int(HEIGHT / 2 + promoImageSize * 1.5 + promoImageSpacing * 1.5))},
-    {'name': 'blackQueen', 'img': bq, 'pos': (int(WIDTH / 2), 50)},
-    {'name': 'blackKnight', 'img': bn, 'pos': (int(WIDTH / 2), 150)},
-    {'name': 'blackRook', 'img': br, 'pos': (int(WIDTH / 2), 250)},
-    {'name': 'blackBishop', 'img': bb, 'pos': (int(WIDTH / 2), 350)},
-    ]
-
-    for i in range(len(pieces)):
-        pos = promoIconPos[i % 4]
-        img = pieces[i]['img']
-        img_rect = img.get_rect(center=pos)
-        pieces[i]['rect'] = img_rect
-
 def drawBoard(game, skipPiece=None):
     game.fill(BACKGROUND)
     for row in range(ROWS):
@@ -448,28 +382,6 @@ def getPieceImage(piece):
             return wk
     return None
 
-
-def slidePieceToTile(piece, targetTile):
-    """
-    Slide a piece to a target tile.
-    """
-    startX, startY = piece.getCoordX() * TILESIZE + LEFTMARGIN, piece.getCoordY() * TILESIZE + TOPMARGIN
-    targetX, targetY = targetTile[0] * TILESIZE + LEFTMARGIN, targetTile[1] * TILESIZE + TOPMARGIN
-    deltaX, deltaY = targetX - startX, targetY - startY
-
-    steps = 12  # Number of steps for the sliding animation
-    for step in range(steps):
-        piece.rectX += deltaX / steps
-        piece.rectY += deltaY / steps
-        drawBoard(GAME, skipPiece=piece)
-        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
-        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
-        drawHistoric(moveList)
-        GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
-        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
-        pygame.display.flip()
-        pygame.time.delay(4)  # Delay for animation effect
-
 def drawFigurine(move, col):
     if col == 0:
         if move[0] == 'R':
@@ -503,9 +415,11 @@ def drawFigurine(move, col):
             return bpFigurine
 
 def drawHistoric(moveList):
+    historicSurface.fill(HISTORICDARKBG)
+
     pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE), int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)), 0, int(15 * SCALE))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(40 * SCALE)))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(10 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(290 * SCALE), TOPMARGIN + int(100 * SCALE)))
+    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(40 * SCALE)))
+    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(100 * SCALE)))
 
     historicTitle = robotoMedium.render("Moves History", True, LIGHTGREY)
     GAME.blit(historicTitle, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(70 * SCALE), TOPMARGIN + int(55 * SCALE)))
@@ -513,29 +427,53 @@ def drawHistoric(moveList):
     for i, move in enumerate(moveList):
         col = i % 2
         row = i // 2
-        textPosX = WIDTH - RIGHTMARGIN + col * (TILESIZE * 1.3) + int(120 * SCALE)
-        textPosY = TOPMARGIN + row * (TILESIZE // 2) + int(120 * SCALE) + historicScroll
+        textPosX = col * TILESIZE * 1.3 + int(100 * SCALE)
+        textPosY = row * (TILESIZE // 2) + historicScroll
         counterText = robotoMedium.render(str(row + 1) + ".", True, HISTORICSECONDARY)
         if col == 0:
             if row % 2 == 0:
-                pygame.draw.rect(GAME, HISTORICLIGHTBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
-                GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
+                pygame.draw.rect(historicSurface, HISTORICLIGHTBG, (0, textPosY, int(3 * TILESIZE), TILESIZE // 2))
+                historicSurface.blit(counterText, (int(20 * SCALE), textPosY + int(11 * SCALE)))
             else:
-                pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, textPosY, int(3 * TILESIZE), TILESIZE // 2))
-                GAME.blit(counterText, (WIDTH - RIGHTMARGIN + int(40 * SCALE), textPosY + int(11 * SCALE)))
+                pygame.draw.rect(historicSurface, HISTORICDARKBG, (0, textPosY, int(3 * TILESIZE), TILESIZE // 2))
+                historicSurface.blit(counterText, (int(20 * SCALE), textPosY + int(11 * SCALE)))
 
         sizeX, sizeY = robotoMedium.size(move)
         if i == displayedBoard.historicIndic - 1:
-            pygame.draw.rect(GAME, HISTORICSELECTLIGHTGREY, (textPosX - int(37 * SCALE), textPosY + int(15 * SCALE), sizeX + int(38 * SCALE), sizeY), border_radius=int(4 * SCALE))
-            pygame.draw.rect(GAME, HISTORICSELECTGREY, (textPosX - int(37 * SCALE), textPosY + int(8 * SCALE), sizeX + int(38 * SCALE), sizeY + int(4 * SCALE)), border_radius=int(4 * SCALE))
+            pygame.draw.rect(historicSurface, HISTORICSELECTLIGHTGREY, (textPosX - int(37 * SCALE), textPosY + int(15 * SCALE), sizeX + int(38 * SCALE), sizeY), border_radius=int(4 * SCALE))
+            pygame.draw.rect(historicSurface, HISTORICSELECTGREY, (textPosX - int(37 * SCALE), textPosY + int(8 * SCALE), sizeX + int(38 * SCALE), sizeY + int(4 * SCALE)), border_radius=int(4 * SCALE))
 
         moveTextFont = pygame.font.Font('fonts/Roboto-Medium.ttf', int(21 * SCALE))
         moveText = moveTextFont.render(move, True, LIGHTGREY)
-        GAME.blit(moveText, (textPosX, textPosY + int(13 * SCALE)))
-        GAME.blit(pygame.transform.scale(drawFigurine(move, col), (int(TILESIZE * 0.35), int(TILESIZE * 0.35))), (textPosX - int(35 * SCALE), textPosY + int(6 * SCALE)))
+        historicSurface.blit(moveText, (textPosX, textPosY + int(13 * SCALE)))
+        historicSurface.blit(pygame.transform.scale(drawFigurine(move, col), (int(TILESIZE * 0.35), int(TILESIZE * 0.35))), (textPosX - int(35 * SCALE), textPosY + int(6 * SCALE)))
 
 display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 adjustPromoSize()
+
+def slidePieceToTile(piece, targetTile):
+    """
+    Slide a piece to a target tile.
+    """
+    startX, startY = piece.getCoordX() * TILESIZE + LEFTMARGIN, piece.getCoordY() * TILESIZE + TOPMARGIN
+    targetX, targetY = targetTile[0] * TILESIZE + LEFTMARGIN, targetTile[1] * TILESIZE + TOPMARGIN
+    deltaX, deltaY = targetX - startX, targetY - startY
+
+    steps = 24  # Number of steps for the sliding animation
+    i = 0
+    frequency = 0.075
+    while i < steps:
+        if time.time() % frequency <= 1 / 15:
+            piece.rectX += deltaX / steps
+            piece.rectY += deltaY / steps
+            drawBoard(GAME, skipPiece=piece)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+            drawHistoric(moveList)
+            GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
+            GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+            pygame.display.flip()
+            i += 1
 
 def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
     """
@@ -549,24 +487,52 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
     deltaX2, deltaY2 = targetX2 - startX2, targetY2 - startY2
 
     steps = 12  # Number of steps for the sliding animation
-    for step in range(steps):
-        piece1.rectX += deltaX1 / steps
-        piece1.rectY += deltaY1 / steps
-        piece2.rectX += deltaX2 / steps
-        piece2.rectY += deltaY2 / steps
-        drawBoard(GAME)
-        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
-        chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
-        drawHistoric(moveList)
-        GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
-        GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
-        GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
-        pygame.display.flip()
-        pygame.time.delay(4)  # Delay for animation effect
+    i = 0
+    frequency = 0.075
+    while i < steps:
+        if time.time() % frequency <= 1 / 15:
+            piece1.rectX += deltaX1 / steps
+            piece1.rectY += deltaY1 / steps
+            piece2.rectX += deltaX2 / steps
+            piece2.rectY += deltaY2 / steps
+            drawBoard(GAME)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+            drawHistoric(moveList)
+            GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
+            GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
+            GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+            pygame.display.flip()
+            i += 1
+        # pygame.time.delay(4)  # Delay for animation effect
+
+def hasSomeoneWon(clock):
+    isSomeoneTimeUp = clock.checkClock0()
+    if isSomeoneTimeUp != False and isSomeoneTimeUp == 'black':
+        return 'white'
+    elif isSomeoneTimeUp != False and isSomeoneTimeUp == 'white':
+        return 'black'
+    
+    blackKing = displayedBoard.bk
+    whiteKing = displayedBoard.wk
+    isWhiteCheckemated = displayedBoard.checkMate(whiteKing)
+    isBlackCheckemated = displayedBoard.checkMate(blackKing)
+    if isWhiteCheckemated and not isBlackCheckemated:
+        return 'black'
+    elif not isWhiteCheckemated and isBlackCheckemated:
+        return 'white'
+        
+def drawEndGameScreen(winner):
+    import end_screen
+    winCondition = "temp win condition"
+    end_screen.drawEndScreen(GAME, winner, winCondition, SCALE, TILESIZE)
 
 
 def main(clockTime, clockIncrement):
     global displayedBoard, chessClock, historicScroll, moveList
+    adjustPromoSize()
+    adjustWindowSize(WIDTH, HEIGHT)
+    end_screen.REPLAY = False
     clock = pygame.time.Clock()
     run = True
     moveList = []
@@ -576,13 +542,14 @@ def main(clockTime, clockIncrement):
     rightClickDown = False
     arrows = []
     promotingPawn = None
-    clockTime, clockIncrement = (180, 5)
     chessClock = chess_clock.chessClock(clockTime, clockIncrement)
     displayedBoard = board.board()
     displayedBoard.fillBoard()
     movingPiece = False
     canPlay = True
     setPiecesCoordinates()
+    potentialWinner = None
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
     while run:
         clock.tick(60)  # 60 FPS cap
@@ -603,150 +570,181 @@ def main(clockTime, clockIncrement):
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
 
-        if firstMovePlayed:
-            chessClock.updateTime()
-            chessClock.updateLastTime()
-
-            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
-            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
+        potentialWinner = hasSomeoneWon(chessClock)
 
         tryDrawPromotionMenu(promotingPawn)
 
         drawHistoric(moveList)
+
+        GAME.blit(historicSurface, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(120 * SCALE)))
+
+        if end_screen.viewingGame:
+            end_screen.inGameMainMenuButton.draw(GAME, (2, 84, 45, 255), (20, 174, 92, 255), (20, 174, 92, 255))
+
+        if potentialWinner is None:
+            potentialWinner = hasSomeoneWon(chessClock)
+
+        if potentialWinner is not None and end_screen.showEndScreen:
+            endScreenDef = end_screen.EndScreen(potentialWinner, "test", WIDTH, HEIGHT, TILESIZE)
+            endScreenDef.defineButtons(SCALE, TILESIZE, WIDTH, HEIGHT)
+            endScreenDef.draw(GAME, SCALE, TILESIZE)
+
+        if firstMovePlayed:
+            if potentialWinner is None and not end_screen.viewingGame:
+                chessClock.updateTime()
+                chessClock.updateLastTime()
+            elif chessClock.checkClock0() == 'white':
+                chessClock.whiteTime = 0.0
+            elif chessClock.checkClock0() == 'black':
+                chessClock.blackTime = 0.0
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'white', ULTRADARK, ULTRALIGHT)
+            chessClock.drawClock(GAME, TOPMARGIN, LEFTMARGIN, TILESIZE, 'black', ULTRALIGHT, ULTRADARK)
 
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 run = False
 
-            tryMoveThroughHistoric(event)
+            if end_screen.viewingGame and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEMOTION):
+                end_screen.inGameMainMenuButton.handle_event(event)
+                
+            if potentialWinner is None or not end_screen.showEndScreen:
+                tryMoveThroughHistoric(event)
 
-            if event.type == pygame.VIDEORESIZE:
-                adjustWindowSize(event.w, event.h)
-                adjustPromoSize()
-                display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
+                if event.type == pygame.VIDEORESIZE:
+                    adjustWindowSize(event.w, event.h)
+                    adjustPromoSize()
+                    setPiecesCoordinates()
+                    display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
 
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and firstMovePlayed and not rightClickDown:
-                rightClickDown = True
-                mouseX, mouseY = pygame.mouse.get_pos()
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and firstMovePlayed and not rightClickDown:
+                    rightClickDown = True
+                    mouseX, mouseY = pygame.mouse.get_pos()
 
-                mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
-                mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
-
-                if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7:
-                    arrowStart = (mouseYTab, mouseXTab)
-
-            if event.type == pygame.MOUSEWHEEL:
-                max_scroll = 0
-                extra_space = 3 * (TILESIZE // 2)
-                min_scroll = min(0, HEIGHT - (len(moveList) // 2) * (TILESIZE // 2) - 150 - extra_space)
-                historicScroll = max(min_scroll, min(max_scroll, historicScroll + event.y * 20 * SCALE))
-
-            if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and firstMovePlayed and rightClickDown:
-                rightClickDown = False
-                mouseX, mouseY = pygame.mouse.get_pos()
-
-                mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
-                mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
-
-                if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7 and (mouseYTab, mouseXTab) != arrowStart:
-                    arrowEnd = (mouseYTab, mouseXTab)
-
-                    if (arrowStart, arrowEnd) in arrows:
-                        arrows.pop(arrows.index((arrowStart, arrowEnd)))
-                    else:
-                        arrows.append((arrowStart, arrowEnd))
-
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-                arrows = []
-
-            if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and canPlay:
-                mouseX, mouseY = pygame.mouse.get_pos()
-
-                if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
                     mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
                     mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
-                    lastSelectedTile = deepcopy(selectedTile)
 
-                    selectedTile, movingPiece = displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
+                    if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7:
+                        arrowStart = (mouseYTab, mouseXTab)                
 
-                    if movingPiece:
-                        if selectedTile.canMove(mouseYTab, mouseXTab, displayedBoard) and selectedTile.getColor() == displayedBoard.turn:
-                            actList = (displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
+                if event.type == pygame.MOUSEWHEEL:
+                    maxScroll = 0
+                    extraSpace = 3 * (TILESIZE // 2)
+                    minScroll = min(0, HEIGHT - (len(moveList) // 2) * (TILESIZE // 2) - 150 - extraSpace)
+                    historicScroll = max(minScroll, min(maxScroll, historicScroll + event.y * 20 * SCALE))
 
-                            if displayedBoard.isCastleMove(lastSelectedTile, mouseXTab):
+                if event.type == pygame.MOUSEBUTTONUP and event.button == 3 and firstMovePlayed and rightClickDown:
+                    rightClickDown = False
+                    mouseX, mouseY = pygame.mouse.get_pos()
 
-                                if selectedTile.getCoordX() > mouseXTab:
-                                    rook = displayedBoard.matrix[mouseYTab][0]
-                                    slideBothPiecesToTile(rook, selectedTile, (mouseXTab + 1, mouseYTab), (mouseXTab, mouseYTab))
+                    mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                    mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
 
-                                    displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                                    displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
+                    if 0 <= mouseXTab <= 7 and 0 <= mouseYTab <= 7 and (mouseYTab, mouseXTab) != arrowStart:
+                        arrowEnd = (mouseYTab, mouseXTab)
+
+                        if (arrowStart, arrowEnd) in arrows:
+                            arrows.pop(arrows.index((arrowStart, arrowEnd)))
+                        else:
+                            arrows.append((arrowStart, arrowEnd))
+
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    arrows = []
+
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and canPlay:
+                    mouseX, mouseY = pygame.mouse.get_pos()
+
+                    if LEFTMARGIN < mouseX < WIDTH - RIGHTMARGIN and TOPMARGIN < mouseY < HEIGHT - BOTTOMMARGIN:
+                        mouseXTab = int((mouseX - LEFTMARGIN) / TILESIZE)
+                        mouseYTab = int((mouseY - TOPMARGIN) / TILESIZE)
+                        lastSelectedTile = deepcopy(selectedTile)
+
+                        selectedTile, movingPiece = displayedBoard.manageSelection(selectedTile, mouseYTab, mouseXTab)
+
+                        if movingPiece:
+                            if selectedTile.canMove(mouseYTab, mouseXTab, displayedBoard) and selectedTile.getColor() == displayedBoard.turn:
+                                actList = (displayedBoard.getActTypes(selectedTile, mouseYTab, mouseXTab)).split(',')
+
+                                if displayedBoard.isCastleMove(lastSelectedTile, mouseXTab):
+
+                                    if selectedTile.getCoordX() > mouseXTab:
+                                        rook = displayedBoard.matrix[mouseYTab][0]
+                                        slideBothPiecesToTile(rook, selectedTile, (mouseXTab + 1, mouseYTab), (mouseXTab, mouseYTab))
+
+                                        displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                        displayedBoard.movePiece(rook, mouseYTab, mouseXTab + 1, doSound=False)
+
+                                    else:
+                                        rook = displayedBoard.matrix[mouseYTab][7]
+                                        slideBothPiecesToTile(rook, selectedTile, (mouseXTab - 1, mouseYTab), (mouseXTab, mouseYTab))
+
+                                        displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                        displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
 
                                 else:
-                                    rook = displayedBoard.matrix[mouseYTab][7]
-                                    slideBothPiecesToTile(rook, selectedTile, (mouseXTab - 1, mouseYTab), (mouseXTab, mouseYTab))
-
+                                    slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
                                     displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
-                                    displayedBoard.movePiece(rook, mouseYTab, mouseXTab - 1, doSound=False)
 
-                            else:
-                                slidePieceToTile(selectedTile, (mouseXTab, mouseYTab))
-                                displayedBoard.movePiece(selectedTile, mouseYTab, mouseXTab)
+                                if len(moveList) == 0:
+                                    firstMovePlayed = True
+                                    chessClock.updateLastTime()
 
-                            if len(moveList) == 0:
-                                firstMovePlayed = True
-                                chessClock.updateLastTime()
+                                if selectedTile.name == '' and selectedTile.isAbleToPromote():
+                                    promotingPawn = selectedTile
+                                selectedTile = None
+                                
+                        availableMoves = displayedBoard.getAvailableMoves(selectedTile)
 
-                            if selectedTile.name == '' and selectedTile.isAbleToPromote():
-                                promotingPawn = selectedTile
-                            selectedTile = None
-                            
-                    availableMoves = displayedBoard.getAvailableMoves(selectedTile)
+                    if promoIconRects:  # if a pawn is promoting
+                        for rect, pieceName in promoIconRects:
+                            if rect.collidepoint((mouseX, mouseY)):
+                                displayedBoard.promote(promotingPawn, pieceName)
+                                if displayedBoard.turn == 'white':
+                                    chessClock.whiteTime += chessClock.increment
+                                else:
+                                    chessClock.blackTime += chessClock.increment
 
-                if promoIconRects:  # if a pawn is promoting
-                    for rect, pieceName in promoIconRects:
-                        if rect.collidepoint((mouseX, mouseY)):
-                            displayedBoard.promote(promotingPawn, pieceName)
-                            if displayedBoard.turn == 'white':
-                                chessClock.whiteTime += chessClock.increment
-                            else:
-                                chessClock.blackTime += chessClock.increment
+                                displayedBoard.switchTurn()
+                                chessClock.setTurn(displayedBoard.turn)
+                                displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
+                                setPiecesCoordinates()
+                                displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
+                                displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
+                                movingPiece = False
+                                promoIconRects.clear()
+                                promotingPawn = None
+                                availableMoves = []
 
-                            displayedBoard.switchTurn()
-                            chessClock.setTurn(displayedBoard.turn)
-                            displayedBoard.addMoveToHistoric(moveList, actList, promotingPawn, mouseYTab, mouseXTab)
-                            setPiecesCoordinates()
-                            displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
-                            displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
-                            movingPiece = False
-                            promoIconRects.clear()
-                            promotingPawn = None
-                            availableMoves = []
-                            break
-                    continue  # don't do anything if something else than a promotion is clicked
+                    if movingPiece and not promotingPawn:
+                        if displayedBoard.turn == 'white':
+                            chessClock.whiteTime += chessClock.increment
+                        else:
+                            chessClock.blackTime += chessClock.increment
 
-                if movingPiece and not promotingPawn:
-                    if displayedBoard.turn == 'white':
-                        chessClock.whiteTime += chessClock.increment
-                    else:
-                        chessClock.blackTime += chessClock.increment
-
-                    displayedBoard.switchTurn()
-                    chessClock.setTurn(displayedBoard.turn)
-                    setPiecesCoordinates()
-                    displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
-                    displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
-                    displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
-                    movingPiece = False
-
-
+                        displayedBoard.switchTurn()
+                        chessClock.setTurn(displayedBoard.turn)
+                        setPiecesCoordinates()
+                        displayedBoard.boardHistoric.append(deepcopy(displayedBoard.matrix))
+                        displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
+                        displayedBoard.addMoveToHistoric(moveList, actList, lastSelectedTile, mouseYTab, mouseXTab)
+                        movingPiece = False
+            else:
+                if end_screen.showEndScreen:
+                    if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
+                        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                        endScreenDef.handleEvents(event)
+                        if end_screen.REPLAY:
+                            run = False
 
         pygame_widgets.update(events)
         pygame.display.update()
 
+    if end_screen.REPLAY:
+        main(clockTime, clockIncrement)
+
     pygame.quit()
     sys.exit()
 
+
 if __name__ == "__main__":
-    main(0, 0)
+    main(5, 5)

@@ -3,8 +3,9 @@ import pygame
 
 class chessClock:
     def __init__(self, clockTime, clockIncrement):
-        self.whiteTime = clockTime
-        self.blackTime = clockTime
+        self.clockTime = clockTime
+        self.whiteTime = float(clockTime)
+        self.blackTime = float(clockTime)
         self.increment = clockIncrement
         self.turn = 'white'
     
@@ -14,11 +15,12 @@ class chessClock:
 
 
     def checkClock0(self):
-        if self.whiteTime == 0:
+        if self.whiteTime <= 1:
             return 'white'
-        elif self.blackTime == 0:
+        elif self.blackTime <= 1:
             return 'black'
-        else: return False
+        else: 
+            return False
 
 
     def updateTime(self):
@@ -72,4 +74,3 @@ class chessClock:
 
         pygame.draw.rect(surface, BGCOLOR, clockRect, border_radius= TILESIZE // 25)
         surface.blit(timeTxt, timeRect)
-
