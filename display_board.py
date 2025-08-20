@@ -472,6 +472,7 @@ def slidePieceToTile(piece, targetTile):
             drawHistoric(moveList)
             GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
             GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+            GAME.blit(historicSurface, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(120 * SCALE)))
             pygame.display.flip()
             i += 1
 
@@ -502,6 +503,7 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
             GAME.blit(getPieceImage(piece1), (piece1.rectX, piece1.rectY))
             GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
             GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
+            GAME.blit(historicSurface, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(120 * SCALE)))
             pygame.display.flip()
             i += 1
         # pygame.time.delay(4)  # Delay for animation effect
