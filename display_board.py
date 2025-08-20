@@ -65,8 +65,6 @@ def adjustWindowSize(newWidth, newHeight):
     lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
     arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
 
-    historicSurface = pygame.Surface(int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE))
-    
     pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
     pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
         
@@ -147,8 +145,6 @@ BIGCLOCKWIDTH, SMALLCLOCKWIDTH, CLOCKHEIGHT = int(150 * SCALE), int(125 * SCALE)
 BIGCLOCKPOS, SMALLCLOCKPOS = (int(615 * SCALE), int(23 * SCALE)), (int(630 * SCALE), int(23 * SCALE))
 pygame.display.set_caption("Chess")
 
-historicSurface = pygame.Surface(int(300 * SCALE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE))
-historicSurface.fill((255, 0, 0))
 
 bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
 bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
@@ -458,11 +454,11 @@ def slidePieceToTile(piece, targetTile):
     targetX, targetY = targetTile[0] * TILESIZE + LEFTMARGIN, targetTile[1] * TILESIZE + TOPMARGIN
     deltaX, deltaY = targetX - startX, targetY - startY
 
-    steps = 12  # Number of steps for the sliding animation
+    steps = 24  # Number of steps for the sliding animation
     i = 0
-    frequency = 0.025
+    frequency = 0.075
     while i < steps:
-        if time.time() % frequency <= frequency / 2:
+        if time.time() % frequency <= 1 / 15:
             piece.rectX += deltaX / steps
             piece.rectY += deltaY / steps
             drawBoard(GAME, skipPiece=piece)
@@ -487,9 +483,9 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
 
     steps = 12  # Number of steps for the sliding animation
     i = 0
-    frequency = 0.025
+    frequency = 0.075
     while i < steps:
-        if time.time() % frequency <= frequency/2:
+        if time.time() % frequency <= 1 / 15:
             piece1.rectX += deltaX1 / steps
             piece1.rectY += deltaY1 / steps
             piece2.rectX += deltaX2 / steps
