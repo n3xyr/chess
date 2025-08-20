@@ -48,19 +48,16 @@ class board:
         for i in [2, 5]:                                              # white bishops
             self.matrix[7][i] = pieces.bishop(7, i, 'white')
 
-
         self.bq = pieces.queen(0, 3, 'black')  
         self.wq = pieces.queen(7, 3, 'white')  
         self.matrix[0][3] = self.bq                                   # black queen
         self.matrix[7][3] = self.wq                                   # white queen
-
 
         self.bk = pieces.king(0, 4, 'black')
         self.wk = pieces.king(7, 4, 'white')
         self.matrix[0][4] = self.bk                                   # black king
         self.matrix[7][4] = self.wk                                   # white king
         
-
         self.boardHistoric = [copy.deepcopy(self.matrix)]  # Initial historic state
         self.historicIndic = len(self.boardHistoric) - 1
 
