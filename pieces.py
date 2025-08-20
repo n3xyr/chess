@@ -97,12 +97,18 @@ class pawn:
                 return True
             
             elif (y, x) in moves[:2]:   # En passant
-                if self.getColor() == 'white':
-                    if coordY == 3 and board.matrix[coordY][x] and board.boardHistoric[coordY][x]:
-                        return True
-                else:
-                    if coordY == 4 and board.matrix[coordY][x] and board.boardHistoric[coordY][x]:
-                        return True
+                if board.matrix[coordY][x]:
+                    if board.matrix[coordY][x].getColor() == self.getColor():
+                        return False
+                    else:
+                        if self.getColor() == 'white':
+                            if coordY == 3:
+                                if board.boardHistoric[-2][coordY - 2][x] and board.boardHistoric[-2][coordY][x] is None and board.matrix[coordY - 2][x] is None:
+                                    return True
+                        else:
+                            if coordY == 4:
+                                if board.boardHistoric[-2][coordY + 2][x] and board.boardHistoric[-2][coordY][x] is None and board.matrix[coordY + 2][x] is None:
+                                    return True
                     
             return False
         
