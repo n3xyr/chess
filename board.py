@@ -1,6 +1,7 @@
 import pieces
 import pygame
 import copy
+import globals
 
 pygame.mixer.init()
 moveSound = pygame.mixer.Sound('soundEffects/moveSound.wav')
@@ -204,6 +205,7 @@ class board:
 
 
     def movePiece(self, piece, y, x, doSound=True):
+        global pieceHasMoved
         actList = self.getActTypes(piece, y, x)
 
         if self.isEnPassantMove(piece, y, x):
@@ -224,6 +226,7 @@ class board:
             self.playSound(actList.split(','))
 
         self.addSoundToHistoric(actList.split(','))
+        globals.pieceHasMoved = True
 
 
     def promote(self, piece, newPieceName):

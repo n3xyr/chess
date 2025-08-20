@@ -9,6 +9,7 @@ from copy import deepcopy
 import chess_clock
 import end_screen
 import time
+import globals
 
 # Initialize Pygame
 pygame.init()
@@ -257,7 +258,9 @@ for i in range(len(pieces)):
     pieces[i]['rect'] = img_rect
 
 historicScroll = 0
-    
+
+pieceHasMoved = False
+
 def drawBoard(game, skipPiece=None):
     game.fill(BACKGROUND)
     for row in range(ROWS):
@@ -509,20 +512,24 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
         # pygame.time.delay(4)  # Delay for animation effect
 
 def hasSomeoneWon(clock):
+    global pieceHasMoved
+
     isSomeoneTimeUp = clock.checkClock0()
     if isSomeoneTimeUp != False and isSomeoneTimeUp == 'black':
         return 'white'
     elif isSomeoneTimeUp != False and isSomeoneTimeUp == 'white':
         return 'black'
-    
-    blackKing = displayedBoard.bk
-    whiteKing = displayedBoard.wk
-    isWhiteCheckemated = displayedBoard.checkMate(whiteKing)
-    isBlackCheckemated = displayedBoard.checkMate(blackKing)
-    if isWhiteCheckemated and not isBlackCheckemated:
-        return 'black'
-    elif not isWhiteCheckemated and isBlackCheckemated:
-        return 'white'
+
+    if globals.pieceHasMoved:
+        globals.pieceHasMoved = False
+        blackKing = displayedBoard.bk
+        whiteKing = displayedBoard.wk
+        isWhiteCheckemated = displayedBoard.checkMate(whiteKing)
+        isBlackCheckemated = displayedBoard.checkMate(blackKing)
+        if isWhiteCheckemated and not isBlackCheckemated:
+            return 'black'
+        elif not isWhiteCheckemated and isBlackCheckemated:
+            return 'white'  
         
 def drawEndGameScreen(winner):
     import end_screen
@@ -571,8 +578,6 @@ def main(clockTime, clockIncrement):
             display_assistant.drawArrow(arrowSurfaceRGBA, ORANGERGBA, arrow[0], arrow[1], TILESIZE / 5, 43 * TILESIZE / 100, 35.5)
 
         GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
-
-        potentialWinner = hasSomeoneWon(chessClock)
 
         tryDrawPromotionMenu(promotingPawn)
 
