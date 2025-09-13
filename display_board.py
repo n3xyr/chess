@@ -41,7 +41,7 @@ TILESIZE = int(INIT_TILESIZE * SCALE)
 def adjustWindowSize(newWidth, newHeight):
     global WIDTH, HEIGHT, LEFTMARGIN, RIGHTMARGIN, TOPMARGIN, BOTTOMMARGIN, TILESIZE, SCALE, GAME
     global bp, bb, bk, bn, bq, br, wp, wb, wk, wn, wq, wr, bpFigurine, bbFigurine, bkFigurine, bnFigurine, bqFigurine, brFigurine, bCastleFigurine, wpFigurine, wbFigurine, wkFigurine, wnFigurine, wqFigurine, wrFigurine, wCastleFigurine, nothingness
-    global robotoFont, robotoMedium, darkSurfaceRGBA, lightSurfaceRGBA, arrowSurfaceRGBA, historicSurface
+    global robotoFont, robotoMedium, darkSurfaceRGBA, lightSurfaceRGBA, arrowSurfaceRGBA, historicSurface, leftArrowButton, rightArrowButton
     
     if newWidth == int(INIT_WIDTH * SCALE) and newHeight != INIT_HEIGHT * SCALE:
         SCALE = newHeight / INIT_HEIGHT
@@ -99,7 +99,9 @@ def adjustWindowSize(newWidth, newHeight):
     wCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
     bCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bCastleFigurine.png"), (int(TILESIZE), int(TILESIZE)))
     nothingness = pygame.image.load("piecesFigurines/nothingness.png")
-
+    
+    leftArrowButton = Button(WIDTH - RIGHTMARGIN + int(215 * SCALE), TOPMARGIN + int(45 * SCALE), int(40 * SCALE), int(40 * SCALE), "", lambda : goBackOneMoveHistoric(), int(22 * SCALE))
+    rightArrowButton = Button(WIDTH - RIGHTMARGIN + int(265 * SCALE), TOPMARGIN + int(45 * SCALE), int(40 * SCALE), int(40 * SCALE), "", lambda : goForwardOneMoveHistoric(), int(22 * SCALE))
 
 def adjustPromoSize():
     global pieces, promoImageSize, promoImageSpacing, promoInnerMargin, promoBlockWidth, promoBlockHeight, promoBlockX, promoBlockY, promoBackground, promoIconPos, promoOrder, promoIconRects, pos, img, img_rect
@@ -261,6 +263,29 @@ historicScroll = 0
 
 pieceHasMoved = False
 
+class Button:
+    def __init__(self, x, y, w, h, text, callback, FONT_SIZE):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.text = text
+        self.callback = callback
+        self.font = pygame.font.Font('fonts/Roboto-Medium.ttf', int(FONT_SIZE * SCALE))
+
+    def draw(self, surface, BG_COLOR, BORDER_COLOR, TEXT_COLOR_1):
+        pygame.draw.rect(surface, BORDER_COLOR, self.rect, border_radius=int(0.036 * HEIGHT))
+        pygame.draw.rect(surface, BG_COLOR, (self.rect.x, self.rect.y, self.rect.width, self.rect.height), border_radius=int(10 * SCALE))
+        txt_surf = self.font.render(self.text, True, TEXT_COLOR_1)
+        txt_rect = txt_surf.get_rect(center=self.rect.center)
+        surface.blit(txt_surf, txt_rect)
+
+    def handle_event(self, event):
+        if self.rect.collidepoint((event.pos[0], event.pos[1])):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+        if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint((event.pos[0], event.pos[1])):
+            self.callback()
+            
+leftArrowButton = Button(WIDTH - RIGHTMARGIN + int(215 * SCALE), TOPMARGIN + int(45 * SCALE), int(40 * SCALE), int(40 * SCALE), "", lambda : goBackOneMoveHistoric(), int(22 * SCALE))
+rightArrowButton = Button(WIDTH - RIGHTMARGIN + int(265 * SCALE), TOPMARGIN + int(45 * SCALE), int(40 * SCALE), int(40 * SCALE), "", lambda : goForwardOneMoveHistoric(), int(22 * SCALE))
+
 def drawBoard(game, skipPiece=None):
     game.fill(BACKGROUND)
     for row in range(ROWS):
@@ -322,22 +347,28 @@ def tryDrawPromotionMenu(promotingPawn):
             GAME.blit(img, (pos[0] - TILESIZE // 2, pos[1]))
             promoIconRects.append((rectBg, ['queen','knight','rook','bishop'][idx]))
 
+def goBackOneMoveHistoric():
+    if len(displayedBoard.boardHistoric) > 1 and displayedBoard.historicIndic > 0:
+        displayedBoard.historicIndic -= 1
+        displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+        setPiecesCoordinates()
+        displayedBoard.playSound(displayedBoard.soundHistoric[displayedBoard.historicIndic])
+
+def goForwardOneMoveHistoric():
+    if len(displayedBoard.boardHistoric) - 1 > displayedBoard.historicIndic:
+        displayedBoard.historicIndic += 1
+        displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
+        setPiecesCoordinates()
+        displayedBoard.playSound(displayedBoard.soundHistoric[displayedBoard.historicIndic - 1])
+
 def tryMoveThroughHistoric(event):
     if event.type == pygame.KEYDOWN:
         if event.key == pygame.K_LEFT:  # Go back one move
-            if len(displayedBoard.boardHistoric) > 1 and displayedBoard.historicIndic > 0:
-                displayedBoard.historicIndic -= 1
-                displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
-                setPiecesCoordinates()
-                displayedBoard.playSound(displayedBoard.soundHistoric[displayedBoard.historicIndic])
-
+            goBackOneMoveHistoric()
+            
         if event.key == pygame.K_RIGHT:  # Go forward one move
-            if len(displayedBoard.boardHistoric) - 1 > displayedBoard.historicIndic:
-                displayedBoard.historicIndic += 1
-                displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
-                setPiecesCoordinates()
-                displayedBoard.playSound(displayedBoard.soundHistoric[displayedBoard.historicIndic - 1])
-
+            goForwardOneMoveHistoric()
+            
         if event.key == pygame.K_UP:  # Go to the last move
             if len(displayedBoard.boardHistoric) > 0 and displayedBoard.historicIndic != len(displayedBoard.boardHistoric) - 1:
                 displayedBoard.historicIndic = len(displayedBoard.boardHistoric) - 1
@@ -351,7 +382,6 @@ def tryMoveThroughHistoric(event):
                 displayedBoard.matrix = displayedBoard.boardHistoric[displayedBoard.historicIndic]
                 setPiecesCoordinates()
                 displayedBoard.playSound('')
-
 
 def getPieceImage(piece):
     """
@@ -451,21 +481,9 @@ adjustPromoSize()
 
 def drawHistoricTitle():
     pygame.draw.rect(GAME, HISTORICDARKBG, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(10 * SCALE), int(3 * TILESIZE), HEIGHT - TOPMARGIN - BOTTOMMARGIN - int(20 * SCALE)), 0, int(15 * SCALE))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(40 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(40 * SCALE)))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(25 * SCALE), TOPMARGIN + int(100 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(275 * SCALE), TOPMARGIN + int(100 * SCALE)))
     
-    # Left Arrow
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(210 * SCALE), TOPMARGIN + int(70 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(230 * SCALE), TOPMARGIN + int(70 * SCALE)))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(210 * SCALE), TOPMARGIN + int(70 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(215 * SCALE), TOPMARGIN + int(75 * SCALE)))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(210 * SCALE), TOPMARGIN + int(70 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(215 * SCALE), TOPMARGIN + int(65 * SCALE)))
-    
-    # Right Arrow
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(250 * SCALE), TOPMARGIN + int(70 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(270 * SCALE), TOPMARGIN + int(70 * SCALE)))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(270 * SCALE), TOPMARGIN + int(70 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(265 * SCALE), TOPMARGIN + int(75 * SCALE)))
-    pygame.draw.aaline(GAME, HISTORICSECONDARY, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(270 * SCALE), TOPMARGIN + int(70 * SCALE)), (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(265 * SCALE), TOPMARGIN + int(65 * SCALE)))
-
     historicTitle = robotoMedium.render("Moves History", True, LIGHTGREY)
-    GAME.blit(historicTitle, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(30 * SCALE), TOPMARGIN + int(55 * SCALE)))
+    GAME.blit(historicTitle, (WIDTH - RIGHTMARGIN + TILESIZE // 4 + int(20 * SCALE), TOPMARGIN + int(50 * SCALE)))
 
 def slidePieceToTile(piece, targetTile):
     """
@@ -493,6 +511,7 @@ def slidePieceToTile(piece, targetTile):
             GAME.blit(getPieceImage(piece), (piece.rectX, piece.rectY))
             GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
             drawHistoricTitle()
+            drawArrowButtons()
             GAME.blit(historicSurface, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(120 * SCALE)))
             pygame.display.update()
             i += 1
@@ -527,6 +546,7 @@ def slideBothPiecesToTile(piece1, piece2, targetTile1, targetTile2):
             GAME.blit(getPieceImage(piece2), (piece2.rectX, piece2.rectY))
             GAME.blit(arrowSurfaceRGBA, (LEFTMARGIN, TOPMARGIN))
             drawHistoricTitle()
+            drawArrowButtons()
             GAME.blit(historicSurface, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(120 * SCALE)))
             pygame.display.flip()
             i += 1
@@ -557,7 +577,17 @@ def drawEndGameScreen(winner):
     winCondition = "temp win condition"
     end_screen.drawEndScreen(GAME, winner, winCondition, SCALE, TILESIZE)
 
-
+def drawArrowButtons():
+    
+    leftArrowButton.draw(GAME, BACKGROUND, BACKGROUND, (0, 0, 0))
+    rightArrowButton.draw(GAME, BACKGROUND, BACKGROUND, (0, 0, 0))
+    
+    # Left Arrow
+    pygame.draw.polygon(GAME, LIGHTGREY, [(WIDTH - RIGHTMARGIN + int(225 * SCALE), TOPMARGIN + int(64 * SCALE)), (WIDTH - RIGHTMARGIN + int(225 * SCALE), TOPMARGIN + int(65 * SCALE)), (WIDTH - RIGHTMARGIN + int(230 * SCALE), TOPMARGIN + int(70 * SCALE)), (WIDTH - RIGHTMARGIN + int(231 * SCALE), TOPMARGIN + int(69 * SCALE)), (WIDTH - RIGHTMARGIN + int(227 * SCALE), TOPMARGIN + int(65 * SCALE)), (WIDTH - RIGHTMARGIN + int(246 * SCALE), TOPMARGIN + int(65 * SCALE)), (WIDTH - RIGHTMARGIN + int(246 * SCALE), TOPMARGIN + int(64 * SCALE)), (WIDTH - RIGHTMARGIN + int(227 * SCALE), TOPMARGIN + int(64 * SCALE)), (WIDTH - RIGHTMARGIN + int(231 * SCALE), TOPMARGIN + int(60 * SCALE)), (WIDTH - RIGHTMARGIN + int(230 * SCALE), TOPMARGIN + int(59 * SCALE))])
+    
+    # Right Arrow
+    pygame.draw.polygon(GAME, LIGHTGREY, [(WIDTH - RIGHTMARGIN + int(275 * SCALE), TOPMARGIN + int(64 * SCALE)), (WIDTH - RIGHTMARGIN + int(275 * SCALE), TOPMARGIN + int(65 * SCALE)), (WIDTH - RIGHTMARGIN + int(295 * SCALE), TOPMARGIN + int(65 * SCALE)), (WIDTH - RIGHTMARGIN + int(290 * SCALE), TOPMARGIN + int(69 * SCALE)), (WIDTH - RIGHTMARGIN + int(291 * SCALE), TOPMARGIN + int(70 * SCALE)), (WIDTH - RIGHTMARGIN + int(296 * SCALE), TOPMARGIN + int(65 * SCALE)), (WIDTH - RIGHTMARGIN + int(296 * SCALE), TOPMARGIN + int(64 * SCALE)), (WIDTH - RIGHTMARGIN + int(291 * SCALE), TOPMARGIN + int(59 * SCALE)), (WIDTH - RIGHTMARGIN + int(290 * SCALE), TOPMARGIN + int(60 * SCALE)), (WIDTH - RIGHTMARGIN + int(294 * SCALE), TOPMARGIN + int(64 * SCALE))])
+                        
 def main(clockTime, clockIncrement):
     global displayedBoard, chessClock, historicScroll, moveList
     adjustPromoSize()
@@ -603,8 +633,9 @@ def main(clockTime, clockIncrement):
         tryDrawPromotionMenu(promotingPawn)
 
         drawHistoric(moveList)
-
         GAME.blit(historicSurface, (WIDTH - RIGHTMARGIN + TILESIZE // 4, TOPMARGIN + int(120 * SCALE)))
+        
+        drawArrowButtons()
 
         if end_screen.viewingGame:
             end_screen.inGameMainMenuButton.draw(GAME, (2, 84, 45, 255), (20, 174, 92, 255), (20, 174, 92, 255))
@@ -635,6 +666,11 @@ def main(clockTime, clockIncrement):
 
             if end_screen.viewingGame and (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.MOUSEMOTION):
                 end_screen.inGameMainMenuButton.handle_event(event)
+                
+            if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                leftArrowButton.handle_event(event)
+                rightArrowButton.handle_event(event)
                 
             if potentialWinner is None or not end_screen.showEndScreen:
                 tryMoveThroughHistoric(event)
