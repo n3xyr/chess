@@ -557,9 +557,9 @@ def hasSomeoneWon(clock):
 
     isSomeoneTimeUp = clock.checkClock0()
     if isSomeoneTimeUp != False and isSomeoneTimeUp == 'black':
-        return 'white'
+        return ('white', 'by time')
     elif isSomeoneTimeUp != False and isSomeoneTimeUp == 'white':
-        return 'black'
+        return ('black', 'by time')
 
     if globals.pieceHasMoved:
         globals.pieceHasMoved = False
@@ -568,9 +568,9 @@ def hasSomeoneWon(clock):
         isWhiteCheckemated = displayedBoard.checkMate(whiteKing)
         isBlackCheckemated = displayedBoard.checkMate(blackKing)
         if isWhiteCheckemated and not isBlackCheckemated:
-            return 'black'
+            return ('black', 'by checkmate')
         elif not isWhiteCheckemated and isBlackCheckemated:
-            return 'white'  
+            return ('white', 'by checkmate') 
         
 def drawEndGameScreen(winner):
     import end_screen
@@ -644,7 +644,7 @@ def main(clockTime, clockIncrement):
             potentialWinner = hasSomeoneWon(chessClock)
 
         if potentialWinner is not None and end_screen.showEndScreen:
-            endScreenDef = end_screen.EndScreen(potentialWinner, "test", WIDTH, HEIGHT, TILESIZE)
+            endScreenDef = end_screen.EndScreen(potentialWinner[0], potentialWinner[1], WIDTH, HEIGHT, TILESIZE)
             endScreenDef.defineButtons(SCALE, TILESIZE, WIDTH, HEIGHT)
             endScreenDef.draw(GAME, SCALE, TILESIZE)
 
