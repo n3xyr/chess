@@ -277,7 +277,7 @@ def main():
                         inputText += str(NUMBER_KEYS_WITH_NUMPAD.index(event.key) % 10)
                     if event.key == pygame.K_BACKSPACE:
                         inputText = inputText[:-1]
-                    if event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         buttonTimeSetting.set_text_entry(False)
                 if len(inputText) <= 6:
                     buttonTimeSetting.set_text(inputText)
@@ -295,7 +295,7 @@ def main():
                         inputText += str(NUMBER_KEYS_WITH_NUMPAD.index(event.key) % 10)
                     if event.key == pygame.K_BACKSPACE:
                         inputText = inputText[:-1]
-                    if event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         buttonIncrementSetting.set_text_entry(False)
                 if len(inputText) <= 6:
                     buttonIncrementSetting.set_text(inputText)
@@ -336,15 +336,19 @@ def main():
 
                 buttonSettings.handle_event(event)
             
-            if (event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN) and globals.showSettings and globals.settingsButtonsDrawn:
+            if (event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN) and globals.showSettings and globals.settingsButtonsDrawn:
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-                settings_menu.closeButton.handleEvent(event)
                 
-                settings_menu.showPossibleMovesSwitch.handleEvent(event)
-                globals.showPossibleMovesSwitchState = settings_menu.showPossibleMovesSwitch.isActivated
+                if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
+                    settings_menu.closeButton.handleEvent(event)
+                    
+                    settings_menu.showPossibleMovesSwitch.handleEvent(event)
+                    globals.showPossibleMovesSwitchState = settings_menu.showPossibleMovesSwitch.isActivated
+                    
+                    settings_menu.disableSoundsSwitch.handleEvent(event)
+                    globals.disableSoundsSwitchState = settings_menu.disableSoundsSwitch.isActivated
                 
-                settings_menu.disableSoundsSwitch.handleEvent(event)
-                globals.disableSoundsSwitchState = settings_menu.disableSoundsSwitch.isActivated
+                settings_menu.primaryColorEntry.handleEvent(event)
         
         pygame.display.flip()
 

@@ -1,5 +1,5 @@
 import pygame
-import globals
+import time
 
 class Button:
     def __init__(self, x, y, w, h, text, callback, fontSize, borderRadius, SCALE, HEIGHT, BORDER_WIDTH):
@@ -87,4 +87,55 @@ class Switch:
             self.isActivated = not self.isActivated
                 
 class EntryBox:
-    pass
+    def __init__(self, scale, x, y, w, h, possibleCaracters):
+        self.rect = pygame.Rect(x, y, w, h)
+        self.scale = scale
+        self.blinkerState = False
+        self.blinkerLastBlink = time.time_ns()
+        self.isWriting = False
+        self.possibleCaracters = possibleCaracters
+        self.typingText = ''
+        
+    def drawBox(self, surface, boxColor, borderColor, borderRadius, borderWidth):
+        pygame.draw.rect(surface, borderColor, self.rect, border_radius=borderRadius)
+        pygame.draw.rect(surface, boxColor, (self.rect.x + borderWidth, self.rect.y + borderWidth, self.rect.width - borderWidth * 2, self.rect.height - borderWidth * 2), border_radius=borderRadius)
+
+    def drawLabel(self, surface, x, y, labelText, labelColor, labelSize):
+        font = pygame.font.Font('fonts/Roboto-Medium.ttf', labelSize)
+        labelSurface = font.render(labelText, True, labelColor)
+        labelRect = labelSurface.get_rect(midleft=(x, y))
+        surface.blit(labelSurface, labelRect)
+        
+    def drawText(self, surface, x, y, textColor, textSize):
+        font = pygame.font.Font('fonts/Roboto-Medium.ttf', textSize)
+        textSurface = font.render(self.typingText, True, textColor)
+        textRect = textSurface.get_rect(midleft=(x, y))
+        surface.blit(textSurface, textRect)
+    
+    def drawBlinker(self, surface, x, y, blinkerColor, blinkerWidth, blinkerHeight, blinkerMSInterval):
+        currentTime = time.time_ns()
+        elapsedMS = (currentTime - self.blinkerLastBlink) / 1000000
+        if elapsedMS > blinkerMSInterval:
+            self.blinkerState = not self.blinkerState
+            self.blinkerLastBlink = currentTime
+            
+        if self.blinkerState:
+            blinkerRect = pygame.Rect(x, y, blinkerWidth, blinkerHeight)
+            pygame.draw.rect(surface, blinkerColor, blinkerRect)
+            
+    def handleEvent(self, event):
+        if (event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN) and self.rect.collidepoint((event.pos[0], event.pos[1])):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.isWriting = True
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            self.isWriting = False
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                self.isWriting = False
+        if self.isWriting:
+            if event.type == pygame.KEYDOWN:
+                if event.key in self.possibleCaracters:
+                    self.typingText += str(chr(event.key))
+                elif event.key == pygame.K_BACKSPACE:
+                    self.typingText = self.typingText[:-1]
