@@ -3,6 +3,8 @@ from screeninfo import get_monitors
 import webbrowser
 import display_board
 import time
+import globals
+import settings_menu
 
 def getMonitorResolution():
     for m in get_monitors():
@@ -28,7 +30,7 @@ SCALE = float(SCREENHEIGHT * 0.8) / 1000
 HEIGHT = int(1000 * SCALE)
 WIDTH = int(800 * SCALE)
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE, pygame.SRCALPHA)
 timeMagnitude = 60
 incrementMagnitude = 1
 
@@ -91,7 +93,7 @@ def resizeWindow():
     buttonIncrementSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
-    buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"), 22)
+    buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: showSettingsFunc(True), 22)
 
 
 PANEL_BG = (31, 31, 28, 192)
@@ -155,7 +157,7 @@ class entryButton:
 
     def handle_event(self, event):            
         if self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.callback()
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -166,6 +168,10 @@ class entryButton:
         self.text_surface = self.font.render(self.text, True, (255, 255, 255))
 
 resizeWindow()
+
+def showSettingsFunc(bool):
+    globals.showSettings = bool
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
 def drawButtons(surface):
     buttonStart.draw(surface, DARKGREEN, GREEN, GREEN)
@@ -253,8 +259,12 @@ def main():
                 drawCursor(buttonTimeSetting)
             if buttonIncrementSetting.text_entry:
                 drawCursor(buttonIncrementSetting)
-
-        screen.blit(menuRGBA, (LEFT, TOP))
+                
+        if globals.showSettings:
+            settings_menu.showSettings(SCALE, screen)
+        else:
+            screen.blit(menuRGBA, (LEFT, TOP))
+            
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -306,15 +316,16 @@ def main():
                 else:
                     SCALE = newWidth / 1000
                 resizeWindow()
-                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE, pygame.SRCALPHA)
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = event.pos
                 if githubLink.collidepoint(pos):
                     webbrowser.open(r"https://www.github.com/n3xyr/chess")
 
-            if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
+            if (event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN) and not globals.showSettings:
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                
                 buttonStart.handle_event(event)
                     
                 buttonTimeSetting.handle_event(event)
@@ -324,6 +335,16 @@ def main():
                 buttonIncrementMagnitude.handle_event(event)
 
                 buttonSettings.handle_event(event)
+            
+            if (event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN) and globals.showSettings and globals.settingsButtonsDrawn:
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                settings_menu.closeButton.handleEvent(event)
+                
+                settings_menu.showPossibleMovesSwitch.handleEvent(event)
+                globals.showPossibleMovesSwitchState = settings_menu.showPossibleMovesSwitch.isActivated
+                
+                settings_menu.disableSoundsSwitch.handleEvent(event)
+                globals.disableSoundsSwitchState = settings_menu.disableSoundsSwitch.isActivated
         
         pygame.display.flip()
 
