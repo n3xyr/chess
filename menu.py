@@ -237,7 +237,7 @@ def setMagnitudes():
     buttonIncrementMagnitude.text = UNIT
     
 def blinkCursor():
-    return (time.time() % 1.4) < 0.7
+    return (time.time() % 1.2) < 0.6
 
 def main():
     global SCALE, screen
@@ -349,6 +349,7 @@ def main():
                     globals.disableSoundsSwitchState = settings_menu.disableSoundsSwitch.isActivated
                 
                 settings_menu.primaryColorEntry.handleEvent(event)
+                settings_menu.secondaryColorEntry.handleEvent(event)
         
         pygame.display.flip()
 
