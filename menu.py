@@ -347,6 +347,8 @@ def main():
                     
                     settings_menu.disableSoundsSwitch.handleEvent(event)
                     globals.disableSoundsSwitchState = settings_menu.disableSoundsSwitch.isActivated
+                    
+                    settings_menu.pieceChoiceDropdown.handleEvent(event)
                 
                 settings_menu.primaryColorEntry.handleEvent(event)
                 settings_menu.secondaryColorEntry.handleEvent(event)

@@ -15,6 +15,8 @@ subCatLineColor = (94, 93, 91, 255)
 primaryColor = (115, 149, 82, 255)
 secondaryColor = (235, 236, 208, 255)
 switchCircleColor = (217, 217, 217, 255)
+arrowBackgroundColor = (73, 70, 64, 255)
+arrowColor = (157, 157, 157, 255)
 
 originalImages = {}
 scaledImages = {}
@@ -164,6 +166,25 @@ def drawSecondaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH):
     secondaryColorEntry.drawText(settingsSurface, int(secondaryTextX * SCALE), int(secondaryTextY * SCALE + int(10 * SCALE)), categoryTitleColor, int(17 * SCALE))
     secondaryColorEntry.drawBlinker(settingsSurface, int(3 * SCALE), int(18 * SCALE), 600)
 
+def drawPieceChoiceDropdown(SCALE, settingsSurface, BORDER_WIDTH):
+    global pieceChoiceDropdown
+    
+    pieceChoicePythonGlobalList = builtins.globals()
+    if 'pieceChoiceDropdown' in pieceChoicePythonGlobalList:
+        pieceChoiceExistingObject = pieceChoicePythonGlobalList['pieceChoiceDropdown']
+        if getattr(pieceChoiceExistingObject, 'scale') != SCALE:
+            pieceChoiceOldSelectedOption = getattr(pieceChoiceExistingObject, 'selectedOption')
+            pieceChoiceOldState = getattr(pieceChoiceExistingObject, 'isOpened', False)
+            pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "pls don't"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE))
+            pieceChoiceDropdown.selectedOption = pieceChoiceOldSelectedOption
+            pieceChoiceDropdown.isOpened = pieceChoiceOldState
+    else:        
+        pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "pls don't"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE))
+    
+    pieceChoiceDropdown.drawBox(settingsSurface, categoryHeaderColor, fullTransparencyColor, int(10 * SCALE), BORDER_WIDTH, categoryTitleColor, int(17 * SCALE), arrowColor, arrowBackgroundColor, accentColor)
+    if not pieceChoiceDropdown.isOpened:
+        pieceChoiceDropdown.drawText(settingsSurface, categoryTitleColor, int(17 * SCALE))
+    
 def drawGameplayCatHeader(SCALE, settingsSurface):
     gameplayCatHeader = style_elements.Container(int(100 * SCALE), int(584 * SCALE), int(600 * SCALE), int(50 * SCALE), fullTransparencyColor, categoryHeaderColor, int(10 * SCALE), int(10 * SCALE), 0, 0, 0, SCALE)
     gameplayCatHeader.drawBox(settingsSurface)
@@ -187,6 +208,7 @@ def drawDisableSoundsSwitch(SCALE, settingsSurface):
     disableSoundsSwitch = style_elements.Switch(int(623 * SCALE), int(713 * SCALE), accentColor, subCatLineColor, switchCircleColor, globals.disableSoundsSwitchState, SCALE)
     disableSoundsSwitch.drawSwitch(settingsSurface)
    
+
 def showSettings(SCALE, screen):
     width = screen.get_width()
     height = screen.get_height()
@@ -201,12 +223,12 @@ def showSettings(SCALE, screen):
     drawAppearanceCatBody(SCALE, settingsSurface)
     drawPrimaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH)
     drawSecondaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH)
-    # entry boxes
     drawGameplayCatHeader(SCALE, settingsSurface)
     drawGameplayCatBody(SCALE, settingsSurface)
     drawShowPossibleMovesSwitch(SCALE, settingsSurface)
     drawDisableSoundsSwitch(SCALE, settingsSurface)
-    
+    drawPieceChoiceDropdown(SCALE, settingsSurface, BORDER_WIDTH)
+
     globals.settingsButtonsDrawn = True
     
     screen.blit(settingsSurface, (0, 0))

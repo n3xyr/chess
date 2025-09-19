@@ -155,3 +155,65 @@ class EntryBox:
                     self.typingText = self.typingText[:-1]
             if len(self.typingText) > self.numCaraMax:
                 self.typingText = self.typingText[:self.numCaraMax]
+                
+class DropdownBox:
+    def __init__(self, scale, options, x, y, w, h):
+        self.options = options
+        self.scale = scale
+        self.rect = pygame.Rect(x, y, w, h)
+        self.isOpened = False
+        self.selectedOption = self.options[0]
+        
+    def drawBox(self, surface, boxColor, borderColor, borderRadius, borderWidth, optionTextColor, optionTextSize, arrowColor, arrowBackgroundColor, accentColor):
+        if self.isOpened:
+            pygame.draw.rect(surface, accentColor, (self.rect.x, self.rect.y, self.rect.w, self.rect.h + int((5 + len(self.options) * 16) * self.scale)), border_radius=borderRadius)
+            pygame.draw.rect(surface, boxColor, (self.rect.x + borderWidth, self.rect.y + borderWidth, self.rect.w - borderWidth * 2, self.rect.h + int((5 + len(self.options) * 16) * self.scale) - borderWidth * 2), border_radius=borderRadius) 
+            self.drawOptions(surface, optionTextColor, optionTextSize, arrowBackgroundColor, borderWidth, borderRadius)
+        else:
+            pygame.draw.rect(surface, borderColor, (self.rect.x, self.rect.y, self.rect.w, self.rect.h), border_radius=borderRadius)
+            pygame.draw.rect(surface, boxColor, (self.rect.x + borderWidth, self.rect.y + borderWidth, self.rect.w - borderWidth * 2, self.rect.h - borderWidth * 2), border_radius=borderRadius)
+            self.drawArrowBackground(surface, int(340 * self.scale), int(513 * self.scale), int(26 * self.scale), int(26 * self.scale), arrowBackgroundColor, 0, int(10 * self.scale), 0, int(10 * self.scale))
+            self.drawArrow(surface, int(347 * self.scale), int(522 * self.scale), arrowColor)
+
+    def drawArrow(self, surface, x, y, arrowColor):
+        pygame.draw.polygon(surface, arrowColor, [(x, y), (x + int(11 * self.scale), y), (x + int(6 * self.scale), y + int(10 * self.scale))])
+        
+    def drawArrowBackground(self, surface, x, y, w, h, backgroundColor, topLeftBorderRadius, topRightBorderRadius, bottomLeftBorderRadius, bottomRightBorderRadius):
+        pygame.draw.rect(surface, backgroundColor, (x, y, w, h), border_top_left_radius=topLeftBorderRadius, border_top_right_radius=topRightBorderRadius, border_bottom_left_radius=bottomLeftBorderRadius, border_bottom_right_radius=bottomRightBorderRadius)
+        
+    def drawText(self, surface, textColor, textSize):
+        font = pygame.font.Font('fonts/Roboto-Medium.ttf', textSize)
+        textSurface = font.render(self.selectedOption, True, textColor)
+        textRect = textSurface.get_rect(midleft=(self.rect.x + int(10 * self.scale), self.rect.y + int((10 + 4) * self.scale)))
+        surface.blit(textSurface, textRect)
+        self.textWidth = textSurface.get_width()
+        
+    def drawOptions(self, surface, textColor, textSize, selectionColor, borderWidth, borderRadius):
+        font = pygame.font.Font('fonts/Roboto-Medium.ttf', textSize)
+        mousePos = pygame.mouse.get_pos()
+        optionRects = []
+        for i in range(len(self.options)):
+            textSurface = font.render(self.options[i], True, textColor)
+            textRect = textSurface.get_rect(midleft=(self.rect.x + int(10 * self.scale), self.rect.y + int(i * (24 * self.scale)) + int((10 + 6) * self.scale)))
+            selectionBackground = textRect.inflate(int(120 * self.scale) - textRect.w - borderWidth * 2, int(6 * self.scale))
+            selectionBackground.move_ip(selectionBackground.w // 2 - textRect.w // 2 - int(10 * self.scale) + borderWidth, - int(0.5 * self.scale))
+            optionRects.append(selectionBackground.copy())
+            if selectionBackground.collidepoint(mousePos):
+                pygame.draw.rect(surface, selectionColor, selectionBackground, border_radius=borderRadius)
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            surface.blit(textSurface, textRect)
+        self.optionRects = optionRects
+        
+    def handleEvent(self, event):
+        if hasattr(event, "pos"):
+            pos = event.pos
+            if self.rect.collidepoint(pos):
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint(pos) and not self.isOpened:
+                self.isOpened = True
+                return
+            if self.isOpened and event.type == pygame.MOUSEBUTTONDOWN:
+                for idx, optRect in enumerate(getattr(self, 'optionRects', [])):
+                    if optRect.collidepoint(pos):
+                        self.selectedOption = self.options[idx]
+                        self.isOpened = False
