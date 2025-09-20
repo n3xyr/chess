@@ -2,6 +2,7 @@ import pygame
 import style_elements
 import globals
 import builtins
+import re
 
 fullTransparencyColor = (0, 0, 0, 0)
 settingsContainerBorderColor = (152, 152, 152, 100)
@@ -64,7 +65,7 @@ def drawAppearanceCatBody(SCALE, settingsSurface):
     pygame.draw.aaline(settingsSurface, subCatLineColor, (int(100 * SCALE), int(436 * SCALE)), (int(400 * SCALE), int(436 * SCALE)))
     appearanceCatBody.drawText(settingsSurface, int(120 * SCALE), int(456 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Secondary color", subCatTitleTextColor)
     pygame.draw.aaline(settingsSurface, subCatLineColor, (int(100 * SCALE), int(496 * SCALE)), (int(400 * SCALE), int(496 * SCALE)))
-    appearanceCatBody.drawText(settingsSurface, int(120 * SCALE), int(516 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Pieces style", subCatTitleTextColor)
+    appearanceCatBody.drawText(settingsSurface, int(120 * SCALE), int(516 * SCALE - int(3 * SCALE)), int(20 * SCALE), "Pieces style", subCatTitleTextColor)
     drawExampleBoard(SCALE, settingsSurface)
         
 def drawExampleBoard(SCALE, settingsSurface):
@@ -124,18 +125,19 @@ def drawPrimaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH):
         if getattr(primaryExistingObject, 'scale') != SCALE:
             primaryOldText = getattr(primaryExistingObject, 'typingText', '')
             primaryOldWritingState = getattr(primaryExistingObject, 'isWriting', False)
-            primaryColorEntry = style_elements.EntryBox(SCALE, int(251 * SCALE), int(392 * SCALE), int(110 * SCALE), int(28 * SCALE), primaryHexPossibleCaracters, 6, accentColor)
+            primaryColorEntry = style_elements.EntryBox(SCALE, int(251 * SCALE), int(392 * SCALE), int(110 * SCALE), int(28 * SCALE), primaryHexPossibleCaracters, 6, accentColor, readUserSettingsState("primaryColor").strip())
             primaryColorEntry.typingText = primaryOldText
             primaryColorEntry.isWriting = primaryOldWritingState
     else:
-        primaryColorEntry = style_elements.EntryBox(SCALE, int(251 * SCALE), int(392 * SCALE), int(110 * SCALE), int(28 * SCALE), primaryHexPossibleCaracters, 6, accentColor)
+        primaryColorEntry = style_elements.EntryBox(SCALE, int(251 * SCALE), int(392 * SCALE), int(110 * SCALE), int(28 * SCALE), primaryHexPossibleCaracters, 6, accentColor, readUserSettingsState("primaryColor").strip())
     
     primaryTextX, primaryTextY = 281, 396
     primaryColorEntry.drawBox(settingsSurface, categoryHeaderColor, int(10 * SCALE), BORDER_WIDTH)
     primaryColorEntry.drawLabel(settingsSurface, int(265 * SCALE), int(396 * SCALE + int(10 * SCALE)), '#', subCatTitleTextColor, int(17 * SCALE))
-    primaryColorEntry.drawDefaultText(settingsSurface, int((primaryTextX + 6) * SCALE), int((primaryTextY + 0.5) * SCALE + int(10 * SCALE)), '739552', subCatTitleTextColor, int(15 * SCALE))
-    primaryColorEntry.drawText(settingsSurface, int(primaryTextX * SCALE), int(primaryTextY * SCALE + int(10 * SCALE)), categoryTitleColor, int(17 * SCALE))
+    primaryColorEntry.drawText(settingsSurface, int(primaryTextX * SCALE), int(primaryTextY * SCALE + int(10 * SCALE)), categoryTitleColor, int(17 * SCALE), readUserSettingsState("primaryColor").strip())
     primaryColorEntry.drawBlinker(settingsSurface, int(3 * SCALE), int(18 * SCALE), 600)
+    if primaryColorEntry.isWriting and len(primaryColorEntry.typingText) == 0:
+        primaryColorEntry.drawDefaultText(settingsSurface, int((primaryTextX + 6) * SCALE), int((primaryTextY + 0.5) * SCALE + int(10 * SCALE)), subCatTitleTextColor, int(15 * SCALE))
 
 def drawSecondaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH):
     global secondaryColorEntry
@@ -153,21 +155,24 @@ def drawSecondaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH):
         if getattr(secondaryExistingObject, 'scale') != SCALE:
             secondaryOldText = getattr(secondaryExistingObject, 'typingText', '')
             secondaryOldWritingState = getattr(secondaryExistingObject, 'isWriting', False)
-            secondaryColorEntry = style_elements.EntryBox(SCALE, int(276 * SCALE), int(452 * SCALE), int(110 * SCALE), int(28 * SCALE), secondaryHexPossibleCaracters, 6, accentColor)
+            secondaryColorEntry = style_elements.EntryBox(SCALE, int(276 * SCALE), int(452 * SCALE), int(110 * SCALE), int(28 * SCALE), secondaryHexPossibleCaracters, 6, accentColor, readUserSettingsState("secondaryColor").strip())
             secondaryColorEntry.typingText = secondaryOldText
             secondaryColorEntry.isWriting = secondaryOldWritingState
     else:
-        secondaryColorEntry = style_elements.EntryBox(SCALE, int(276 * SCALE), int(452 * SCALE), int(110 * SCALE), int(28 * SCALE), secondaryHexPossibleCaracters, 6, accentColor)
+        secondaryColorEntry = style_elements.EntryBox(SCALE, int(276 * SCALE), int(452 * SCALE), int(110 * SCALE), int(28 * SCALE), secondaryHexPossibleCaracters, 6, accentColor, readUserSettingsState("secondaryColor").strip())
     
     secondaryTextX, secondaryTextY = 306, 456
     secondaryColorEntry.drawBox(settingsSurface, categoryHeaderColor, int(10 * SCALE), BORDER_WIDTH)
     secondaryColorEntry.drawLabel(settingsSurface, int(290 * SCALE), int(456 * SCALE + int(10 * SCALE)), '#', subCatTitleTextColor, int(17 * SCALE))
-    secondaryColorEntry.drawDefaultText(settingsSurface, int((secondaryTextX + 6) * SCALE), int((secondaryTextY + 0.5) * SCALE + int(10 * SCALE)), 'EBECD0', subCatTitleTextColor, int(15 * SCALE))
-    secondaryColorEntry.drawText(settingsSurface, int(secondaryTextX * SCALE), int(secondaryTextY * SCALE + int(10 * SCALE)), categoryTitleColor, int(17 * SCALE))
+    secondaryColorEntry.drawText(settingsSurface, int(secondaryTextX * SCALE), int(secondaryTextY * SCALE + int(10 * SCALE)), categoryTitleColor, int(17 * SCALE), readUserSettingsState("secondaryColor").strip())
     secondaryColorEntry.drawBlinker(settingsSurface, int(3 * SCALE), int(18 * SCALE), 600)
+    if secondaryColorEntry.isWriting and len(secondaryColorEntry.typingText) == 0:
+        secondaryColorEntry.drawDefaultText(settingsSurface, int((secondaryTextX + 6) * SCALE), int((secondaryTextY + 0.5) * SCALE + int(9 * SCALE)), subCatTitleTextColor, int(15 * SCALE))
 
 def drawPieceChoiceDropdown(SCALE, settingsSurface, BORDER_WIDTH):
     global pieceChoiceDropdown
+    
+    currentSelectedOption = readUserSettingsState("pieceChoice").strip()
     
     pieceChoicePythonGlobalList = builtins.globals()
     if 'pieceChoiceDropdown' in pieceChoicePythonGlobalList:
@@ -175,15 +180,15 @@ def drawPieceChoiceDropdown(SCALE, settingsSurface, BORDER_WIDTH):
         if getattr(pieceChoiceExistingObject, 'scale') != SCALE:
             pieceChoiceOldSelectedOption = getattr(pieceChoiceExistingObject, 'selectedOption')
             pieceChoiceOldState = getattr(pieceChoiceExistingObject, 'isOpened', False)
-            pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "pls don't"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE))
+            pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "pls don't"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE), currentSelectedOption)
             pieceChoiceDropdown.selectedOption = pieceChoiceOldSelectedOption
             pieceChoiceDropdown.isOpened = pieceChoiceOldState
     else:        
-        pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "pls don't"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE))
+        pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "pls don't"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE), currentSelectedOption)
     
-    pieceChoiceDropdown.drawBox(settingsSurface, categoryHeaderColor, fullTransparencyColor, int(10 * SCALE), BORDER_WIDTH, categoryTitleColor, int(17 * SCALE), arrowColor, arrowBackgroundColor, accentColor)
+    pieceChoiceDropdown.drawBox(settingsSurface, categoryHeaderColor, fullTransparencyColor, int(10 * SCALE), BORDER_WIDTH, categoryTitleColor, int(15 * SCALE), arrowColor, arrowBackgroundColor, accentColor)
     if not pieceChoiceDropdown.isOpened:
-        pieceChoiceDropdown.drawText(settingsSurface, categoryTitleColor, int(17 * SCALE))
+        pieceChoiceDropdown.drawText(settingsSurface, categoryTitleColor, int(15 * SCALE))
     
 def drawGameplayCatHeader(SCALE, settingsSurface):
     gameplayCatHeader = style_elements.Container(int(100 * SCALE), int(584 * SCALE), int(600 * SCALE), int(50 * SCALE), fullTransparencyColor, categoryHeaderColor, int(10 * SCALE), int(10 * SCALE), 0, 0, 0, SCALE)
@@ -196,19 +201,38 @@ def drawGameplayCatBody(SCALE, settingsSurface):
     gameplayCatBody.drawBox(settingsSurface)
     gameplayCatBody.drawText(settingsSurface, int(120 * SCALE), int(654 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Show possible moves", subCatTitleTextColor)
     pygame.draw.aaline(settingsSurface, subCatLineColor, (int(100 * SCALE), int(694 * SCALE)), (int(700 * SCALE), int(694 * SCALE)))
-    gameplayCatBody.drawText(settingsSurface, int(120 * SCALE), int(714 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Enable sounds", subCatTitleTextColor)
+    gameplayCatBody.drawText(settingsSurface, int(120 * SCALE), int(714 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Disable sounds", subCatTitleTextColor)
     
 def drawShowPossibleMovesSwitch(SCALE, settingsSurface):
     global showPossibleMovesSwitch
-    showPossibleMovesSwitch = style_elements.Switch(int(623 * SCALE), int(655 * SCALE), accentColor, subCatLineColor, switchCircleColor, globals.showPossibleMovesSwitchState, SCALE)
+    if readUserSettingsState("showPossibleMoves").strip() == "True":
+        isActivatedBool = True
+    else:
+        isActivatedBool = False
+        
+    showPossibleMovesSwitch = style_elements.Switch(int(623 * SCALE), int(655 * SCALE), accentColor, subCatLineColor, switchCircleColor, isActivatedBool, SCALE)
     showPossibleMovesSwitch.drawSwitch(settingsSurface)
     
 def drawDisableSoundsSwitch(SCALE, settingsSurface):
     global disableSoundsSwitch
-    disableSoundsSwitch = style_elements.Switch(int(623 * SCALE), int(713 * SCALE), accentColor, subCatLineColor, switchCircleColor, globals.disableSoundsSwitchState, SCALE)
+    if readUserSettingsState("disableSounds").strip() == "True":
+        isActivatedBool = True
+    else:
+        isActivatedBool = False
+    disableSoundsSwitch = style_elements.Switch(int(623 * SCALE), int(713 * SCALE), accentColor, subCatLineColor, switchCircleColor, isActivatedBool, SCALE)
     disableSoundsSwitch.drawSwitch(settingsSurface)
-   
-
+    
+def readUserSettingsState(settingsName):
+    with open("user_settings.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            if line.startswith(settingsName):
+                value = line[len(settingsName) + 3:]
+                return value
+    
+def RGBToHex(RGBCode):
+    hexValue = '%02x%02x%02x%02x' % tuple(RGBCode)
+    return hexValue[:6]
+    
 def showSettings(SCALE, screen):
     width = screen.get_width()
     height = screen.get_height()

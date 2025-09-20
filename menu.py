@@ -5,6 +5,7 @@ import display_board
 import time
 import globals
 import settings_menu
+import re
 
 def getMonitorResolution():
     for m in get_monitors():
@@ -239,6 +240,26 @@ def setMagnitudes():
 def blinkCursor():
     return (time.time() % 1.2) < 0.6
 
+def readWriteUserSettings(currentLineName, newLineState):
+    path = "user_settings.txt"
+    pattern = re.compile(r"^" + currentLineName)
+    replacement = f"{currentLineName} = {newLineState}\n"
+    
+    with open(path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    
+    for i in range(len(lines)):
+        if pattern.search(lines[i]):
+            lines[i] = replacement
+            break
+    
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.writelines(lines)
+        
+def hexToRGB(hexCode):
+    return (int(hexCode[:2], 16), int(hexCode[2:4], 16), int(hexCode[4:], 16), 255)
+
+
 def main():
     global SCALE, screen
     clock.tick(60)
@@ -344,15 +365,22 @@ def main():
                     
                     settings_menu.showPossibleMovesSwitch.handleEvent(event)
                     globals.showPossibleMovesSwitchState = settings_menu.showPossibleMovesSwitch.isActivated
+                    readWriteUserSettings("showPossibleMoves", str(settings_menu.showPossibleMovesSwitch.isActivated))
                     
                     settings_menu.disableSoundsSwitch.handleEvent(event)
                     globals.disableSoundsSwitchState = settings_menu.disableSoundsSwitch.isActivated
+                    readWriteUserSettings("disableSounds", str(settings_menu.disableSoundsSwitch.isActivated))
                     
                     settings_menu.pieceChoiceDropdown.handleEvent(event)
                 
                 settings_menu.primaryColorEntry.handleEvent(event)
-                settings_menu.secondaryColorEntry.handleEvent(event)
-        
+                if hasattr(settings_menu.primaryColorEntry, "definitveText"):
+                    readWriteUserSettings("primaryColor", settings_menu.primaryColorEntry.definitveText)
+                
+                settings_menu.secondaryColorEntry.handleEvent(event) 
+                if hasattr(settings_menu.secondaryColorEntry, "definitveText"):
+                    readWriteUserSettings("secondaryColor", settings_menu.secondaryColorEntry.definitveText)
+                    
         pygame.display.flip()
 
     pygame.quit()

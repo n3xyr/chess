@@ -1,5 +1,6 @@
 import pygame
 import time
+import re
 
 class Button:
     def __init__(self, x, y, w, h, text, callback, fontSize, borderRadius, SCALE, HEIGHT, BORDER_WIDTH):
@@ -87,7 +88,7 @@ class Switch:
             self.isActivated = not self.isActivated
                 
 class EntryBox:
-    def __init__(self, scale, x, y, w, h, possibleCaracters, numCaraMax, accentColor):
+    def __init__(self, scale, x, y, w, h, possibleCaracters, numCaraMax, accentColor, defaultTextContent):
         self.rect = pygame.Rect(x, y, w, h)
         self.scale = scale
         self.blinkerState = False
@@ -97,6 +98,7 @@ class EntryBox:
         self.typingText = ''
         self.numCaraMax = numCaraMax
         self.accentColor = accentColor
+        self.defaultTextContent = defaultTextContent
         
     def drawBox(self, surface, boxColor, borderRadius, borderWidth):
         if self.isWriting:
@@ -111,9 +113,12 @@ class EntryBox:
         labelRect = labelSurface.get_rect(midleft=(x, y))
         surface.blit(labelSurface, labelRect)
         
-    def drawText(self, surface, x, y, textColor, textSize):
+    def drawText(self, surface, x, y, textColor, textSize, alreadySetText):
         font = pygame.font.Font('fonts/Roboto-Medium.ttf', textSize)
-        textSurface = font.render(self.typingText, True, textColor)
+        if self.isWriting:
+            textSurface = font.render(self.typingText.upper(), True, textColor)
+        else:
+            textSurface = font.render(alreadySetText.upper(), True, textColor)
         textRect = textSurface.get_rect(midleft=(x, y))
         surface.blit(textSurface, textRect)
         self.textPos = (x, y)
@@ -130,10 +135,10 @@ class EntryBox:
                 blinkerRect = pygame.Rect(self.textPos[0] + self.textWidth + int(3 * self.scale), self.textPos[1] - int(8.5 * self.scale), blinkerWidth, blinkerHeight)
                 pygame.draw.rect(surface, self.accentColor, blinkerRect)
             
-    def drawDefaultText(self, surface, x, y, defaultTextContent, defaultTextColor, defaultTextSize):
+    def drawDefaultText(self, surface, x, y, defaultTextColor, defaultTextSize):
         if len(self.typingText) <= 0:
             font = pygame.font.Font('fonts/Roboto-Medium.ttf', defaultTextSize)
-            defaultTextSurface = font.render(defaultTextContent, True, defaultTextColor)
+            defaultTextSurface = font.render(self.defaultTextContent.upper(), True, defaultTextColor)
             defaultTextRect = defaultTextSurface.get_rect(midleft=(x, y))
             surface.blit(defaultTextSurface, defaultTextRect)
             
@@ -155,14 +160,18 @@ class EntryBox:
                     self.typingText = self.typingText[:-1]
             if len(self.typingText) > self.numCaraMax:
                 self.typingText = self.typingText[:self.numCaraMax]
+            elif len(self.typingText) == 6:
+                self.definitveText = self.typingText
+            elif len(self.typingText) < 6:
+                self.definitveText = self.defaultTextContent
                 
 class DropdownBox:
-    def __init__(self, scale, options, x, y, w, h):
+    def __init__(self, scale, options, x, y, w, h, selectedOption):
         self.options = options
         self.scale = scale
         self.rect = pygame.Rect(x, y, w, h)
         self.isOpened = False
-        self.selectedOption = self.options[0]
+        self.selectedOption = selectedOption
         
     def drawBox(self, surface, boxColor, borderColor, borderRadius, borderWidth, optionTextColor, optionTextSize, arrowColor, arrowBackgroundColor, accentColor):
         if self.isOpened:
@@ -213,7 +222,24 @@ class DropdownBox:
                 self.isOpened = True
                 return
             if self.isOpened and event.type == pygame.MOUSEBUTTONDOWN:
-                for idx, optRect in enumerate(getattr(self, 'optionRects', [])):
+                for i, optRect in enumerate(getattr(self, 'optionRects', [])):
                     if optRect.collidepoint(pos):
-                        self.selectedOption = self.options[idx]
+                        self.selectedOption = self.options[i]
+                        readWriteUserSettings("pieceChoice", self.options[i])
                         self.isOpened = False
+                        
+def readWriteUserSettings(currentLineName, newLineState):
+    path = "user_settings.txt"
+    pattern = re.compile(r"^" + currentLineName)
+    replacement = f"{currentLineName} = {newLineState}\n"
+    
+    with open(path, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+    
+    for i in range(len(lines)):
+        if pattern.search(lines[i]):
+            lines[i] = replacement
+            break
+    
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.writelines(lines)
