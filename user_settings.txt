@@ -1,5 +1,5 @@
-primaryColor = b231bc
-secondaryColor = 12ca12
+primaryColor = 739552
+secondaryColor = ebecd0
 pieceChoice = Neo
 showPossibleMoves = True
-disableSounds = True
+disableSounds = False
