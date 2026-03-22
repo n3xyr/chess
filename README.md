@@ -1,6 +1,8 @@
 # Chess
 
-A Python-based chess game aiming to replicate the experience of standard online platforms like [chess.com](https://chess.com). Currently under active development.
+A Python-based chess game aiming to replicate the experience of standard online platforms like [chess.com](https://chess.com). Currently, this project is kind of abandoned and it may stay that way forever.
+
+WARNING: this is a While In Progress project, so you will find bugs. It's also our first project so the code is terrible. >e never intended to do a full release, but more of a fun project to learn python and things around project creation.
 
 ## Goal
 
@@ -10,16 +12,13 @@ This project is built to mimic a full-featured chess game, providing a playable 
 
 ## Current Features
 
+- A fully functionning chess game.
 - Game menu with clock settings.
 - Detects legal moves for all standard chess pieces.
-- Turn-based logic to ensure only the correct color can move.
 - Interactive GUI using `pygame` and `pygame_widgets`.
 - Visual indicators:
   - Dots: legal move tiles.
   - Circles: capture opportunities.
-- Basic pawn promotion.
-- Check/ Checkmate detection.
-- Castling and en passant moves.
 - Game historic with notations.
 
 ---
@@ -28,7 +27,7 @@ This project is built to mimic a full-featured chess game, providing a playable 
 
 - No premoves available.
 - Unable to drag pieces to move them.
-- No end-game screen.
+- Checkmate isn't detected sometimes
 
 ---
 
@@ -56,5 +55,5 @@ This project is built to mimic a full-featured chess game, providing a playable 
 4. Start the game:
 
    ```bash
-   python display_board.py
+   python menu.py
    ```
