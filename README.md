@@ -2,7 +2,7 @@
 
 A Python-based chess game aiming to replicate the experience of standard online platforms like [chess.com](https://chess.com). Currently, this project is kind of abandoned and it may stay that way forever.
 
-WARNING: this is a While In Progress project, so you will find bugs. It's also our first project so the code is terrible. >e never intended to do a full release, but more of a fun project to learn python and things around project creation.
+WARNING: this is a While In Progress project, so you will find bugs. It's also our first project so the code is terrible. We never intended to do a full release, but more of a fun project to learn python and things around project creation.
 
 ## Goal
 
