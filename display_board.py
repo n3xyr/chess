@@ -288,6 +288,7 @@ rightArrowButton = Button(WIDTH - RIGHTMARGIN + int(265 * SCALE), TOPMARGIN + in
 
 def drawBoard(game, skipPiece=None):
     game.fill(BACKGROUND)
+    labelFont = pygame.font.Font('fonts/Roboto-Medium.ttf', int(18 * SCALE))
     for row in range(ROWS):
         for col in range(COLS):
             if (row + col) % 2 == 1:
@@ -303,7 +304,23 @@ def drawBoard(game, skipPiece=None):
                         game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
                 else:
                     game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
-
+                    
+            # Draw column labels
+            if row == 7:
+                if col % 2 == 0:
+                    columnText = labelFont.render(chr(col + 65), True, (LIGHT))
+                else:   
+                    columnText = labelFont.render(chr(col + 65), True, (DARK))
+                game.blit(columnText, (TILESIZE * (col + 0.85), TOPMARGIN + TILESIZE * 7.8))
+            
+            # Draw row labels
+            if col == 0:
+                if row % 2 == 0:
+                    rowText = labelFont.render(str(- row + 8), True, (DARK))
+                else:
+                    rowText = labelFont.render(str(- row + 8), True, (LIGHT))
+                game.blit(rowText, (TILESIZE * 0.05, TOPMARGIN + TILESIZE * (row + 0.05)))
+                
 def setPiecesCoordinates():
     """
     Initialize pieces coordinates for display
