@@ -10,6 +10,10 @@ import chess_clock
 import end_screen
 import time
 import globals
+import ctypes
+
+appId = 'n3xyr.chess.0.5' 
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appId)
 
 # Initialize Pygame
 pygame.init()
@@ -180,6 +184,8 @@ wrFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wrFigurin
 wCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wCastleFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
 bCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bCastleFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
 nothingness = pygame.image.load("piecesFigurines/nothingness.png")
+
+pygame.display.set_icon(bCastleFigurine)
 
 # Define colors
 WHITE = (255, 255, 255)
