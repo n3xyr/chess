@@ -5,7 +5,7 @@ import display_board
 import time
 import globals
 import settings_menu
-import re
+import json
 
 def getMonitorResolution():
     for m in get_monitors():
@@ -241,20 +241,13 @@ def blinkCursor():
     return (time.time() % 1.2) < 0.6
 
 def readWriteUserSettings(currentLineName, newLineState):
-    path = "user_settings.txt"
-    pattern = re.compile(r"^" + currentLineName)
-    replacement = f"{currentLineName} = {newLineState}\n"
-    
-    with open(path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-    
-    for i in range(len(lines)):
-        if pattern.search(lines[i]):
-            lines[i] = replacement
-            break
-    
-    with open(path, "w", encoding="utf-8", newline="\n") as f:
-        f.writelines(lines)
+    with open("user_settings.json", "r", encoding="utf-8") as f:
+        userSettings = json.load(f)
+
+    userSettings[currentLineName] = newLineState
+
+    with open("user_settings.json", "w", encoding="utf-8") as f:
+        json.dump(userSettings, f, indent=4, ensure_ascii=False)
         
 def hexToRGB(hexCode):
     return (int(hexCode[:2], 16), int(hexCode[2:4], 16), int(hexCode[4:], 16), 255)

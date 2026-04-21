@@ -1,6 +1,6 @@
 import pygame
 import time
-import re
+import json
 
 class Button:
     def __init__(self, x, y, w, h, text, callback, fontSize, borderRadius, SCALE, HEIGHT, BORDER_WIDTH):
@@ -229,17 +229,10 @@ class DropdownBox:
                         self.isOpened = False
                         
 def readWriteUserSettings(currentLineName, newLineState):
-    path = "user_settings.txt"
-    pattern = re.compile(r"^" + currentLineName)
-    replacement = f"{currentLineName} = {newLineState}\n"
-    
-    with open(path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-    
-    for i in range(len(lines)):
-        if pattern.search(lines[i]):
-            lines[i] = replacement
-            break
-    
-    with open(path, "w", encoding="utf-8", newline="\n") as f:
-        f.writelines(lines)
+    with open("user_settings.json", "r", encoding="utf-8") as f:
+        userSettings = json.load(f)
+
+    userSettings[currentLineName] = newLineState
+
+    with open("user_settings.json", "w", encoding="utf-8") as f:
+        json.dump(userSettings, f, indent=4, ensure_ascii=False)

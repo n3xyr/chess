@@ -11,6 +11,7 @@ import end_screen
 import time
 import globals
 import ctypes
+import json
 
 appId = 'n3xyr.chess.0.5' 
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appId)
@@ -146,6 +147,9 @@ def adjustPromoSize():
         img_rect = img.get_rect(center=pos)
         pieces[i]['rect'] = img_rect
 
+# Import user settings
+with open("user_settings.json", "r", encoding="utf-8") as f:
+    userSettings = json.load(f)
 
 SCREENWIDTH, SCREENHEIGHT = getMonitorResolution()
 WIDTH, HEIGHT = LEFTMARGIN + 8 * TILESIZE + RIGHTMARGIN, 8 * TILESIZE + BOTTOMMARGIN + TOPMARGIN
@@ -190,8 +194,8 @@ pygame.display.set_icon(bCastleFigurine)
 # Define colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-LIGHT = (235, 236, 208)
-DARK = (115, 149, 82)
+LIGHT = pygame.Color('#'+str(userSettings['secondaryColor']))
+DARK = pygame.Color('#'+str(userSettings['primaryColor']))
 LIGHTSELECT = (202, 203, 179)
 DARKSELECT = (99, 128, 70)
 ULTRADARK = (38, 36, 33)
