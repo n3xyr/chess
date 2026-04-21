@@ -3,24 +3,53 @@ import pygame
 import json
 
 def getColorsFromTheme(primary, secondary):
+    #====== display_board ======#
     # primary select
     if sum(primary) / 3 >= 128:
-        primarySelect = (min((primary[0] - 25), 0), min((primary[1] - 25), 0), min((primary[2] - 25), 0))
+        primarySelect = (max((primary[0] - 25), 0), max((primary[1] - 25), 0), max((primary[2] - 25), 0))
     else:
-        primarySelect = (max((primary[0] + 25), 0), max((primary[1] + 25), 0), max((primary[2] + 25), 0))
+        primarySelect = (min((primary[0] + 25), 0), min((primary[1] + 25), 0), min((primary[2] + 25), 0))
         
     # secondary select
     if sum(secondary) / 3 >= 128:
-        secondarySelect = (min((secondary[0] - 25), 0), min((secondary[1] - 25), 0), min((secondary[2] - 25), 0))
+        secondarySelect = (max((secondary[0] - 25), 0), max((secondary[1] - 25), 0), max((secondary[2] - 25), 0))
     else:
-        secondarySelect = (max((secondary[0] + 25), 0), max((secondary[1] + 25), 0), max((secondary[2] + 25), 0))
+        secondarySelect = (min((secondary[0] + 25), 0), min((secondary[1] + 25), 0), min((secondary[2] + 25), 0))
         
     ultraDarkPrimary = ((primary[0] + 4 * 38) // 5, (primary[1] + 4 * 36) // 5, (primary[2] + 4 * 33) // 5)
     ultraLightSecondary = ((secondary[0] + 4 * 217) // 5, (secondary[1] + 4 * 219) // 5, (secondary[2] + 4 * 222) // 5)
     background = ((primary[0] + 4 * 48) // 5, (primary[1] + 4 * 46) // 5, (primary[2] + 4 * 43) // 5)
+    historyDarkBg = (min(ultraDarkPrimary[0] + 1, 255), min(ultraDarkPrimary[1] + 1, 255), min(ultraDarkPrimary[2] + 1, 255))
+    historyLightBg = (min(historyDarkBg[0] + 4, 255), min(historyDarkBg[1] + 4, 255), min(historyDarkBg[2] + 4, 255))
+    historySelectDarkGrey = (min(historyDarkBg[0] + 34, 255), min(historyDarkBg[1] + 34, 255), min(historyDarkBg[2] + 34, 255))
+    historySelectLightGrey = (min(historySelectDarkGrey[0] + 19, 255), min(historySelectDarkGrey[1] + 19, 255), min(historySelectDarkGrey[2] + 19, 255))
+    historySecondary = (min(historyDarkBg[0] + 106, 255), min(historyDarkBg[1] + 106, 255), min(historyDarkBg[2] + 106, 255))
     
+    #====== end_screen ======#
+    endBoxOutline = (min(background[0] + 12, 255), min(background[1] + 12, 255), min(background[2] + 13, 255))
+    endBoxOutlineTransparent = (min(background[0] + 12, 255), min(background[1] + 12, 255), min(background[2] + 13, 255), 240)
+    endBoxBackground = (max(background[0] - 17, 0), max(background[1] - 15, 0), max(background[2] - 15, 0), 240)
+    titleText = (min(background[0] + 169, 255), min(background[1] + 171, 255), min(background[2] + 174, 255))
+    winConditionText = (min(background[0] + 96, 255), min(background[1] + 96, 255), min(background[2] + 96, 255))
     
-    return {'whiteColor': (255, 255, 255), 'blackColor': (0, 0, 0), 'lightgrey': (200, 200, 200), 'darkgrey': (150, 150, 150), 'primaryColor': primary, 'secondaryColor': secondary, 'primarySelectColor': primarySelect, 'secondarySelectColor': secondarySelect, 'ultraDarkPrimaryColor': ultraDarkPrimary, 'ultraLightSecondaryColor': ultraLightSecondary, 'backgroundColor': background}
+    return {'white': (255, 255, 255),
+            'black': (0, 0, 0),
+            'lightgrey': (200, 200, 200),
+            'darkgrey': (150, 150, 150),
+            'orangeRGBA': (237, 127, 16, 127),
+            'windowDarkTransparency': (0, 0, 0, 128),
+            'primary': primary,
+            'secondary': secondary,
+            'primarySelect': primarySelect,
+            'secondarySelect': secondarySelect,
+            'ultraDarkPrimary': ultraDarkPrimary,
+            'ultraLightSecondary': ultraLightSecondary,
+            'background': background,
+            'historyDarkBg': historyDarkBg,
+            'historyLightBg': historyLightBg,
+            'historySelectDarkGrey': historySelectDarkGrey,
+            'historySelectLightGrey': historySelectLightGrey,
+            'historySecondary': historySecondary}
 
 def writeThemeColors(newColors):
     with open("theme.json", "w", encoding="utf-8") as f:
