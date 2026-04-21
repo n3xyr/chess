@@ -1,12 +1,47 @@
 {
-    "#invisible_entry": {
-        "colours": {
-            "dark_bg": "#00000000",
-            "selected_text": "#FFFFFF",
-            "selected_bg": "#055D0090",
-            "text_cursor": "#00000000",
-            "normal_border": "#00000000"
-        },
-        "border_width": 0
-    }
+    "whiteColor": [
+        255,
+        255,
+        255
+    ],
+    "blackColor": [
+        0,
+        0,
+        0
+    ],
+    "primaryColor": [
+        115,
+        149,
+        82
+    ],
+    "secondaryColor": [
+        235,
+        236,
+        208
+    ],
+    "primarySelectColor": [
+        140,
+        174,
+        107
+    ],
+    "secondarySelectColor": [
+        0,
+        0,
+        0
+    ],
+    "ultraDarkPrimaryColor": [
+        53,
+        58,
+        42
+    ],
+    "ultraLightSecondaryColor": [
+        220,
+        222,
+        219
+    ],
+    "backgroundColor": [
+        61,
+        66,
+        50
+    ]
 }

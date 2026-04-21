@@ -26,6 +26,31 @@ def getMonitorResolution():
         if m.is_primary:
             return m.width, m.height
 
+# Import user settings
+with open("user_settings.json", "r", encoding="utf-8") as f:
+    userSettings = json.load(f)
+
+# Define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+LIGHT = pygame.Color('#'+str(userSettings['secondaryColor']))
+DARK = pygame.Color('#'+str(userSettings['primaryColor']))
+LIGHTSELECT = (202, 203, 179)
+DARKSELECT = (99, 128, 70)
+ULTRADARK = (38, 36, 33)
+ULTRALIGHT = (217, 219, 222)
+BACKGROUND = (48, 46, 43)
+LIGHTGREY = (200, 200, 200)
+DARKGREY = (150, 150, 150)
+
+HISTORICDARKBG = (38, 37, 34)
+HISTORICSELECTGREY = (72, 71, 69)
+HISTORICSELECTLIGHTGREY = (91, 90, 88)
+HISTORICLIGHTBG = (42, 41, 38)
+HISTORICSECONDARY = (144, 146, 140)
+ORANGERGBA = (237, 127, 16, 128)
+
+
 INIT_LEFTMARGIN = 0
 INIT_RIGHTMARGIN = 350
 INIT_TOPMARGIN = 100
@@ -73,8 +98,8 @@ def adjustWindowSize(newWidth, newHeight):
 
     historicSurface = pygame.Surface((3 * TILESIZE, int(654 * SCALE)))
     
-    pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
-    pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+    pygame.draw.circle(darkSurfaceRGBA, DARKSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+    pygame.draw.circle(lightSurfaceRGBA, LIGHTSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
         
     bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
     bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
@@ -147,10 +172,6 @@ def adjustPromoSize():
         img_rect = img.get_rect(center=pos)
         pieces[i]['rect'] = img_rect
 
-# Import user settings
-with open("user_settings.json", "r", encoding="utf-8") as f:
-    userSettings = json.load(f)
-
 SCREENWIDTH, SCREENHEIGHT = getMonitorResolution()
 WIDTH, HEIGHT = LEFTMARGIN + 8 * TILESIZE + RIGHTMARGIN, 8 * TILESIZE + BOTTOMMARGIN + TOPMARGIN
 GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
@@ -191,33 +212,14 @@ nothingness = pygame.image.load("piecesFigurines/nothingness.png")
 
 pygame.display.set_icon(bCastleFigurine)
 
-# Define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-LIGHT = pygame.Color('#'+str(userSettings['secondaryColor']))
-DARK = pygame.Color('#'+str(userSettings['primaryColor']))
-LIGHTSELECT = (202, 203, 179)
-DARKSELECT = (99, 128, 70)
-ULTRADARK = (38, 36, 33)
-ULTRALIGHT = (217, 219, 222)
-BACKGROUND = (48, 46, 43)
-LIGHTGREY = (200, 200, 200)
-DARKGREY = (150, 150, 150)
-HISTORICSELECTGREY = (72, 71, 69)
-HISTORICSELECTLIGHTGREY = (91, 90, 88)
-ORANGERGBA = (237, 127, 16, 128)
-HISTORICLIGHTBG = (42, 41, 38)
-HISTORICDARKBG = (38, 37, 34)
-HISTORICSECONDARY = (144, 146, 140)
-
 # Create a surface with per-pixel alpha
 darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
 lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
 arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
 
 # Draw a semi-transparent circle (RGBA) on canCaptureSurfaceRGBA
-pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
-pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+pygame.draw.circle(darkSurfaceRGBA, DARKSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+pygame.draw.circle(lightSurfaceRGBA, LIGHTSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
 
 # Define text
 pygame.font.init()

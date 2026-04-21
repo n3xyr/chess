@@ -1,5 +1,30 @@
 import math
 import pygame
+import json
+
+def getColorsFromTheme(primary, secondary):
+    # primary select
+    if sum(primary) / 3 >= 128:
+        primarySelect = (min((primary[0] - 25), 0), min((primary[1] - 25), 0), min((primary[2] - 25), 0))
+    else:
+        primarySelect = (max((primary[0] + 25), 0), max((primary[1] + 25), 0), max((primary[2] + 25), 0))
+        
+    # secondary select
+    if sum(secondary) / 3 >= 128:
+        secondarySelect = (min((secondary[0] - 25), 0), min((secondary[1] - 25), 0), min((secondary[2] - 25), 0))
+    else:
+        secondarySelect = (max((secondary[0] + 25), 0), max((secondary[1] + 25), 0), max((secondary[2] + 25), 0))
+        
+    ultraDarkPrimary = ((primary[0] + 4 * 38) // 5, (primary[1] + 4 * 36) // 5, (primary[2] + 4 * 33) // 5)
+    ultraLightSecondary = ((secondary[0] + 4 * 217) // 5, (secondary[1] + 4 * 219) // 5, (secondary[2] + 4 * 222) // 5)
+    background = ((primary[0] + 4 * 48) // 5, (primary[1] + 4 * 46) // 5, (primary[2] + 4 * 43) // 5)
+    
+    
+    return {'whiteColor': (255, 255, 255), 'blackColor': (0, 0, 0), 'lightgrey': (200, 200, 200), 'darkgrey': (150, 150, 150), 'primaryColor': primary, 'secondaryColor': secondary, 'primarySelectColor': primarySelect, 'secondarySelectColor': secondarySelect, 'ultraDarkPrimaryColor': ultraDarkPrimary, 'ultraLightSecondaryColor': ultraLightSecondary, 'backgroundColor': background}
+
+def writeThemeColors(newColors):
+    with open("theme.json", "w", encoding="utf-8") as f:
+        json.dump(newColors, f, indent=4, ensure_ascii=False)
 
 def displayAssistantConstructor(tileSize, topMargin, leftMargin, lightSelect, darkSelect):
     global TILESIZE, LIGHTSELECT, LEFTMARGIN, TOPMARGIN, DARKSELECT
