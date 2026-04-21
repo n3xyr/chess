@@ -25,30 +25,78 @@ def getMonitorResolution():
     for m in get_monitors():
         if m.is_primary:
             return m.width, m.height
-
-# Import user settings
-with open("user_settings.json", "r", encoding="utf-8") as f:
-    userSettings = json.load(f)
-
+    
+# Import theme
+with open("theme.json", "r", encoding="utf-8") as t:
+    theme = json.load(t)
+    
 # Define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-LIGHT = pygame.Color('#'+str(userSettings['secondaryColor']))
-DARK = pygame.Color('#'+str(userSettings['primaryColor']))
-LIGHTSELECT = (202, 203, 179)
-DARKSELECT = (99, 128, 70)
-ULTRADARK = (38, 36, 33)
-ULTRALIGHT = (217, 219, 222)
-BACKGROUND = (48, 46, 43)
-LIGHTGREY = (200, 200, 200)
-DARKGREY = (150, 150, 150)
-HISTORICDARKBG = (38, 37, 34)
-HISTORICSELECTGREY = (72, 71, 69)
-HISTORICSELECTLIGHTGREY = (91, 90, 88)
-HISTORICLIGHTBG = (42, 41, 38)
-HISTORICSECONDARY = (144, 146, 140)
-ORANGERGBA = (237, 127, 16, 128)
+WHITE = theme['white']
+BLACK = theme['black']
+DARK = theme['primary']
+LIGHT = theme['secondary']
+DARKSELECT = theme['primarySelect']
+LIGHTSELECT = theme['secondarySelect']
+ULTRADARK = theme['ultraDarkPrimary']
+ULTRALIGHT = theme['ultraLightSecondary']
+BACKGROUND = theme['background']
+LIGHTGREY = theme['lightgrey']
+DARKGREY = theme['darkgrey']
+HISTORICDARKBG = theme['historyDarkBg']
+HISTORICLIGHTBG = theme['historyLightBg']
+HISTORICSELECTGREY = theme['historySelectDarkGrey']
+HISTORICSELECTLIGHTGREY = theme['historySelectLightGrey']
+HISTORICSECONDARY = theme['historySecondary']
+ORANGERGBA = theme['orangeRGBA']
+GREENBUTTONBACKGROUND = theme['mainButtonSecondary']
+GREENBUTTONOUTLINE = theme['mainButtonPrimary']
+GREENBUTTONTEXT = theme['mainButtonPrimary']
 
+def importThemeColors():
+    global WHITE, BLACK, DARK, LIGHT, DARKSELECT, LIGHTSELECT, ULTRADARK, ULTRALIGHT, BACKGROUND, LIGHTGREY, DARKGREY, HISTORICDARKBG, HISTORICLIGHTBG, HISTORICSELECTGREY, HISTORICSELECTLIGHTGREY, HISTORICSECONDARY, ORANGERGBA
+    
+    # Import theme
+    with open("theme.json", "r", encoding="utf-8") as t:
+        theme = json.load(t)
+        
+    # Define colors
+    WHITE = theme['white']
+    BLACK = theme['black']
+    DARK = theme['primary']
+    LIGHT = theme['secondary']
+    DARKSELECT = theme['primarySelect']
+    LIGHTSELECT = theme['secondarySelect']
+    ULTRADARK = theme['ultraDarkPrimary']
+    ULTRALIGHT = theme['ultraLightSecondary']
+    BACKGROUND = theme['background']
+    LIGHTGREY = theme['lightgrey']
+    DARKGREY = theme['darkgrey']
+    HISTORICDARKBG = theme['historyDarkBg']
+    HISTORICLIGHTBG = theme['historyLightBg']
+    HISTORICSELECTGREY = theme['historySelectDarkGrey']
+    HISTORICSELECTLIGHTGREY = theme['historySelectLightGrey']
+    HISTORICSECONDARY = theme['historySecondary']
+    ORANGERGBA = theme['orangeRGBA']
+    GREENBUTTONBACKGROUND = theme['mainButtonSecondary']
+    GREENBUTTONOUTLINE = theme['mainButtonPrimary']
+    GREENBUTTONTEXT = theme['mainButtonPrimary']
+
+
+def rebuildThemeAssets():
+    global darkSurfaceRGBA, lightSurfaceRGBA, arrowSurfaceRGBA
+
+    importThemeColors()
+    darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+    lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+    arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
+
+    pygame.draw.circle(darkSurfaceRGBA, DARKSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+    pygame.draw.circle(lightSurfaceRGBA, LIGHTSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+
+    try:
+        display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
+    except Exception:
+        pass
 
 INIT_LEFTMARGIN = 0
 INIT_RIGHTMARGIN = 350
@@ -618,6 +666,7 @@ def drawArrowButtons():
                         
 def main(clockTime, clockIncrement):
     global displayedBoard, chessClock, historicScroll, moveList
+    importThemeColors()
     adjustPromoSize()
     adjustWindowSize(WIDTH, HEIGHT)
     end_screen.REPLAY = False
@@ -666,7 +715,7 @@ def main(clockTime, clockIncrement):
         drawArrowButtons()
 
         if end_screen.viewingGame:
-            end_screen.inGameMainMenuButton.draw(GAME, (2, 84, 45, 255), (20, 174, 92, 255), (20, 174, 92, 255))
+            end_screen.inGameMainMenuButton.draw(GAME, GREENBUTTONBACKGROUND, GREENBUTTONOUTLINE, GREENBUTTONTEXT)
 
         if potentialWinner is None:
             potentialWinner = hasSomeoneWon(chessClock)

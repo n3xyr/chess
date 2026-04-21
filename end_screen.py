@@ -1,21 +1,45 @@
 import pygame
 import subprocess
+import json
 
-WINDOWDARKTRANSPARENCY = (0, 0, 0, 128)
-ENDBOXOUTLINE = (60, 58, 56, 255)
-ENDBOXOUTLINETRANSPARENT = (60, 58, 56, 240)
-ENDBOXBACKGROUND = (31, 31, 28, 240)
-TITLETEXT = (217, 217, 217, 255)
+# Import theme
+with open("theme.json", "r", encoding="utf-8") as t:
+    theme = json.load(t)
 
-WINCONDITIONTEXTCOLOR = (144, 142, 140, 255)
+WINDOWDARKTRANSPARENCY = theme['windowDarkTransparency']
+ENDBOXOUTLINE = theme['endBoxOutline']
+ENDBOXOUTLINETRANSPARENT = theme['endBoxOutlineTransparent']
+ENDBOXBACKGROUND = theme['endBoxBackground']
+TITLETEXT = theme['titleText']
+WINCONDITIONTEXTCOLOR = theme['winConditionText']
+CROSSCOLOR = theme['cross']
+GREENBUTTONBACKGROUND = theme['mainButtonSecondary']
+GREENBUTTONOUTLINE = theme['mainButtonPrimary']
+GREENBUTTONTEXT = theme['mainButtonPrimary']
+NORMALBUTTONOUTLINE = theme['normalButtonPrimary']
+NORMALBUTTONBACKGROUND =  theme['normalButtonSecondary']
+NORMALBUTTONTEXT = theme['normalButtonPrimary']
 
-CROSSCOLOR = WINCONDITIONTEXTCOLOR
-GREENBUTTONBACKGROUND = (2, 84, 45, 255)
-GREENBUTTONOUTLINE = (20, 174, 92, 255)
-GREENBUTTONTEXT = GREENBUTTONOUTLINE
-NORMALBUTTONOUTLINE = (94, 93, 91, 255)
-NORMALBUTTONBACKGROUND = (48, 46, 43, 255)
-NORMALBUTTONTEXT = NORMALBUTTONOUTLINE
+def importThemeColors():
+    global WINDOWDARKTRANSPARENCY, ENDBOXOUTLINE, ENDBOXOUTLINETRANSPARENT, ENDBOXBACKGROUND, TITLETEXT, WINCONDITIONTEXTCOLOR, CROSSCOLOR, GREENBUTTONBACKGROUND, GREENBUTTONOUTLINE, GREENBUTTONTEXT, NORMALBUTTONOUTLINE, NORMALBUTTONBACKGROUND, NORMALBUTTONTEXT
+    # Import theme
+    with open("theme.json", "r", encoding="utf-8") as t:
+        theme = json.load(t)
+    
+    WINDOWDARKTRANSPARENCY = theme['windowDarkTransparency']
+    ENDBOXOUTLINE = theme['endBoxOutline']
+    ENDBOXOUTLINETRANSPARENT = theme['endBoxOutlineTransparent']
+    ENDBOXBACKGROUND = theme['endBoxBackground']
+    TITLETEXT = theme['titleText']
+    WINCONDITIONTEXTCOLOR = theme['winConditionText']
+    CROSSCOLOR = theme['cross']
+    GREENBUTTONBACKGROUND = theme['mainButtonSecondary']
+    GREENBUTTONOUTLINE = theme['mainButtonPrimary']
+    GREENBUTTONTEXT = theme['mainButtonPrimary']
+    NORMALBUTTONOUTLINE = theme['normalButtonPrimary']
+    NORMALBUTTONBACKGROUND =  theme['normalButtonSecondary']
+    NORMALBUTTONTEXT = theme['normalButtonPrimary']
+            
 
 REPLAY = False
 showEndScreen = True
@@ -68,6 +92,7 @@ class EndScreen:
         self.revengeButton.handle_event(event)
 
     def draw(self, surface, scale, tileSize):
+        importThemeColors()
         width, height = surface.get_size()
         BORDER_WIDTH = max(1, width // 600)
         ENDBOX_BORDER_RADIUS = int(25 * scale)

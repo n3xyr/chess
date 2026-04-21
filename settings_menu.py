@@ -4,20 +4,60 @@ import globals
 import builtins
 import json
 
-fullTransparencyColor = (0, 0, 0, 0)
-settingsContainerBorderColor = (152, 152, 152, 100)
-settingsContainerBoxColor = (10, 10, 10, 100)
-categoryBodyBackgroundColor = (38, 37, 34, 255)
-categoryTitleColor = (218, 218, 218, 255)
-categoryHeaderColor = (53, 51, 46, 255)
-accentColor = (115, 149, 82, 255)
-subCatTitleTextColor = (150, 150, 150, 255)
-subCatLineColor = (94, 93, 91, 255)
-primaryColor = (115, 149, 82, 255)
-secondaryColor = (235, 236, 208, 255)
-switchCircleColor = (217, 217, 217, 255)
-arrowBackgroundColor = (73, 70, 64, 255)
-arrowColor = (157, 157, 157, 255)
+# Import theme
+with open("theme.json", "r", encoding="utf-8") as t:
+    theme = json.load(t)
+
+fullTransparencyColor = theme['fullTransparency']
+settingsContainerBorderColor = theme['settingsContainerBorder']
+settingsContainerBoxColor = theme['settingsContainerBox']
+categoryBodyBackgroundColor = theme['categoryBodyBackground']
+categoryTitleColor = theme['categoryTitle']
+categoryHeaderColor = theme['categoryHeader']
+accentColor = theme['accent']
+subCatTitleTextColor = theme['subCatTitleText']
+subCatLineColor = theme['subCatLine']
+primaryColor = theme['primary']
+secondaryColor = theme['secondary']
+switchCircleColor = theme['switchCircle']
+arrowBackgroundColor = theme['arrowBackground']
+arrowColor = theme['arrow']
+
+def importThemeColors():
+    global fullTransparencyColor, settingsContainerBorderColor, settingsContainerBoxColor, categoryBodyBackgroundColor, categoryTitleColor, categoryHeaderColor, accentColor, subCatTitleTextColor, subCatLineColor, primaryColor, secondaryColor, switchCircleColor, arrowBackgroundColor, arrowColor
+    
+    # Import theme
+    with open("theme.json", "r", encoding="utf-8") as t:
+        theme = json.load(t)
+        
+    fullTransparencyColor = theme['fullTransparency']
+    settingsContainerBorderColor = theme['settingsContainerBorder']
+    settingsContainerBoxColor = theme['settingsContainerBox']
+    categoryBodyBackgroundColor = theme['categoryBodyBackground']
+    categoryTitleColor = theme['categoryTitle']
+    categoryHeaderColor = theme['categoryHeader']
+    accentColor = theme['accent']
+    subCatTitleTextColor = theme['subCatTitleText']
+    subCatLineColor = theme['subCatLine']
+    primaryColor = theme['primary']
+    secondaryColor = theme['secondary']
+    switchCircleColor = theme['switchCircle']
+    arrowBackgroundColor = theme['arrowBackground']
+    arrowColor = theme['arrow']
+
+    g = builtins.globals()
+    try:
+        if 'primaryColorEntry' in g:
+            primaryColorEntry.accentColor = accentColor
+            primaryColorEntry.defaultTextContent = userSettings.get('primaryColor', primaryColorEntry.defaultTextContent)
+    except Exception:
+        pass
+    try:
+        if 'secondaryColorEntry' in g:
+            secondaryColorEntry.accentColor = accentColor
+            secondaryColorEntry.defaultTextContent = userSettings.get('secondaryColor', secondaryColorEntry.defaultTextContent)
+    except Exception:
+        pass
 
 originalImages = {}
 scaledImages = {}
@@ -44,24 +84,28 @@ def drawMainContainer(SCALE, settingsSurface, BORDER_WIDTH):
     settingsContainer.drawBox(settingsSurface)
     
 def drawTitle(SCALE, settingsSurface, BORDER_WIDTH):
+    importThemeColors()
     titleContainer = style_elements.Container(int(100 * SCALE), int(246 * SCALE), int(156 * SCALE), int(60 * SCALE), categoryBodyBackgroundColor, categoryBodyBackgroundColor, int(10 * SCALE), int(10 * SCALE), int(10 * SCALE), int(10 * SCALE), BORDER_WIDTH, SCALE)
     titleContainer.drawBox(settingsSurface)
     titleContainer.drawText(settingsSurface, int(128 * SCALE), int(266 * SCALE - int(6 * SCALE)), int(27 * SCALE), "Settings", categoryTitleColor)
 
 def drawClose(SCALE, settingsSurface, HEIGHT):
     global closeButton
+    importThemeColors()
     closeButton = style_elements.Button(int(640 * SCALE), int(246 * SCALE), int(60 * SCALE), int(60 * SCALE), "", lambda: showSettingsFunc(False), 0, int(10 * SCALE), SCALE, HEIGHT, 0)
     closeButton.draw(settingsSurface, categoryBodyBackgroundColor, fullTransparencyColor, fullTransparencyColor)
     pygame.draw.aaline(settingsSurface, categoryTitleColor, (int(659 * SCALE), int(264 * SCALE)), (int(680 * SCALE), int(285 * SCALE)))
     pygame.draw.aaline(settingsSurface, categoryTitleColor, (int(680 * SCALE), int(264 * SCALE)), (int(659 * SCALE), int(285 * SCALE)))
     
 def drawAppearanceCatHeader(SCALE, settingsSurface):
+    importThemeColors()
     appearanceCatHeader = style_elements.Container(int(100 * SCALE), int(326 * SCALE), int(600 * SCALE), int(50 * SCALE), fullTransparencyColor, categoryHeaderColor, int(10 * SCALE), int(10 * SCALE), 0, 0, 0, SCALE)
     appearanceCatHeader.drawBox(settingsSurface)
     appearanceCatHeader.drawAccent(settingsSurface, int(11 * SCALE), int(50 * SCALE), accentColor)
     appearanceCatHeader.drawText(settingsSurface, int(131 * SCALE), int(341 * SCALE - int(6 * SCALE)), int(25 * SCALE), "Appearance", categoryTitleColor)
     
 def drawAppearanceCatBody(SCALE, settingsSurface):
+    importThemeColors()
     appearanceCatBody = style_elements.Container(int(100 * SCALE), int(376 * SCALE), int(600 * SCALE), int(179 * SCALE), fullTransparencyColor, categoryBodyBackgroundColor, 0, 0, int(10 * SCALE), int(10 * SCALE), 0, SCALE)
     appearanceCatBody.drawBox(settingsSurface)
     appearanceCatBody.drawText(settingsSurface, int(120 * SCALE), int(396 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Primary color", subCatTitleTextColor)
@@ -72,6 +116,7 @@ def drawAppearanceCatBody(SCALE, settingsSurface):
     drawExampleBoard(SCALE, settingsSurface)
         
 def drawExampleBoard(SCALE, settingsSurface):
+    importThemeColors()
     squareSize = int(50 * SCALE)
     pygame.draw.rect(settingsSurface, secondaryColor, (int(443 * SCALE), int(391 * SCALE), squareSize, squareSize), border_top_left_radius=int(10 * SCALE))
     pygame.draw.rect(settingsSurface, secondaryColor, (int(443 * SCALE), int(491 * SCALE), squareSize, squareSize), border_bottom_left_radius=int(10 * SCALE))
@@ -114,6 +159,7 @@ def drawExampleBoard(SCALE, settingsSurface):
 
 def drawPrimaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH):
     global primaryColorEntry
+    importThemeColors()
     primaryHexPossibleCaracters = [
         pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
         pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9,
@@ -144,6 +190,7 @@ def drawPrimaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH):
 
 def drawSecondaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH):
     global secondaryColorEntry
+    importThemeColors()
     secondaryHexPossibleCaracters = [
         pygame.K_0, pygame.K_1, pygame.K_2, pygame.K_3, pygame.K_4,
         pygame.K_5, pygame.K_6, pygame.K_7, pygame.K_8, pygame.K_9,
@@ -174,6 +221,7 @@ def drawSecondaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH):
 
 def drawPieceChoiceDropdown(SCALE, settingsSurface, BORDER_WIDTH):
     global pieceChoiceDropdown
+    importThemeColors()
     
     currentSelectedOption = userSettings['pieceChoice']
     
@@ -194,12 +242,14 @@ def drawPieceChoiceDropdown(SCALE, settingsSurface, BORDER_WIDTH):
         pieceChoiceDropdown.drawText(settingsSurface, categoryTitleColor, int(15 * SCALE))
     
 def drawGameplayCatHeader(SCALE, settingsSurface):
+    importThemeColors()
     gameplayCatHeader = style_elements.Container(int(100 * SCALE), int(584 * SCALE), int(600 * SCALE), int(50 * SCALE), fullTransparencyColor, categoryHeaderColor, int(10 * SCALE), int(10 * SCALE), 0, 0, 0, SCALE)
     gameplayCatHeader.drawBox(settingsSurface)
     gameplayCatHeader.drawAccent(settingsSurface, int(11 * SCALE), int(50 * SCALE), accentColor)
     gameplayCatHeader.drawText(settingsSurface, int(131 * SCALE), int(599 * SCALE - int(6 * SCALE)), int(25 * SCALE), "Gameplay", categoryTitleColor)
    
 def drawGameplayCatBody(SCALE, settingsSurface):
+    importThemeColors()
     gameplayCatBody = style_elements.Container(int(100 * SCALE), int(634 * SCALE), int(600 * SCALE), int(120 * SCALE), fullTransparencyColor, categoryBodyBackgroundColor, 0, 0, int(10 * SCALE), int(10 * SCALE), 0, SCALE)
     gameplayCatBody.drawBox(settingsSurface)
     gameplayCatBody.drawText(settingsSurface, int(120 * SCALE), int(654 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Show possible moves", subCatTitleTextColor)
@@ -207,6 +257,7 @@ def drawGameplayCatBody(SCALE, settingsSurface):
     gameplayCatBody.drawText(settingsSurface, int(120 * SCALE), int(714 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Disable sounds", subCatTitleTextColor)
     
 def drawShowPossibleMovesSwitch(SCALE, settingsSurface):
+    importThemeColors()
     global showPossibleMovesSwitch
     if userSettings['showPossibleMoves']:
         isActivatedBool = True
@@ -217,6 +268,7 @@ def drawShowPossibleMovesSwitch(SCALE, settingsSurface):
     showPossibleMovesSwitch.drawSwitch(settingsSurface)
     
 def drawDisableSoundsSwitch(SCALE, settingsSurface):
+    importThemeColors()
     global disableSoundsSwitch
     if userSettings['disableSounds']:
         isActivatedBool = True
@@ -230,6 +282,7 @@ def RGBToHex(RGBCode):
     return hexValue[:6]
     
 def showSettings(SCALE, screen):
+    importThemeColors()
     width = screen.get_width()
     height = screen.get_height()
     settingsSurface = pygame.Surface((width, height), pygame.SRCALPHA)

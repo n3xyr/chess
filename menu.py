@@ -2,9 +2,11 @@ import pygame
 from screeninfo import get_monitors
 import webbrowser
 import display_board
+import display_assistant
 import time
 import globals
 import settings_menu
+import end_screen
 import json
 
 def getMonitorResolution():
@@ -96,17 +98,38 @@ def resizeWindow():
     BUTTON_INDIC += 1
     buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: showSettingsFunc(True), 22)
 
+# Import theme
+with open("theme.json", "r", encoding="utf-8") as t:
+    theme = json.load(t)
 
-PANEL_BG = (31, 31, 28, 192)
-BORDER = pygame.Color("#5E5D5B")
-DARKGREEN = pygame.Color("#02542D")
-GREEN = pygame.Color("#14AE5C")
-BUTTON_BG = (50, 50, 50)
-BUTTON_TEXT = (150, 150, 150)
-TEXTBOX_BG = pygame.Color("#211f1d")
-TEXTBOX_TEXT = (94, 93, 91)
-TEXTBOX_LINE = (94, 93, 91, 102)
-LINK_COLOR = pygame.Color("#C6C6C6")
+PANEL_BG = theme['panelBg']
+BORDER = theme['border']
+DARKGREEN = theme['mainButtonPrimary']
+GREEN = theme['mainButtonSecondary']
+BUTTON_BG = theme['buttonBg']
+BUTTON_TEXT = theme['buttonText']
+TEXTBOX_BG = theme['textboxBg']
+TEXTBOX_TEXT = theme['textboxText']
+TEXTBOX_LINE = theme['textboxTextLine']
+LINK_COLOR = theme['link']
+
+def importThemeColors():
+    global PANEL_BG, BORDER, DARKGREEN, GREEN, BUTTON_BG, BUTTON_TEXT, TEXTBOX_BG, TEXTBOX_TEXT, TEXTBOX_LINE, LINK_COLOR
+    
+    # Import theme
+    with open("theme.json", "r", encoding="utf-8") as t:
+        theme = json.load(t)
+        
+    PANEL_BG = theme['panelBg']
+    BORDER = theme['border']
+    DARKGREEN = theme['mainButtonPrimary']
+    GREEN = theme['mainButtonSecondary']
+    BUTTON_BG = theme['buttonBg']
+    BUTTON_TEXT = theme['buttonText']
+    TEXTBOX_BG = theme['textboxBg']
+    TEXTBOX_TEXT = theme['textboxText']
+    TEXTBOX_LINE = theme['textboxTextLine']
+    LINK_COLOR = theme['link']
 
 
 class Button:
@@ -250,14 +273,22 @@ def readWriteUserSettings(currentLineName, newLineState):
         json.dump(userSettings, f, indent=4, ensure_ascii=False)
         
 def hexToRGB(hexCode):
-    return (int(hexCode[:2], 16), int(hexCode[2:4], 16), int(hexCode[4:], 16), 255)
+    return (int(hexCode[:2], 16), int(hexCode[2:4], 16), int(hexCode[4:6], 16), 255)
 
+def refreshTheme():
+    display_assistant.writeThemeColors(display_assistant.getColorsFromTheme(hexToRGB(settings_menu.userSettings["primaryColor"]), hexToRGB(settings_menu.userSettings["secondaryColor"])))
+    importThemeColors()
+    settings_menu.importThemeColors()
+    display_board.rebuildThemeAssets()
+    end_screen.importThemeColors()
 
 def main():
     global SCALE, screen
+    importThemeColors()
+    display_assistant.writeThemeColors(display_assistant.getColorsFromTheme(hexToRGB(settings_menu.userSettings["primaryColor"]), hexToRGB(settings_menu.userSettings["secondaryColor"])))
     clock.tick(60)
     running = True
-
+    
     while running:
         screen.blit(background, (0, 0))
         pygame.draw.rect(menuRGBA, BORDER, (0, int(80 * SCALE), menuX, menuY), border_radius=BORDER_RADIUS)
@@ -359,20 +390,28 @@ def main():
                     settings_menu.showPossibleMovesSwitch.handleEvent(event)
                     globals.showPossibleMovesSwitchState = settings_menu.showPossibleMovesSwitch.isActivated
                     readWriteUserSettings("showPossibleMoves", str(settings_menu.showPossibleMovesSwitch.isActivated))
+                    settings_menu.userSettings["showPossibleMoves"] = settings_menu.showPossibleMovesSwitch.isActivated
                     
                     settings_menu.disableSoundsSwitch.handleEvent(event)
                     globals.disableSoundsSwitchState = settings_menu.disableSoundsSwitch.isActivated
                     readWriteUserSettings("disableSounds", str(settings_menu.disableSoundsSwitch.isActivated))
+                    settings_menu.userSettings["disableSounds"] = settings_menu.disableSoundsSwitch.isActivated
                     
                     settings_menu.pieceChoiceDropdown.handleEvent(event)
                 
                 settings_menu.primaryColorEntry.handleEvent(event)
                 if hasattr(settings_menu.primaryColorEntry, "definitveText"):
                     readWriteUserSettings("primaryColor", settings_menu.primaryColorEntry.definitveText)
-                
+                    settings_menu.userSettings["primaryColor"] = settings_menu.primaryColorEntry.definitveText
+                    settings_menu.primaryColorEntry.defaultTextContent = settings_menu.primaryColorEntry.definitveText
+                    refreshTheme()
+                    
                 settings_menu.secondaryColorEntry.handleEvent(event) 
                 if hasattr(settings_menu.secondaryColorEntry, "definitveText"):
                     readWriteUserSettings("secondaryColor", settings_menu.secondaryColorEntry.definitveText)
+                    settings_menu.userSettings["secondaryColor"] = settings_menu.secondaryColorEntry.definitveText
+                    settings_menu.secondaryColorEntry.defaultTextContent = settings_menu.secondaryColorEntry.definitveText
+                    refreshTheme()
                     
         pygame.display.flip()
 

@@ -1,47 +1,255 @@
 {
-    "whiteColor": [
+    "white": [
         255,
         255,
         255
     ],
-    "blackColor": [
+    "black": [
         0,
         0,
         0
     ],
-    "primaryColor": [
-        115,
-        149,
-        82
+    "lightgrey": [
+        200,
+        200,
+        200
     ],
-    "secondaryColor": [
-        235,
-        236,
-        208
+    "darkgrey": [
+        150,
+        150,
+        150
     ],
-    "primarySelectColor": [
-        140,
-        174,
-        107
+    "orangeRGBA": [
+        237,
+        127,
+        16,
+        127
     ],
-    "secondarySelectColor": [
+    "windowDarkTransparency": [
         0,
         0,
-        0
+        0,
+        128
     ],
-    "ultraDarkPrimaryColor": [
+    "primary": [
+        41,
+        135,
+        49,
+        255
+    ],
+    "secondary": [
+        145,
+        35,
+        118,
+        255
+    ],
+    "primarySelect": [
+        110,
+        199,
+        118
+    ],
+    "secondarySelect": [
+        209,
+        103,
+        183
+    ],
+    "ultraDarkPrimary": [
+        38,
+        48,
+        35
+    ],
+    "ultraLightSecondary": [
+        208,
+        196,
+        209
+    ],
+    "background": [
+        47,
+        57,
+        43
+    ],
+    "historyDarkBg": [
+        39,
+        49,
+        36
+    ],
+    "historyLightBg": [
+        43,
         53,
-        58,
-        42
+        40
     ],
-    "ultraLightSecondaryColor": [
-        220,
-        222,
-        219
+    "historySelectDarkGrey": [
+        73,
+        83,
+        70
     ],
-    "backgroundColor": [
+    "historySelectLightGrey": [
+        92,
+        102,
+        89
+    ],
+    "historySecondary": [
+        145,
+        155,
+        142
+    ],
+    "endBoxOutline": [
+        59,
+        69,
+        56
+    ],
+    "endBoxOutlineTransparent": [
+        59,
+        69,
+        56,
+        240
+    ],
+    "endBoxBackground": [
+        30,
+        42,
+        28,
+        240
+    ],
+    "titleText": [
+        216,
+        228,
+        217
+    ],
+    "winConditionText": [
+        143,
+        153,
+        139
+    ],
+    "cross": [
+        143,
+        153,
+        139
+    ],
+    "mainButtonSecondary": [
+        0,
+        62,
+        69
+    ],
+    "mainButtonPrimary": [
+        0,
+        152,
+        160
+    ],
+    "normalButtonPrimary": [
+        93,
+        104,
+        91
+    ],
+    "normalButtonSecondary": [
+        47,
+        57,
+        43
+    ],
+    "panelBg": [
+        30,
+        42,
+        28,
+        240
+    ],
+    "border": [
+        93,
+        104,
+        91
+    ],
+    "buttonBg": [
+        49,
         61,
-        66,
         50
+    ],
+    "buttonText": [
+        149,
+        161,
+        150
+    ],
+    "textboxBg": [
+        32,
+        42,
+        29,
+        240
+    ],
+    "textboxText": [
+        93,
+        104,
+        91
+    ],
+    "textboxTextLine": [
+        93,
+        104,
+        91,
+        102
+    ],
+    "link": [
+        197,
+        209,
+        198
+    ],
+    "fullTransparency": [
+        0,
+        0,
+        0,
+        0
+    ],
+    "settingsContainerBorder": [
+        151,
+        163,
+        152,
+        100
+    ],
+    "settingsContainerBox": [
+        9,
+        21,
+        10,
+        100
+    ],
+    "categoryBodyBackground": [
+        37,
+        48,
+        34
+    ],
+    "categoryTitle": [
+        217,
+        229,
+        218
+    ],
+    "categoryHeader": [
+        52,
+        62,
+        46
+    ],
+    "accent": [
+        41,
+        135,
+        49,
+        255
+    ],
+    "subCatTitleText": [
+        149,
+        161,
+        150
+    ],
+    "subCatLine": [
+        93,
+        104,
+        91
+    ],
+    "switchCircle": [
+        216,
+        228,
+        217
+    ],
+    "arrowBackground": [
+        72,
+        81,
+        64
+    ],
+    "arrow": [
+        176,
+        188,
+        177
     ]
 }

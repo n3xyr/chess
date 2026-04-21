@@ -1,3 +1,5 @@
+import json
+
 pieceHasMoved = False
 showSettings = False
 settingsButtonsDrawn = False
@@ -13,3 +15,8 @@ def getSettingsOriginalValues():
     "disableSounds" : False
     }
     return settingsOriginalValues
+
+def readTheme():
+    with open("theme.json", "r", encoding="utf-8") as f:
+        theme = json.load(f)
+    return theme

@@ -85,6 +85,7 @@ class Switch:
         if self.rect.collidepoint((event.pos[0], event.pos[1])):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
         if event.type == pygame.MOUSEBUTTONDOWN and self.rect.collidepoint((event.pos[0], event.pos[1])):
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)
             self.isActivated = not self.isActivated
                 
 class EntryBox:
@@ -179,7 +180,8 @@ class DropdownBox:
             pygame.draw.rect(surface, boxColor, (self.rect.x + borderWidth, self.rect.y + borderWidth, self.rect.w - borderWidth * 2, self.rect.h + int((5 + len(self.options) * 16) * self.scale) - borderWidth * 2), border_radius=borderRadius) 
             self.drawOptions(surface, optionTextColor, optionTextSize, arrowBackgroundColor, borderWidth, borderRadius)
         else:
-            pygame.draw.rect(surface, borderColor, (self.rect.x, self.rect.y, self.rect.w, self.rect.h), border_radius=borderRadius)
+            if borderWidth and borderWidth > 0:
+                pygame.draw.rect(surface, borderColor, (self.rect.x, self.rect.y, self.rect.w, self.rect.h), width=borderWidth, border_radius=borderRadius)
             pygame.draw.rect(surface, boxColor, (self.rect.x + borderWidth, self.rect.y + borderWidth, self.rect.w - borderWidth * 2, self.rect.h - borderWidth * 2), border_radius=borderRadius)
             self.drawArrowBackground(surface, int(340 * self.scale), int(513 * self.scale), int(26 * self.scale), int(26 * self.scale), arrowBackgroundColor, 0, int(10 * self.scale), 0, int(10 * self.scale))
             self.drawArrow(surface, int(347 * self.scale), int(522 * self.scale), arrowColor)
