@@ -28,44 +28,41 @@ class board:
         '''
         Fills an empty board with pieces.
         '''
-        for i in range(8):                                            # black pawns
+        for i in range(8):
             self.matrix[1][i] = pieces.pawn(1, i, 'black')
-        for i in range(8):                                            # white pawns
+        for i in range(8):
             self.matrix[6][i] = pieces.pawn(6, i, 'white')
 
-        for i in [0, 7]:                                              # black rooks
+        for i in [0, 7]:
             self.matrix[0][i] = pieces.rook(0, i, 'black')
-        for i in [0, 7]:                                              # white rooks
+        for i in [0, 7]:
             self.matrix[7][i] = pieces.rook(7, i, 'white')
 
-        for i in [1, 6]:                                              # black knights
+        for i in [1, 6]:
             self.matrix[0][i] = pieces.knight(0, i, 'black')
-        for i in [1, 6]:                                              # white knights
+        for i in [1, 6]:
             self.matrix[7][i] = pieces.knight(7, i, 'white')
 
-        for i in [2, 5]:                                              # black bishops
+        for i in [2, 5]:
             self.matrix[0][i] = pieces.bishop(0, i, 'black')
-        for i in [2, 5]:                                              # white bishops
+        for i in [2, 5]:
             self.matrix[7][i] = pieces.bishop(7, i, 'white')
 
         self.bq = pieces.queen(0, 3, 'black')  
         self.wq = pieces.queen(7, 3, 'white')  
-        self.matrix[0][3] = self.bq                                   # black queen
-        self.matrix[7][3] = self.wq                                   # white queen
+        self.matrix[0][3] = self.bq
+        self.matrix[7][3] = self.wq
 
         self.bk = pieces.king(0, 4, 'black')
         self.wk = pieces.king(7, 4, 'white')
-        self.matrix[0][4] = self.bk                                   # black king
-        self.matrix[7][4] = self.wk                                   # white king
+        self.matrix[0][4] = self.bk
+        self.matrix[7][4] = self.wk
         
-        self.boardHistoric = [copy.deepcopy(self.matrix)]  # Initial historic state
+        self.boardHistoric = [copy.deepcopy(self.matrix)] # initial historic state
         self.historicIndic = len(self.boardHistoric) - 1
 
 
     def getPieces(self, color):
-        """
-        Returns a list of pieces of the specified color.
-        """
         piecesList = []
         for i in range(8):
             for j in range(8):
@@ -93,13 +90,15 @@ class board:
     def getActTypes(self, piece, y, x):
         result = ''
 
-        if piece.getColor() == 'white':
-            king = self.wk
-        else:
-            king =  self.bk
-
         if self.nextMoveGivesCheck(piece, y, x):
-            if self.checkMate(king):
+            simulatedBoard = self.createSimulatedBoard()
+            simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
+            simulatedBoard.simulateMovePiece(simPiece, y, x)
+            if piece.getColor() == 'white':
+                simKing = simulatedBoard.bk
+            else:
+                simKing = simulatedBoard.wk
+            if simulatedBoard.checkMate(simKing):
                 result += '#,'
             else:
                 result += '+,'
@@ -141,7 +140,6 @@ class board:
                                 elif matrixPiece.getCoordY() != piece.getCoordY():
                                     resultMove += str(8 - piece.getCoordY())
 
-
         if 'x' in actList:
             resultMove += 'x'
 
@@ -173,12 +171,13 @@ class board:
 
     
     def playSound(self, act):
-        if 'x' in act:
-            eatSound.play()
-        elif 'O-O' in act or 'O-O-O' in act:
-            castleSound.play()
-        else:
-            moveSound.play()
+        if globals.readUserSettings()['playSounds'] == 'True':
+            if 'x' in act:
+                eatSound.play()
+            elif 'O-O' in act or 'O-O-O' in act:
+                castleSound.play()
+            else:
+                moveSound.play()
 
 
     def addSoundToHistoric(self, act):
@@ -268,16 +267,16 @@ class board:
             piece.setCoordX(x)
 
     def nextMoveGivesCheck(self, piece, y, x):
-            simulatedBoard = self.createSimulatedBoard()
-            simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
-            simulatedBoard.simulateMovePiece(simPiece, y, x)
+        simulatedBoard = self.createSimulatedBoard()
+        simPiece = simulatedBoard.matrix[piece.getCoordY()][piece.getCoordX()]
+        simulatedBoard.simulateMovePiece(simPiece, y, x)
 
-            if piece.getColor() == 'white':
-                simKing = simulatedBoard.bk
-            else:
-                simKing =  simulatedBoard.wk
+        if piece.getColor() == 'white':
+            simKing = simulatedBoard.bk
+        else:
+            simKing = simulatedBoard.wk
 
-            return simKing.isChecked(simulatedBoard, checkNext=False)
+        return simKing.isChecked(simulatedBoard, checkNext=False)
 
     def nextMoveIsCheck(self, piece, y, x):
         simulatedBoard = self.createSimulatedBoard()
@@ -287,42 +286,32 @@ class board:
         if piece.getColor() == 'white':
             simKing = simulatedBoard.wk
         else:
-            simKing =  simulatedBoard.bk
+            simKing = simulatedBoard.bk
 
         return simKing.isChecked(simulatedBoard, checkNext=False)
     
     def checkMate(self, king):
         if king.isChecked(self):
-            pieces = []
-            
-            simulatedBoard = self.createSimulatedBoard()
-
-            if king.getColor() == 'white':
-                simKing = simulatedBoard.wk
-            else:
-                simKing = simulatedBoard.bk   
-
+            color = king.getColor()
             for i in range(8):
                 for j in range(8):
-                    currentPiece = simulatedBoard.matrix[i][j]
-                    if currentPiece is not None and currentPiece.getColor() == simKing.getColor():
-                        pieces.append(currentPiece)
-            
-            for piece in pieces:
-                initialY = piece.getCoordY()
-                initialX = piece.getCoordX()
-                possibleMoves = piece.possibleMoves(self)
-                for move in possibleMoves:
-                    simulatedBoard = self.createSimulatedBoard()
-                    simulatedBoard.simulateMovePiece(piece, move[0], move[1])
-                    if not simKing.isChecked(simulatedBoard, checkNext=False):
-                        return False
-                    piece.setCoordY(initialY)
-                    piece.setCoordX(initialX)
+                    currentPiece = self.matrix[i][j]
+                    if currentPiece is not None and currentPiece.getColor() == color:
+                        possibleMoves = currentPiece.possibleMoves(self)
+                        for move in possibleMoves:
+                            simulatedBoard = self.createSimulatedBoard()
+                            simPiece = simulatedBoard.matrix[i][j]
+                            simulatedBoard.simulateMovePiece(simPiece, move[0], move[1])
+                            if simulatedBoard.wk.getColor() == color:
+                                simKing = simulatedBoard.wk
+                            else:
+                                simKing = simulatedBoard.bk
+                            if not simKing.isChecked(simulatedBoard, checkNext=False):
+                                return False
             return True
         else:
             return False
-        
+
     
     def consoleDisplay(self):
         for i in range(len(self.matrix)):

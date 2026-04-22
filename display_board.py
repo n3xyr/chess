@@ -10,6 +10,11 @@ import chess_clock
 import end_screen
 import time
 import globals
+import ctypes
+import json
+
+appId = 'n3xyr.chess.0.5' 
+ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(appId)
 
 # Initialize Pygame
 pygame.init()
@@ -20,6 +25,78 @@ def getMonitorResolution():
     for m in get_monitors():
         if m.is_primary:
             return m.width, m.height
+    
+# Import theme
+with open("theme.json", "r", encoding="utf-8") as t:
+    theme = json.load(t)
+    
+# Define colors
+WHITE = theme['white']
+BLACK = theme['black']
+DARK = theme['primary']
+LIGHT = theme['secondary']
+DARKSELECT = theme['primarySelect']
+LIGHTSELECT = theme['secondarySelect']
+ULTRADARK = theme['ultraDarkPrimary']
+ULTRALIGHT = theme['ultraLightSecondary']
+BACKGROUND = theme['background']
+LIGHTGREY = theme['lightgrey']
+DARKGREY = theme['darkgrey']
+HISTORICDARKBG = theme['historyDarkBg']
+HISTORICLIGHTBG = theme['historyLightBg']
+HISTORICSELECTGREY = theme['historySelectDarkGrey']
+HISTORICSELECTLIGHTGREY = theme['historySelectLightGrey']
+HISTORICSECONDARY = theme['historySecondary']
+ORANGERGBA = theme['orangeRGBA']
+GREENBUTTONBACKGROUND = theme['mainButtonSecondary']
+GREENBUTTONOUTLINE = theme['mainButtonPrimary']
+GREENBUTTONTEXT = theme['mainButtonPrimary']
+
+def importThemeColors():
+    global WHITE, BLACK, DARK, LIGHT, DARKSELECT, LIGHTSELECT, ULTRADARK, ULTRALIGHT, BACKGROUND, LIGHTGREY, DARKGREY, HISTORICDARKBG, HISTORICLIGHTBG, HISTORICSELECTGREY, HISTORICSELECTLIGHTGREY, HISTORICSECONDARY, ORANGERGBA
+    
+    # Import theme
+    with open("theme.json", "r", encoding="utf-8") as t:
+        theme = json.load(t)
+        
+    # Define colors
+    WHITE = theme['white']
+    BLACK = theme['black']
+    DARK = theme['primary']
+    LIGHT = theme['secondary']
+    DARKSELECT = theme['primarySelect']
+    LIGHTSELECT = theme['secondarySelect']
+    ULTRADARK = theme['ultraDarkPrimary']
+    ULTRALIGHT = theme['ultraLightSecondary']
+    BACKGROUND = theme['background']
+    LIGHTGREY = theme['lightgrey']
+    DARKGREY = theme['darkgrey']
+    HISTORICDARKBG = theme['historyDarkBg']
+    HISTORICLIGHTBG = theme['historyLightBg']
+    HISTORICSELECTGREY = theme['historySelectDarkGrey']
+    HISTORICSELECTLIGHTGREY = theme['historySelectLightGrey']
+    HISTORICSECONDARY = theme['historySecondary']
+    ORANGERGBA = theme['orangeRGBA']
+    GREENBUTTONBACKGROUND = theme['mainButtonSecondary']
+    GREENBUTTONOUTLINE = theme['mainButtonPrimary']
+    GREENBUTTONTEXT = theme['mainButtonPrimary']
+
+
+def rebuildThemeAssets():
+    global darkSurfaceRGBA, lightSurfaceRGBA, arrowSurfaceRGBA
+
+    importThemeColors()
+    darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+    lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
+    arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
+
+    pygame.draw.circle(darkSurfaceRGBA, DARKSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+    pygame.draw.circle(lightSurfaceRGBA, LIGHTSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+
+    try:
+        display_assistant.displayAssistantConstructor(TILESIZE, TOPMARGIN, LEFTMARGIN, LIGHTSELECT, DARKSELECT)
+    except Exception:
+        pass
 
 INIT_LEFTMARGIN = 0
 INIT_RIGHTMARGIN = 350
@@ -68,21 +145,23 @@ def adjustWindowSize(newWidth, newHeight):
 
     historicSurface = pygame.Surface((3 * TILESIZE, int(654 * SCALE)))
     
-    pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
-    pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+    pygame.draw.circle(darkSurfaceRGBA, DARKSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+    pygame.draw.circle(lightSurfaceRGBA, LIGHTSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
         
-    bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
-    bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
-    bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (TILESIZE, TILESIZE))
-    bn = pygame.transform.scale(pygame.image.load("piecesImages/bn.png"), (TILESIZE, TILESIZE))
-    bq = pygame.transform.scale(pygame.image.load("piecesImages/bq.png"), (TILESIZE, TILESIZE))
-    br = pygame.transform.scale(pygame.image.load("piecesImages/br.png"), (TILESIZE, TILESIZE))
-    wp = pygame.transform.scale(pygame.image.load("piecesImages/wp.png"), (TILESIZE, TILESIZE))
-    wb = pygame.transform.scale(pygame.image.load("piecesImages/wb.png"), (TILESIZE, TILESIZE))
-    wk = pygame.transform.scale(pygame.image.load("piecesImages/wk.png"), (TILESIZE, TILESIZE))
-    wn = pygame.transform.scale(pygame.image.load("piecesImages/wn.png"), (TILESIZE, TILESIZE))
-    wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
-    wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
+    pieceStyle = globals.getPieceImageStyle()[globals.readUserSettings()['pieceChoice']]
+
+    bp = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bp.png"), (TILESIZE, TILESIZE))
+    bb = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bb.png"), (TILESIZE, TILESIZE))
+    bk = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bk.png"), (TILESIZE, TILESIZE))
+    bn = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bn.png"), (TILESIZE, TILESIZE))
+    bq = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bq.png"), (TILESIZE, TILESIZE))
+    br = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/br.png"), (TILESIZE, TILESIZE))
+    wp = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wp.png"), (TILESIZE, TILESIZE))
+    wb = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wb.png"), (TILESIZE, TILESIZE))
+    wk = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wk.png"), (TILESIZE, TILESIZE))
+    wn = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wn.png"), (TILESIZE, TILESIZE))
+    wq = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wq.png"), (TILESIZE, TILESIZE))
+    wr = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wr.png"), (TILESIZE, TILESIZE))
 
     bpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
     bbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
@@ -142,7 +221,6 @@ def adjustPromoSize():
         img_rect = img.get_rect(center=pos)
         pieces[i]['rect'] = img_rect
 
-
 SCREENWIDTH, SCREENHEIGHT = getMonitorResolution()
 WIDTH, HEIGHT = LEFTMARGIN + 8 * TILESIZE + RIGHTMARGIN, 8 * TILESIZE + BOTTOMMARGIN + TOPMARGIN
 GAME = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
@@ -152,18 +230,20 @@ pygame.display.set_caption("Chess")
 
 historicSurface = pygame.Surface((3 * TILESIZE, (654 * SCALE)))
 
-bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
-bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
-bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (TILESIZE, TILESIZE))
-bn = pygame.transform.scale(pygame.image.load("piecesImages/bn.png"), (TILESIZE, TILESIZE))
-bq = pygame.transform.scale(pygame.image.load("piecesImages/bq.png"), (TILESIZE, TILESIZE))
-br = pygame.transform.scale(pygame.image.load("piecesImages/br.png"), (TILESIZE, TILESIZE))
-wp = pygame.transform.scale(pygame.image.load("piecesImages/wp.png"), (TILESIZE, TILESIZE))
-wb = pygame.transform.scale(pygame.image.load("piecesImages/wb.png"), (TILESIZE, TILESIZE))
-wk = pygame.transform.scale(pygame.image.load("piecesImages/wk.png"), (TILESIZE, TILESIZE))
-wn = pygame.transform.scale(pygame.image.load("piecesImages/wn.png"), (TILESIZE, TILESIZE))
-wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
-wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
+pieceStyle = globals.getPieceImageStyle()[globals.readUserSettings()['pieceChoice']]
+
+bp = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bp.png"), (TILESIZE, TILESIZE))
+bb = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bb.png"), (TILESIZE, TILESIZE))
+bk = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bk.png"), (TILESIZE, TILESIZE))
+bn = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bn.png"), (TILESIZE, TILESIZE))
+bq = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bq.png"), (TILESIZE, TILESIZE))
+br = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/br.png"), (TILESIZE, TILESIZE))
+wp = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wp.png"), (TILESIZE, TILESIZE))
+wb = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wb.png"), (TILESIZE, TILESIZE))
+wk = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wk.png"), (TILESIZE, TILESIZE))
+wn = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wn.png"), (TILESIZE, TILESIZE))
+wq = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wq.png"), (TILESIZE, TILESIZE))
+wr = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wr.png"), (TILESIZE, TILESIZE))
 
 bpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bpFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
 bbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bbFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
@@ -181,24 +261,7 @@ wCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/wCas
 bCastleFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bCastleFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
 nothingness = pygame.image.load("piecesFigurines/nothingness.png")
 
-# Define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-LIGHT = (235, 236, 208)
-DARK = (115, 149, 82)
-LIGHTSELECT = (202, 203, 179)
-DARKSELECT = (99, 128, 70)
-ULTRADARK = (38, 36, 33)
-ULTRALIGHT = (217, 219, 222)
-BACKGROUND = (48, 46, 43)
-LIGHTGREY = (200, 200, 200)
-DARKGREY = (150, 150, 150)
-HISTORICSELECTGREY = (72, 71, 69)
-HISTORICSELECTLIGHTGREY = (91, 90, 88)
-ORANGERGBA = (237, 127, 16, 128)
-HISTORICLIGHTBG = (42, 41, 38)
-HISTORICDARKBG = (38, 37, 34)
-HISTORICSECONDARY = (144, 146, 140)
+pygame.display.set_icon(bCastleFigurine)
 
 # Create a surface with per-pixel alpha
 darkSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
@@ -206,8 +269,8 @@ lightSurfaceRGBA = pygame.Surface((TILESIZE, TILESIZE), pygame.SRCALPHA)
 arrowSurfaceRGBA = pygame.Surface((TILESIZE * 8, TILESIZE * 8), pygame.SRCALPHA)
 
 # Draw a semi-transparent circle (RGBA) on canCaptureSurfaceRGBA
-pygame.draw.circle(darkSurfaceRGBA, (99, 128, 70, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
-pygame.draw.circle(lightSurfaceRGBA, (202, 203, 179, 192), (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+pygame.draw.circle(darkSurfaceRGBA, DARKSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
+pygame.draw.circle(lightSurfaceRGBA, LIGHTSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
 
 # Define text
 pygame.font.init()
@@ -288,14 +351,31 @@ rightArrowButton = Button(WIDTH - RIGHTMARGIN + int(265 * SCALE), TOPMARGIN + in
 
 def drawBoard(game, skipPiece=None):
     game.fill(BACKGROUND)
+    labelFont = pygame.font.Font('fonts/Roboto-Medium.ttf', int(18 * SCALE))
     for row in range(ROWS):
         for col in range(COLS):
             if (row + col) % 2 == 1:
                 pygame.draw.rect(game, DARK, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
             else:
                 pygame.draw.rect(game, LIGHT, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
-
-            # Draw tiles
+                
+            # Draw column labels
+            if row == 7:
+                if col % 2 == 0:
+                    columnText = labelFont.render(chr(col + 65), True, (LIGHT))
+                else:   
+                    columnText = labelFont.render(chr(col + 65), True, (DARK))
+                game.blit(columnText, (TILESIZE * (col + 0.85), TOPMARGIN + TILESIZE * 7.8))
+            
+            # Draw row labels
+            if col == 0:
+                if row % 2 == 0:
+                    rowText = labelFont.render(str(- row + 8), True, (DARK))
+                else:
+                    rowText = labelFont.render(str(- row + 8), True, (LIGHT))
+                game.blit(rowText, (TILESIZE * 0.05, TOPMARGIN + TILESIZE * (row + 0.05)))
+                
+            # Draw images
             currentLoadingPiece = displayedBoard.matrix[row][col]
             if currentLoadingPiece:
                 if skipPiece:
@@ -303,7 +383,8 @@ def drawBoard(game, skipPiece=None):
                         game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
                 else:
                     game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
-
+                    
+                
 def setPiecesCoordinates():
     """
     Initialize pieces coordinates for display
@@ -321,19 +402,20 @@ def getTileColor(coordinates):
     return 'LIGHT' if (y + x) % 2 == 0 else 'DARK'
 
 def displayAvailableMoves(availableMoves, selectedTile):
-    for move in availableMoves:
-        y, x = move
-        target = displayedBoard.matrix[y][x]
-        if target and selectedTile:
-            if target.getColor() != selectedTile.getColor():
-                if getTileColor(move) == 'DARK':
-                    GAME.blit(darkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+    if globals.readUserSettings()['showPossibleMoves'] == 'True':
+        for move in availableMoves:
+            y, x = move
+            target = displayedBoard.matrix[y][x]
+            if target and selectedTile:
+                if target.getColor() != selectedTile.getColor():
+                    if getTileColor(move) == 'DARK':
+                        GAME.blit(darkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                    else:
+                        GAME.blit(lightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
                 else:
-                    GAME.blit(lightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                    display_assistant.drawPossibleTile(GAME, move)
             else:
                 display_assistant.drawPossibleTile(GAME, move)
-        else:
-            display_assistant.drawPossibleTile(GAME, move)
 
 def tryDrawPromotionMenu(promotingPawn):
     promoIconRects.clear()
@@ -590,6 +672,7 @@ def drawArrowButtons():
                         
 def main(clockTime, clockIncrement):
     global displayedBoard, chessClock, historicScroll, moveList
+    importThemeColors()
     adjustPromoSize()
     adjustWindowSize(WIDTH, HEIGHT)
     end_screen.REPLAY = False
@@ -638,7 +721,7 @@ def main(clockTime, clockIncrement):
         drawArrowButtons()
 
         if end_screen.viewingGame:
-            end_screen.inGameMainMenuButton.draw(GAME, (2, 84, 45, 255), (20, 174, 92, 255), (20, 174, 92, 255))
+            end_screen.inGameMainMenuButton.draw(GAME, GREENBUTTONBACKGROUND, GREENBUTTONOUTLINE, GREENBUTTONTEXT)
 
         if potentialWinner is None:
             potentialWinner = hasSomeoneWon(chessClock)

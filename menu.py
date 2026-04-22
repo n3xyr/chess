@@ -2,7 +2,12 @@ import pygame
 from screeninfo import get_monitors
 import webbrowser
 import display_board
+import display_assistant
 import time
+import globals
+import settings_menu
+import end_screen
+import json
 
 def getMonitorResolution():
     for m in get_monitors():
@@ -28,7 +33,7 @@ SCALE = float(SCREENHEIGHT * 0.8) / 1000
 HEIGHT = int(1000 * SCALE)
 WIDTH = int(800 * SCALE)
 clock = pygame.time.Clock()
-screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE, pygame.SRCALPHA)
 timeMagnitude = 60
 incrementMagnitude = 1
 
@@ -91,19 +96,40 @@ def resizeWindow():
     buttonIncrementSetting.set_text_entry(False)
 
     BUTTON_INDIC += 1
-    buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: print("Settings"), 22)
+    buttonSettings = Button(button_x(), button_y(BUTTON_INDIC), button_w(), button_h(), "Settings", lambda: showSettingsFunc(True), 22)
 
+# Import theme
+with open("theme.json", "r", encoding="utf-8") as t:
+    theme = json.load(t)
 
-PANEL_BG = (31, 31, 28, 192)
-BORDER = pygame.Color("#5E5D5B")
-DARKGREEN = pygame.Color("#02542D")
-GREEN = pygame.Color("#14AE5C")
-BUTTON_BG = (50, 50, 50)
-BUTTON_TEXT = (150, 150, 150)
-TEXTBOX_BG = pygame.Color("#211f1d")
-TEXTBOX_TEXT = (94, 93, 91)
-TEXTBOX_LINE = (94, 93, 91, 102)
-LINK_COLOR = pygame.Color("#C6C6C6")
+PANEL_BG = theme['panelBg']
+BORDER = theme['border']
+DARKGREEN = theme['mainButtonSecondary']
+GREEN = theme['mainButtonPrimary']
+BUTTON_BG = theme['buttonBg']
+BUTTON_TEXT = theme['buttonText']
+TEXTBOX_BG = theme['textboxBg']
+TEXTBOX_TEXT = theme['textboxText']
+TEXTBOX_LINE = theme['textboxTextLine']
+LINK_COLOR = theme['link']
+
+def importThemeColors():
+    global PANEL_BG, BORDER, DARKGREEN, GREEN, BUTTON_BG, BUTTON_TEXT, TEXTBOX_BG, TEXTBOX_TEXT, TEXTBOX_LINE, LINK_COLOR
+    
+    # Import theme
+    with open("theme.json", "r", encoding="utf-8") as t:
+        theme = json.load(t)
+        
+    PANEL_BG = theme['panelBg']
+    BORDER = theme['border']
+    DARKGREEN = theme['mainButtonSecondary']
+    GREEN = theme['mainButtonPrimary']
+    BUTTON_BG = theme['buttonBg']
+    BUTTON_TEXT = theme['buttonText']
+    TEXTBOX_BG = theme['textboxBg']
+    TEXTBOX_TEXT = theme['textboxText']
+    TEXTBOX_LINE = theme['textboxTextLine']
+    LINK_COLOR = theme['link']
 
 
 class Button:
@@ -155,7 +181,7 @@ class entryButton:
 
     def handle_event(self, event):            
         if self.rect.collidepoint((event.pos[0] - LEFT, event.pos[1] - TOP)):
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)
             if event.type == pygame.MOUSEBUTTONDOWN:
                 self.callback()
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -166,6 +192,10 @@ class entryButton:
         self.text_surface = self.font.render(self.text, True, (255, 255, 255))
 
 resizeWindow()
+
+def showSettingsFunc(bool):
+    globals.showSettings = bool
+    pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
 def drawButtons(surface):
     buttonStart.draw(surface, DARKGREEN, GREEN, GREEN)
@@ -231,13 +261,34 @@ def setMagnitudes():
     buttonIncrementMagnitude.text = UNIT
     
 def blinkCursor():
-    return (time.time() % 1.4) < 0.7
+    return (time.time() % 1.2) < 0.6
+
+def readWriteUserSettings(currentLineName, newLineState):
+    with open("user_settings.json", "r", encoding="utf-8") as f:
+        userSettings = json.load(f)
+
+    userSettings[currentLineName] = newLineState
+
+    with open("user_settings.json", "w", encoding="utf-8") as f:
+        json.dump(userSettings, f, indent=4, ensure_ascii=False)
+        
+def hexToRGB(hexCode):
+    return (int(hexCode[:2], 16), int(hexCode[2:4], 16), int(hexCode[4:6], 16), 255)
+
+def refreshTheme():
+    display_assistant.writeThemeColors(display_assistant.getColorsFromTheme(hexToRGB(settings_menu.userSettings["primaryColor"]), hexToRGB(settings_menu.userSettings["secondaryColor"])))
+    importThemeColors()
+    settings_menu.importThemeColors()
+    display_board.rebuildThemeAssets()
+    end_screen.importThemeColors()
 
 def main():
     global SCALE, screen
+    importThemeColors()
+    display_assistant.writeThemeColors(display_assistant.getColorsFromTheme(hexToRGB(settings_menu.userSettings["primaryColor"]), hexToRGB(settings_menu.userSettings["secondaryColor"])))
     clock.tick(60)
     running = True
-
+    
     while running:
         screen.blit(background, (0, 0))
         pygame.draw.rect(menuRGBA, BORDER, (0, int(80 * SCALE), menuX, menuY), border_radius=BORDER_RADIUS)
@@ -253,8 +304,12 @@ def main():
                 drawCursor(buttonTimeSetting)
             if buttonIncrementSetting.text_entry:
                 drawCursor(buttonIncrementSetting)
-
-        screen.blit(menuRGBA, (LEFT, TOP))
+                
+        if globals.showSettings:
+            settings_menu.showSettings(SCALE, screen)
+        else:
+            screen.blit(menuRGBA, (LEFT, TOP))
+            
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
@@ -267,7 +322,7 @@ def main():
                         inputText += str(NUMBER_KEYS_WITH_NUMPAD.index(event.key) % 10)
                     if event.key == pygame.K_BACKSPACE:
                         inputText = inputText[:-1]
-                    if event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         buttonTimeSetting.set_text_entry(False)
                 if len(inputText) <= 6:
                     buttonTimeSetting.set_text(inputText)
@@ -285,7 +340,7 @@ def main():
                         inputText += str(NUMBER_KEYS_WITH_NUMPAD.index(event.key) % 10)
                     if event.key == pygame.K_BACKSPACE:
                         inputText = inputText[:-1]
-                    if event.key == pygame.K_RETURN:
+                    if event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
                         buttonIncrementSetting.set_text_entry(False)
                 if len(inputText) <= 6:
                     buttonIncrementSetting.set_text(inputText)
@@ -306,15 +361,16 @@ def main():
                 else:
                     SCALE = newWidth / 1000
                 resizeWindow()
-                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
+                screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE, pygame.SRCALPHA)
                 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = event.pos
                 if githubLink.collidepoint(pos):
                     webbrowser.open(r"https://www.github.com/n3xyr/chess")
 
-            if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
+            if (event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN) and not globals.showSettings:
                 pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                
                 buttonStart.handle_event(event)
                     
                 buttonTimeSetting.handle_event(event)
@@ -324,7 +380,45 @@ def main():
                 buttonIncrementMagnitude.handle_event(event)
 
                 buttonSettings.handle_event(event)
-        
+            
+            if (event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.KEYDOWN) and globals.showSettings and globals.settingsButtonsDrawn:
+                pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+                
+                if event.type == pygame.MOUSEMOTION or event.type == pygame.MOUSEBUTTONDOWN:
+                    settings_menu.closeButton.handleEvent(event)
+                    
+                    settings_menu.showPossibleMovesSwitch.handleEvent(event)
+                    globals.showPossibleMovesSwitchState = settings_menu.showPossibleMovesSwitch.isActivated
+                    readWriteUserSettings("showPossibleMoves", str(settings_menu.showPossibleMovesSwitch.isActivated))
+                    settings_menu.userSettings["showPossibleMoves"] = settings_menu.showPossibleMovesSwitch.isActivated
+                    
+                    settings_menu.playSoundsSwitch.handleEvent(event)
+                    globals.playSoundsSwitchState = settings_menu.playSoundsSwitch.isActivated
+                    readWriteUserSettings("playSounds", str(settings_menu.playSoundsSwitch.isActivated))
+                    settings_menu.userSettings["playSounds"] = settings_menu.playSoundsSwitch.isActivated
+                    
+                    settings_menu.pieceChoiceDropdown.handleEvent(event)
+                    settings_menu.drawExampleBoardPieces(SCALE, screen)
+                    if settings_menu.pieceChoiceDropdown.selectedOption != settings_menu.userSettings.get("pieceChoice"):
+                        settings_menu.originalImages.clear()
+                        settings_menu.scaledImages.clear()
+                        readWriteUserSettings("pieceChoice", settings_menu.pieceChoiceDropdown.selectedOption)
+                        settings_menu.userSettings["pieceChoice"] = settings_menu.pieceChoiceDropdown.selectedOption
+                
+                settings_menu.primaryColorEntry.handleEvent(event)
+                if hasattr(settings_menu.primaryColorEntry, "definitveText"):
+                    readWriteUserSettings("primaryColor", settings_menu.primaryColorEntry.definitveText)
+                    settings_menu.userSettings["primaryColor"] = settings_menu.primaryColorEntry.definitveText
+                    settings_menu.primaryColorEntry.defaultTextContent = settings_menu.primaryColorEntry.definitveText
+                    refreshTheme()
+                    
+                settings_menu.secondaryColorEntry.handleEvent(event) 
+                if hasattr(settings_menu.secondaryColorEntry, "definitveText"):
+                    readWriteUserSettings("secondaryColor", settings_menu.secondaryColorEntry.definitveText)
+                    settings_menu.userSettings["secondaryColor"] = settings_menu.secondaryColorEntry.definitveText
+                    settings_menu.secondaryColorEntry.defaultTextContent = settings_menu.secondaryColorEntry.definitveText
+                    refreshTheme()
+                    
         pygame.display.flip()
 
     pygame.quit()
