@@ -207,7 +207,8 @@ marimo/_lsp/
 __marimo__/
 
 # user settings
-user_settings.txt
+user_settings.json
+theme.json
 
 # tests
 tests.py
