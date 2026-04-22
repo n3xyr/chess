@@ -176,8 +176,8 @@ class DropdownBox:
         
     def drawBox(self, surface, boxColor, borderColor, borderRadius, borderWidth, optionTextColor, optionTextSize, arrowColor, arrowBackgroundColor, accentColor):
         if self.isOpened:
-            pygame.draw.rect(surface, accentColor, (self.rect.x, self.rect.y, self.rect.w, self.rect.h + int((5 + len(self.options) * 16) * self.scale)), border_radius=borderRadius)
-            pygame.draw.rect(surface, boxColor, (self.rect.x + borderWidth, self.rect.y + borderWidth, self.rect.w - borderWidth * 2, self.rect.h + int((5 + len(self.options) * 16) * self.scale) - borderWidth * 2), border_radius=borderRadius) 
+            pygame.draw.rect(surface, accentColor, (self.rect.x, self.rect.y + (4.445075 * self.scale), self.rect.w, self.rect.h + int((0 + len(self.options) * 17.7083) * self.scale)), border_radius=borderRadius)
+            pygame.draw.rect(surface, boxColor, (self.rect.x + borderWidth, self.rect.y + (4.445075 * self.scale) + borderWidth, self.rect.w - borderWidth * 2, self.rect.h + int((0 + len(self.options) * 17.7083) * self.scale) - borderWidth * 2), border_radius=borderRadius) 
             self.drawOptions(surface, optionTextColor, optionTextSize, arrowBackgroundColor, borderWidth, borderRadius)
         else:
             if borderWidth and borderWidth > 0:

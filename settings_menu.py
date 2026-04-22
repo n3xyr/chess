@@ -23,6 +23,14 @@ switchCircleColor = theme['switchCircle']
 arrowBackgroundColor = theme['arrowBackground']
 arrowColor = theme['arrow']
 
+def resetUserSettings():
+    defaultUserSettings = globals.getSettingsOriginalValues()
+    
+    with open("user_settings.json", "w", encoding="utf-8") as f:
+        json.dump(defaultUserSettings, f, indent=4, ensure_ascii=False)
+        
+resetUserSettings()
+
 def importThemeColors():
     global fullTransparencyColor, settingsContainerBorderColor, settingsContainerBoxColor, categoryBodyBackgroundColor, categoryTitleColor, categoryHeaderColor, accentColor, subCatTitleTextColor, subCatLineColor, primaryColor, secondaryColor, switchCircleColor, arrowBackgroundColor, arrowColor
     
@@ -66,8 +74,9 @@ with open("user_settings.json", "r", encoding="utf-8") as f:
     userSettings = json.load(f)
 
 def getOriginalImage(name):
+    pieceStyle = globals.getPieceImageStyle()[globals.readUserSettings()['pieceChoice']]
     if name not in originalImages:
-        originalImages[name] = pygame.image.load(f"piecesImages/{name}.png").convert_alpha()
+        originalImages[name] = pygame.image.load(f"piecesImages/{pieceStyle}/{name}.png").convert_alpha()
     return originalImages[name]
 
 def getScaledImage(name, size):
@@ -115,6 +124,32 @@ def drawAppearanceCatBody(SCALE, settingsSurface):
     appearanceCatBody.drawText(settingsSurface, int(120 * SCALE), int(516 * SCALE - int(3 * SCALE)), int(20 * SCALE), "Pieces style", subCatTitleTextColor)
     drawExampleBoard(SCALE, settingsSurface)
         
+def drawExampleBoardPieces(SCALE, settingsSurface):
+    squareSize = int(50 * SCALE)
+    
+    bp = getScaledImage("bp", squareSize)
+    bb = getScaledImage("bb", squareSize)
+    bk = getScaledImage("bk", squareSize)
+    bn = getScaledImage("bn", squareSize)
+    bq = getScaledImage("bq", squareSize)
+    br = getScaledImage("br", squareSize)
+    wp = getScaledImage("wp", squareSize)
+    wb = getScaledImage("wb", squareSize)
+    wk = getScaledImage("wk", squareSize)
+    wn = getScaledImage("wn", squareSize)
+    wq = getScaledImage("wq", squareSize)
+    wr = getScaledImage("wr", squareSize)
+    
+    placements = [(443, 391, bb), (493, 391, bq), (543, 391, bk), (593, 391, br), (443, 441, bp), (493, 441, bn),
+                  (543, 441, wn), (593, 441, wp), (443, 491, wb), (493, 491, wq), (543, 491, wk), (593, 491, wr)]
+    
+    for staticX, staticY, imageName in placements:
+            x = int(staticX * SCALE)
+            y = int(staticY * SCALE)
+            settingsSurface.blit(imageName, (x, y))
+            
+    return placements
+        
 def drawExampleBoard(SCALE, settingsSurface):
     importThemeColors()
     squareSize = int(50 * SCALE)
@@ -136,26 +171,7 @@ def drawExampleBoard(SCALE, settingsSurface):
             fillColor = secondaryColor
         pygame.draw.rect(settingsSurface, fillColor, (int((443 + 50 * i) * SCALE), int(441 * SCALE), squareSize, squareSize))
     
-    bp = getScaledImage("bp", squareSize)
-    bb = getScaledImage("bb", squareSize)
-    bk = getScaledImage("bk", squareSize)
-    bn = getScaledImage("bn", squareSize)
-    bq = getScaledImage("bq", squareSize)
-    br = getScaledImage("br", squareSize)
-    wp = getScaledImage("wp", squareSize)
-    wb = getScaledImage("wb", squareSize)
-    wk = getScaledImage("wk", squareSize)
-    wn = getScaledImage("wn", squareSize)
-    wq = getScaledImage("wq", squareSize)
-    wr = getScaledImage("wr", squareSize)
-    
-    placements = [(443, 391, bb), (493, 391, bq), (543, 391, bk), (593, 391, br), (443, 441, bp), (493, 441, bn),
-                  (543, 441, wn), (593, 441, wp), (443, 491, wb), (493, 491, wq), (543, 491, wk), (593, 491, wr)]
-    
-    for staticX, staticY, imageName in placements:
-        x = int(staticX * SCALE)
-        y = int(staticY * SCALE)
-        settingsSurface.blit(imageName, (x, y))
+    drawExampleBoardPieces(SCALE, settingsSurface)
 
 def drawPrimaryColorEntry(SCALE, settingsSurface, BORDER_WIDTH):
     global primaryColorEntry
@@ -231,11 +247,11 @@ def drawPieceChoiceDropdown(SCALE, settingsSurface, BORDER_WIDTH):
         if getattr(pieceChoiceExistingObject, 'scale') != SCALE:
             pieceChoiceOldSelectedOption = getattr(pieceChoiceExistingObject, 'selectedOption')
             pieceChoiceOldState = getattr(pieceChoiceExistingObject, 'isOpened', False)
-            pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "pls don't"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE), currentSelectedOption)
+            pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "3D", "Wooden"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE), currentSelectedOption)
             pieceChoiceDropdown.selectedOption = pieceChoiceOldSelectedOption
             pieceChoiceDropdown.isOpened = pieceChoiceOldState
     else:        
-        pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "pls don't"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE), currentSelectedOption)
+        pieceChoiceDropdown = style_elements.DropdownBox(SCALE, ["Neo", "Classic", "3D", "Wooden"], int(246 * SCALE), int(512 * SCALE), int(120 * SCALE), int(28 * SCALE), currentSelectedOption)
     
     pieceChoiceDropdown.drawBox(settingsSurface, categoryHeaderColor, fullTransparencyColor, int(10 * SCALE), BORDER_WIDTH, categoryTitleColor, int(15 * SCALE), arrowColor, arrowBackgroundColor, accentColor)
     if not pieceChoiceDropdown.isOpened:
@@ -283,6 +299,7 @@ def RGBToHex(RGBCode):
     
 def showSettings(SCALE, screen):
     importThemeColors()
+    
     width = screen.get_width()
     height = screen.get_height()
     settingsSurface = pygame.Surface((width, height), pygame.SRCALPHA)
@@ -305,3 +322,4 @@ def showSettings(SCALE, screen):
     globals.settingsButtonsDrawn = True
     
     screen.blit(settingsSurface, (0, 0))
+    

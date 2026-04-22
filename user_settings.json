@@ -1,7 +1,7 @@
 {
-    "primaryColor": "ffffff",
-    "secondaryColor": "000000",
+    "primaryColor": "739552",
+    "secondaryColor": "ebecd0",
     "pieceChoice": "Neo",
-    "showPossibleMoves": "False",
+    "showPossibleMoves": "True",
     "playSounds": "True"
 }

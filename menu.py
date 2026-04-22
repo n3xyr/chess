@@ -398,6 +398,12 @@ def main():
                     settings_menu.userSettings["playSounds"] = settings_menu.playSoundsSwitch.isActivated
                     
                     settings_menu.pieceChoiceDropdown.handleEvent(event)
+                    settings_menu.drawExampleBoardPieces(SCALE, screen)
+                    if settings_menu.pieceChoiceDropdown.selectedOption != settings_menu.userSettings.get("pieceChoice"):
+                        settings_menu.originalImages.clear()
+                        settings_menu.scaledImages.clear()
+                        readWriteUserSettings("pieceChoice", settings_menu.pieceChoiceDropdown.selectedOption)
+                        settings_menu.userSettings["pieceChoice"] = settings_menu.pieceChoiceDropdown.selectedOption
                 
                 settings_menu.primaryColorEntry.handleEvent(event)
                 if hasattr(settings_menu.primaryColorEntry, "definitveText"):

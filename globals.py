@@ -11,8 +11,8 @@ def getSettingsOriginalValues():
     "primaryColor" : "739552",
     "secondaryColor" : "ebecd0",
     "pieceChoice" : "Neo",
-    "showPossibleMoves" : True,
-    "playSounds" : False
+    "showPossibleMoves" : "True",
+    "playSounds" : "True"
     }
     return settingsOriginalValues
 
@@ -25,3 +25,9 @@ def readUserSettings():
     with open("user_settings.json", "r", encoding="utf-8") as f:
         userSettings = json.load(f)
     return userSettings
+
+def getPieceImageStyle():
+    return {'Neo': 'neo',
+            'Classic': 'classic',
+            '3D': '3d',
+            'Wooden': 'wooden'}

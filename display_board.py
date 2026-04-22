@@ -148,18 +148,20 @@ def adjustWindowSize(newWidth, newHeight):
     pygame.draw.circle(darkSurfaceRGBA, DARKSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
     pygame.draw.circle(lightSurfaceRGBA, LIGHTSELECT, (TILESIZE // 2, TILESIZE // 2), TILESIZE // 2, TILESIZE // 10)
         
-    bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
-    bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
-    bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (TILESIZE, TILESIZE))
-    bn = pygame.transform.scale(pygame.image.load("piecesImages/bn.png"), (TILESIZE, TILESIZE))
-    bq = pygame.transform.scale(pygame.image.load("piecesImages/bq.png"), (TILESIZE, TILESIZE))
-    br = pygame.transform.scale(pygame.image.load("piecesImages/br.png"), (TILESIZE, TILESIZE))
-    wp = pygame.transform.scale(pygame.image.load("piecesImages/wp.png"), (TILESIZE, TILESIZE))
-    wb = pygame.transform.scale(pygame.image.load("piecesImages/wb.png"), (TILESIZE, TILESIZE))
-    wk = pygame.transform.scale(pygame.image.load("piecesImages/wk.png"), (TILESIZE, TILESIZE))
-    wn = pygame.transform.scale(pygame.image.load("piecesImages/wn.png"), (TILESIZE, TILESIZE))
-    wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
-    wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
+    pieceStyle = globals.getPieceImageStyle()[globals.readUserSettings()['pieceChoice']]
+
+    bp = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bp.png"), (TILESIZE, TILESIZE))
+    bb = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bb.png"), (TILESIZE, TILESIZE))
+    bk = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bk.png"), (TILESIZE, TILESIZE))
+    bn = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bn.png"), (TILESIZE, TILESIZE))
+    bq = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bq.png"), (TILESIZE, TILESIZE))
+    br = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/br.png"), (TILESIZE, TILESIZE))
+    wp = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wp.png"), (TILESIZE, TILESIZE))
+    wb = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wb.png"), (TILESIZE, TILESIZE))
+    wk = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wk.png"), (TILESIZE, TILESIZE))
+    wn = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wn.png"), (TILESIZE, TILESIZE))
+    wq = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wq.png"), (TILESIZE, TILESIZE))
+    wr = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wr.png"), (TILESIZE, TILESIZE))
 
     bpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bpFigurine.png"), (int(TILESIZE), int(TILESIZE)))
     bbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bbFigurine.png"), (int(TILESIZE), int(TILESIZE)))
@@ -228,18 +230,20 @@ pygame.display.set_caption("Chess")
 
 historicSurface = pygame.Surface((3 * TILESIZE, (654 * SCALE)))
 
-bp = pygame.transform.scale(pygame.image.load("piecesImages/bp.png"), (TILESIZE, TILESIZE))
-bb = pygame.transform.scale(pygame.image.load("piecesImages/bb.png"), (TILESIZE, TILESIZE))
-bk = pygame.transform.scale(pygame.image.load("piecesImages/bk.png"), (TILESIZE, TILESIZE))
-bn = pygame.transform.scale(pygame.image.load("piecesImages/bn.png"), (TILESIZE, TILESIZE))
-bq = pygame.transform.scale(pygame.image.load("piecesImages/bq.png"), (TILESIZE, TILESIZE))
-br = pygame.transform.scale(pygame.image.load("piecesImages/br.png"), (TILESIZE, TILESIZE))
-wp = pygame.transform.scale(pygame.image.load("piecesImages/wp.png"), (TILESIZE, TILESIZE))
-wb = pygame.transform.scale(pygame.image.load("piecesImages/wb.png"), (TILESIZE, TILESIZE))
-wk = pygame.transform.scale(pygame.image.load("piecesImages/wk.png"), (TILESIZE, TILESIZE))
-wn = pygame.transform.scale(pygame.image.load("piecesImages/wn.png"), (TILESIZE, TILESIZE))
-wq = pygame.transform.scale(pygame.image.load("piecesImages/wq.png"), (TILESIZE, TILESIZE))
-wr = pygame.transform.scale(pygame.image.load("piecesImages/wr.png"), (TILESIZE, TILESIZE))
+pieceStyle = globals.getPieceImageStyle()[globals.readUserSettings()['pieceChoice']]
+
+bp = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bp.png"), (TILESIZE, TILESIZE))
+bb = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bb.png"), (TILESIZE, TILESIZE))
+bk = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bk.png"), (TILESIZE, TILESIZE))
+bn = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bn.png"), (TILESIZE, TILESIZE))
+bq = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/bq.png"), (TILESIZE, TILESIZE))
+br = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/br.png"), (TILESIZE, TILESIZE))
+wp = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wp.png"), (TILESIZE, TILESIZE))
+wb = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wb.png"), (TILESIZE, TILESIZE))
+wk = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wk.png"), (TILESIZE, TILESIZE))
+wn = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wn.png"), (TILESIZE, TILESIZE))
+wq = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wq.png"), (TILESIZE, TILESIZE))
+wr = pygame.transform.scale(pygame.image.load(f"piecesImages/{pieceStyle}/wr.png"), (TILESIZE, TILESIZE))
 
 bpFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bpFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
 bbFigurine = pygame.transform.scale(pygame.image.load("piecesFigurines/bbFigurine.png"), (int(TILESIZE * 0.5), int(TILESIZE * 0.5)))
@@ -354,16 +358,7 @@ def drawBoard(game, skipPiece=None):
                 pygame.draw.rect(game, DARK, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
             else:
                 pygame.draw.rect(game, LIGHT, (col * TILESIZE, TOPMARGIN + row * TILESIZE, TILESIZE, TILESIZE))
-
-            # Draw tiles
-            currentLoadingPiece = displayedBoard.matrix[row][col]
-            if currentLoadingPiece:
-                if skipPiece:
-                    if not(skipPiece.getCoordX() == currentLoadingPiece.getCoordX() and skipPiece.getCoordY() == currentLoadingPiece.getCoordY()):
-                        game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
-                else:
-                    game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
-                    
+                
             # Draw column labels
             if row == 7:
                 if col % 2 == 0:
@@ -379,6 +374,16 @@ def drawBoard(game, skipPiece=None):
                 else:
                     rowText = labelFont.render(str(- row + 8), True, (LIGHT))
                 game.blit(rowText, (TILESIZE * 0.05, TOPMARGIN + TILESIZE * (row + 0.05)))
+                
+            # Draw images
+            currentLoadingPiece = displayedBoard.matrix[row][col]
+            if currentLoadingPiece:
+                if skipPiece:
+                    if not(skipPiece.getCoordX() == currentLoadingPiece.getCoordX() and skipPiece.getCoordY() == currentLoadingPiece.getCoordY()):
+                        game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
+                else:
+                    game.blit(getPieceImage(currentLoadingPiece), (currentLoadingPiece.rectX, currentLoadingPiece.rectY))
+                    
                 
 def setPiecesCoordinates():
     """

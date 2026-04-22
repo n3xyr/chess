@@ -32,161 +32,161 @@
         128
     ],
     "primary": [
-        255,
-        255,
-        255,
+        115,
+        149,
+        82,
         255
     ],
     "secondary": [
-        0,
-        0,
-        0,
+        235,
+        236,
+        208,
         255
     ],
     "primarySelect": [
         191,
-        191,
-        191
+        213,
+        170
     ],
     "secondarySelect": [
-        64,
-        64,
-        64
+        172,
+        172,
+        172
     ],
     "ultraDarkPrimary": [
-        65,
-        63,
-        60
+        47,
+        50,
+        39
     ],
     "ultraLightSecondary": [
-        189,
-        191,
-        194
+        219,
+        221,
+        220
     ],
     "background": [
-        73,
-        72,
-        69
+        56,
+        58,
+        47
     ],
     "historyDarkBg": [
-        66,
-        64,
-        61
+        48,
+        51,
+        40
     ],
     "historyLightBg": [
-        70,
-        68,
-        65
+        52,
+        55,
+        44
     ],
     "historySelectDarkGrey": [
-        100,
-        98,
-        95
+        82,
+        85,
+        74
     ],
     "historySelectLightGrey": [
-        119,
-        117,
-        114
+        101,
+        104,
+        93
     ],
     "historySecondary": [
-        172,
-        170,
-        167
+        154,
+        157,
+        146
     ],
     "endBoxOutline": [
-        85,
-        84,
-        82
+        68,
+        70,
+        60
     ],
     "endBoxOutlineTransparent": [
-        85,
-        84,
-        82,
+        68,
+        70,
+        60,
         240
     ],
     "endBoxBackground": [
-        56,
-        57,
-        54,
+        39,
+        43,
+        32,
         240
     ],
     "titleText": [
-        242,
-        243,
-        243
+        225,
+        229,
+        221
     ],
     "winConditionText": [
-        169,
-        168,
-        165
-    ],
-    "cross": [
-        169,
-        168,
-        165
-    ],
-    "mainButtonSecondary": [
-        187,
-        189,
-        89
-    ],
-    "mainButtonPrimary": [
-        255,
-        251,
+        152,
+        154,
         143
     ],
+    "cross": [
+        152,
+        154,
+        143
+    ],
+    "mainButtonSecondary": [
+        2,
+        83,
+        44
+    ],
+    "mainButtonPrimary": [
+        19,
+        174,
+        93
+    ],
     "normalButtonPrimary": [
-        119,
-        119,
-        117
+        102,
+        105,
+        95
     ],
     "normalButtonSecondary": [
-        73,
-        72,
-        69
+        56,
+        58,
+        47
     ],
     "panelBg": [
-        56,
-        57,
-        54,
+        39,
+        43,
+        32,
         240
     ],
     "border": [
-        119,
-        119,
-        117
+        102,
+        105,
+        95
     ],
     "buttonBg": [
-        75,
-        76,
-        76
+        58,
+        62,
+        54
     ],
     "buttonText": [
-        175,
-        176,
-        176
+        158,
+        162,
+        154
     ],
     "textboxBg": [
-        58,
-        57,
-        55,
+        41,
+        43,
+        33,
         240
     ],
     "textboxText": [
-        119,
-        119,
-        117
+        102,
+        105,
+        95
     ],
     "textboxTextLine": [
-        119,
-        119,
-        117,
+        102,
+        105,
+        95,
         102
     ],
     "link": [
-        223,
-        224,
-        224
+        206,
+        210,
+        202
     ],
     "fullTransparency": [
         0,
@@ -195,61 +195,61 @@
         0
     ],
     "settingsContainerBorder": [
-        177,
-        178,
-        178,
+        160,
+        164,
+        156,
         100
     ],
     "settingsContainerBox": [
-        35,
-        36,
-        36,
+        18,
+        22,
+        14,
         100
     ],
     "categoryBodyBackground": [
-        63,
-        63,
-        60
+        46,
+        49,
+        38
     ],
     "categoryTitle": [
-        243,
-        244,
-        244
+        226,
+        230,
+        222
     ],
     "categoryHeader": [
-        78,
-        77,
-        72
+        61,
+        63,
+        50
     ],
     "accent": [
-        255,
-        255,
-        255,
+        115,
+        149,
+        82,
         255
     ],
     "subCatTitleText": [
-        175,
-        176,
-        176
+        158,
+        162,
+        154
     ],
     "subCatLine": [
-        119,
-        119,
-        117
+        102,
+        105,
+        95
     ],
     "switchCircle": [
-        242,
-        243,
-        243
+        225,
+        229,
+        221
     ],
     "arrowBackground": [
-        98,
-        96,
-        90
+        81,
+        82,
+        68
     ],
     "arrow": [
-        202,
-        203,
-        203
+        185,
+        189,
+        181
     ]
 }
