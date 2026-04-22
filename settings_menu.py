@@ -254,7 +254,7 @@ def drawGameplayCatBody(SCALE, settingsSurface):
     gameplayCatBody.drawBox(settingsSurface)
     gameplayCatBody.drawText(settingsSurface, int(120 * SCALE), int(654 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Show possible moves", subCatTitleTextColor)
     pygame.draw.aaline(settingsSurface, subCatLineColor, (int(100 * SCALE), int(694 * SCALE)), (int(700 * SCALE), int(694 * SCALE)))
-    gameplayCatBody.drawText(settingsSurface, int(120 * SCALE), int(714 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Disable sounds", subCatTitleTextColor)
+    gameplayCatBody.drawText(settingsSurface, int(120 * SCALE), int(714 * SCALE - int(2 * SCALE)), int(20 * SCALE), "Play sounds", subCatTitleTextColor)
     
 def drawShowPossibleMovesSwitch(SCALE, settingsSurface):
     importThemeColors()
@@ -267,15 +267,15 @@ def drawShowPossibleMovesSwitch(SCALE, settingsSurface):
     showPossibleMovesSwitch = style_elements.Switch(int(623 * SCALE), int(655 * SCALE), accentColor, subCatLineColor, switchCircleColor, isActivatedBool, SCALE)
     showPossibleMovesSwitch.drawSwitch(settingsSurface)
     
-def drawDisableSoundsSwitch(SCALE, settingsSurface):
+def drawPlaySoundsSwitch(SCALE, settingsSurface):
     importThemeColors()
-    global disableSoundsSwitch
-    if userSettings['disableSounds']:
+    global playSoundsSwitch
+    if userSettings['playSounds']:
         isActivatedBool = True
     else:
         isActivatedBool = False
-    disableSoundsSwitch = style_elements.Switch(int(623 * SCALE), int(713 * SCALE), accentColor, subCatLineColor, switchCircleColor, isActivatedBool, SCALE)
-    disableSoundsSwitch.drawSwitch(settingsSurface)
+    playSoundsSwitch = style_elements.Switch(int(623 * SCALE), int(713 * SCALE), accentColor, subCatLineColor, switchCircleColor, isActivatedBool, SCALE)
+    playSoundsSwitch.drawSwitch(settingsSurface)
     
 def RGBToHex(RGBCode):
     hexValue = '%02x%02x%02x%02x' % tuple(RGBCode)
@@ -299,7 +299,7 @@ def showSettings(SCALE, screen):
     drawGameplayCatHeader(SCALE, settingsSurface)
     drawGameplayCatBody(SCALE, settingsSurface)
     drawShowPossibleMovesSwitch(SCALE, settingsSurface)
-    drawDisableSoundsSwitch(SCALE, settingsSurface)
+    drawPlaySoundsSwitch(SCALE, settingsSurface)
     drawPieceChoiceDropdown(SCALE, settingsSurface, BORDER_WIDTH)
 
     globals.settingsButtonsDrawn = True

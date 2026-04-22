@@ -4,7 +4,7 @@ pieceHasMoved = False
 showSettings = False
 settingsButtonsDrawn = False
 showPossibleMovesSwitchState = True
-disableSoundsSwitchState = False
+playSoundsSwitchState = False
 
 def getSettingsOriginalValues():
     settingsOriginalValues = {
@@ -12,7 +12,7 @@ def getSettingsOriginalValues():
     "secondaryColor" : "ebecd0",
     "pieceChoice" : "Neo",
     "showPossibleMoves" : True,
-    "disableSounds" : False
+    "playSounds" : False
     }
     return settingsOriginalValues
 
@@ -20,3 +20,8 @@ def readTheme():
     with open("theme.json", "r", encoding="utf-8") as f:
         theme = json.load(f)
     return theme
+
+def readUserSettings():
+    with open("user_settings.json", "r", encoding="utf-8") as f:
+        userSettings = json.load(f)
+    return userSettings

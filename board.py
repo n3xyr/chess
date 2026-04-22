@@ -171,12 +171,13 @@ class board:
 
     
     def playSound(self, act):
-        if 'x' in act:
-            eatSound.play()
-        elif 'O-O' in act or 'O-O-O' in act:
-            castleSound.play()
-        else:
-            moveSound.play()
+        if globals.readUserSettings()['playSounds'] == 'True':
+            if 'x' in act:
+                eatSound.play()
+            elif 'O-O' in act or 'O-O-O' in act:
+                castleSound.play()
+            else:
+                moveSound.play()
 
 
     def addSoundToHistoric(self, act):

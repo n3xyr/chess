@@ -104,8 +104,8 @@ with open("theme.json", "r", encoding="utf-8") as t:
 
 PANEL_BG = theme['panelBg']
 BORDER = theme['border']
-DARKGREEN = theme['mainButtonPrimary']
-GREEN = theme['mainButtonSecondary']
+DARKGREEN = theme['mainButtonSecondary']
+GREEN = theme['mainButtonPrimary']
 BUTTON_BG = theme['buttonBg']
 BUTTON_TEXT = theme['buttonText']
 TEXTBOX_BG = theme['textboxBg']
@@ -122,8 +122,8 @@ def importThemeColors():
         
     PANEL_BG = theme['panelBg']
     BORDER = theme['border']
-    DARKGREEN = theme['mainButtonPrimary']
-    GREEN = theme['mainButtonSecondary']
+    DARKGREEN = theme['mainButtonSecondary']
+    GREEN = theme['mainButtonPrimary']
     BUTTON_BG = theme['buttonBg']
     BUTTON_TEXT = theme['buttonText']
     TEXTBOX_BG = theme['textboxBg']
@@ -392,10 +392,10 @@ def main():
                     readWriteUserSettings("showPossibleMoves", str(settings_menu.showPossibleMovesSwitch.isActivated))
                     settings_menu.userSettings["showPossibleMoves"] = settings_menu.showPossibleMovesSwitch.isActivated
                     
-                    settings_menu.disableSoundsSwitch.handleEvent(event)
-                    globals.disableSoundsSwitchState = settings_menu.disableSoundsSwitch.isActivated
-                    readWriteUserSettings("disableSounds", str(settings_menu.disableSoundsSwitch.isActivated))
-                    settings_menu.userSettings["disableSounds"] = settings_menu.disableSoundsSwitch.isActivated
+                    settings_menu.playSoundsSwitch.handleEvent(event)
+                    globals.playSoundsSwitchState = settings_menu.playSoundsSwitch.isActivated
+                    readWriteUserSettings("playSounds", str(settings_menu.playSoundsSwitch.isActivated))
+                    settings_menu.userSettings["playSounds"] = settings_menu.playSoundsSwitch.isActivated
                     
                     settings_menu.pieceChoiceDropdown.handleEvent(event)
                 

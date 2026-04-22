@@ -397,19 +397,20 @@ def getTileColor(coordinates):
     return 'LIGHT' if (y + x) % 2 == 0 else 'DARK'
 
 def displayAvailableMoves(availableMoves, selectedTile):
-    for move in availableMoves:
-        y, x = move
-        target = displayedBoard.matrix[y][x]
-        if target and selectedTile:
-            if target.getColor() != selectedTile.getColor():
-                if getTileColor(move) == 'DARK':
-                    GAME.blit(darkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+    if globals.readUserSettings()['showPossibleMoves'] == 'True':
+        for move in availableMoves:
+            y, x = move
+            target = displayedBoard.matrix[y][x]
+            if target and selectedTile:
+                if target.getColor() != selectedTile.getColor():
+                    if getTileColor(move) == 'DARK':
+                        GAME.blit(darkSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                    else:
+                        GAME.blit(lightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
                 else:
-                    GAME.blit(lightSurfaceRGBA, (LEFTMARGIN + x * TILESIZE, TOPMARGIN + y * TILESIZE))
+                    display_assistant.drawPossibleTile(GAME, move)
             else:
                 display_assistant.drawPossibleTile(GAME, move)
-        else:
-            display_assistant.drawPossibleTile(GAME, move)
 
 def tryDrawPromotionMenu(promotingPawn):
     promoIconRects.clear()
